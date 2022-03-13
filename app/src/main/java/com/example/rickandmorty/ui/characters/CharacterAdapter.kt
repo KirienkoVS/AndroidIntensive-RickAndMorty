@@ -12,9 +12,8 @@ import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
 import com.example.rickandmorty.model.CharacterData
 
-class CharacterAdapter(private val onClick: (Int, CharacterData) -> Unit): PagingDataAdapter<CharacterData, RecyclerView.ViewHolder>(CHARACTER_COMPARATOR) {
-
-//    val characterList = arrayListOf<CharacterData>()
+class CharacterAdapter(private val onClick: (Int, CharacterData) -> Unit)
+    : PagingDataAdapter<CharacterData, RecyclerView.ViewHolder>(CHARACTER_COMPARATOR) {
 
     class CharacterViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val name: TextView = view.findViewById(R.id.character_name)
@@ -49,7 +48,7 @@ class CharacterAdapter(private val onClick: (Int, CharacterData) -> Unit): Pagin
     companion object {
         private val CHARACTER_COMPARATOR = object : DiffUtil.ItemCallback<CharacterData>() {
             override fun areItemsTheSame(oldItem: CharacterData, newItem: CharacterData): Boolean {
-                return oldItem.name == newItem.name
+                return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(oldItem: CharacterData, newItem: CharacterData): Boolean {

@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.example.rickandmorty.Injection
 import com.example.rickandmorty.databinding.CharactersFragmentBinding
 import kotlinx.coroutines.flow.collectLatest
 
@@ -15,8 +16,6 @@ class CharactersFragment : Fragment() {
 
     private var _binding: CharactersFragmentBinding? = null
     private val binding get() = _binding!!
-
-//    private lateinit var characterList: List<CharacterData>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +32,10 @@ class CharactersFragment : Fragment() {
         }
         recyclerView.adapter = recyclerViewAdapter
 
-        val viewModel = ViewModelProvider(this).get(CharacterViewModel::class.java)
+        val viewModel = ViewModelProvider(
+            this,
+            Injection.provideCharacterViewModelFactory(requireContext())
+        ).get(CharacterViewModel::class.java)
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.requestCharacters().collectLatest {
@@ -43,27 +45,6 @@ class CharactersFragment : Fragment() {
 
         return binding.root
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.search_item)
-//
-//        val item = menu.findItem(R.id.search_action)
-//        val searchView = item.actionView as SearchView
-//
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                return false
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                val searchList: ArrayList<CharacterData> = arrayListOf()
-//
-//
-//            }
-//
-//        })
-//    }
 
     override fun onDestroy() {
         super.onDestroy()
