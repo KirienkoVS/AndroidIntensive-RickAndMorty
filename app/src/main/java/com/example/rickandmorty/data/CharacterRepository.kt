@@ -15,18 +15,19 @@ class CharacterRepository(
     private val database: CharacterDatabase
 ) {
 
-    fun getCharacters(filter: String): Flow<PagingData<CharacterData>> {
+    fun getCharacters(filter: String, filterGroup: String): Flow<PagingData<CharacterData>> {
+        val apiFilter = "%$filterGroup=$filter%"
         return if (filter.isBlank()) {
             Pager(
                 config = PagingConfig(pageSize = PAGE_SIZE),
                 pagingSourceFactory = { database.characterDao().getAllCharacters() },
-                remoteMediator = CharacterRemoteMediator(api, database)
+                remoteMediator = CharacterRemoteMediator(filter, api, database)
             ).flow
         } else {
             Pager(
                 config = PagingConfig(pageSize = PAGE_SIZE),
                 pagingSourceFactory = { database.characterDao().charactersByFilter(filter) },
-                remoteMediator = CharacterRemoteMediator(api, database)
+                remoteMediator = CharacterRemoteMediator(apiFilter, api, database)
             ).flow
         }
     }

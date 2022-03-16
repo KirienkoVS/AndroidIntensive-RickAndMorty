@@ -12,12 +12,15 @@ class CharacterViewModel(private val repository: CharacterRepository): ViewModel
     private val _filter = MutableLiveData("")
     val filter: LiveData<String> = _filter
 
-    fun setFilter(filter: String) {
+    private var filterGroup: String = ""
+
+    fun setFilter(filter: String, filterGroup: String) {
         _filter.value = filter
+        this.filterGroup = filterGroup
     }
 
-    fun requestCharacters(filter: String): Flow<PagingData<CharacterData>> {
-        return repository.getCharacters(filter).cachedIn(viewModelScope)
+    fun requestCharacters(filter: String, filterGroup: String): Flow<PagingData<CharacterData>> {
+        return repository.getCharacters(filter, filterGroup).cachedIn(viewModelScope)
     }
 
 }

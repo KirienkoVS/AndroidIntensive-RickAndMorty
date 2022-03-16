@@ -39,7 +39,7 @@ class CharactersFragment : Fragment() {
         viewModel.filter.observe(viewLifecycleOwner) { filter ->
             Toast.makeText(activity, filter, Toast.LENGTH_SHORT).show()
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                viewModel.requestCharacters(filter).collectLatest {
+                viewModel.requestCharacters(filter, "").collectLatest {
                     characterAdapter.submitData(it)
                 }
             }
@@ -49,18 +49,26 @@ class CharactersFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
-            R.id.alive -> {
-                viewModel.setFilter("Alive")
-                true
-            }
-            R.id.dead -> {
-                viewModel.setFilter("Dead")
-                true
-            }
-            R.id.unknown -> {
-                viewModel.setFilter("unknown")
-                true
+        return when(item.groupId) {
+            R.id.group_status -> {
+                when(item.itemId) {
+                    R.id.alive -> {
+                        viewModel.setFilter("Alive", "status")
+                        item.isChecked = true
+                        true
+                    }
+                    R.id.dead -> {
+                        viewModel.setFilter("Dead", "status")
+                        item.isChecked = true
+                        true
+                    }
+                    R.id.unknown -> {
+                        viewModel.setFilter("unknown", "status")
+                        item.isChecked = true
+                        true
+                    }
+                    else -> super.onOptionsItemSelected(item)
+                }
             }
             else -> super.onOptionsItemSelected(item)
         }
