@@ -1,14 +1,13 @@
 package com.example.rickandmorty.ui.characters
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.rickandmorty.Injection
+import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.CharactersFragmentBinding
 import kotlinx.coroutines.flow.collectLatest
 
@@ -16,6 +15,8 @@ class CharactersFragment : Fragment() {
 
     private var _binding: CharactersFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var viewModel: CharacterViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,23 +28,47 @@ class CharactersFragment : Fragment() {
         _binding = CharactersFragmentBinding.inflate(inflater, container, false)
 
         val recyclerView = binding.characterRecyclerview
-        val recyclerViewAdapter = CharacterAdapter { position, data ->
-            Toast.makeText(activity, "$position $data", Toast.LENGTH_SHORT).show()
-        }
-        recyclerView.adapter = recyclerViewAdapter
+        val characterAdapter = CharacterAdapter()
+        recyclerView.adapter = characterAdapter
 
-        val viewModel = ViewModelProvider(
+        viewModel = ViewModelProvider(
             this,
             Injection.provideCharacterViewModelFactory(requireContext())
         ).get(CharacterViewModel::class.java)
 
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.requestCharacters().collectLatest {
-                recyclerViewAdapter.submitData(it)
+        viewModel.filter.observe(viewLifecycleOwner) { filter ->
+            Toast.makeText(activity, filter, Toast.LENGTH_SHORT).show()
+            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+                viewModel.requestCharacters(filter).collectLatest {
+                    characterAdapter.submitData(it)
+                }
             }
         }
 
         return binding.root
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.alive -> {
+                viewModel.setFilter("Alive")
+                true
+            }
+            R.id.dead -> {
+                viewModel.setFilter("Dead")
+                true
+            }
+            R.id.unknown -> {
+                viewModel.setFilter("unknown")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.search_item, menu)
     }
 
     override fun onDestroy() {

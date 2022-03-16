@@ -11,13 +11,13 @@ import com.example.rickandmorty.model.CharacterData
 interface CharacterDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(characters: List<CharacterData>)
+    suspend fun insertCharacters(characters: List<CharacterData>)
 
     @Query("SELECT * FROM characters")
-    fun allCharacters(): PagingSource<Int, CharacterData>
+    fun getAllCharacters(): PagingSource<Int, CharacterData>
 
-//    @Query("SELECT * FROM characters WHERE name = :name")
-//    fun charactersByName(name: String): PagingSource<Int, CharacterData>
+    @Query("SELECT * FROM characters WHERE status = :filter OR gender = :filter")
+    fun charactersByFilter(filter: String): PagingSource<Int, CharacterData>
 
     @Query("DELETE FROM characters")
     suspend fun clearCharacters()

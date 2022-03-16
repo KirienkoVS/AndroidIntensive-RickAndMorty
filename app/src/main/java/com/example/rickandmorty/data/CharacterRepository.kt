@@ -9,18 +9,26 @@ import com.example.rickandmorty.db.CharacterDatabase
 import com.example.rickandmorty.model.CharacterData
 import kotlinx.coroutines.flow.Flow
 
+@OptIn(ExperimentalPagingApi::class)
 class CharacterRepository(
     private val api: RickAndMortyApi,
     private val database: CharacterDatabase
 ) {
 
-    @OptIn(ExperimentalPagingApi::class)
-    fun requestCharacters(): Flow<PagingData<CharacterData>> {
-        return Pager(
-            config = PagingConfig(pageSize = PAGE_SIZE),
-            pagingSourceFactory = { database.characterDao().allCharacters() },
-            remoteMediator = CharacterRemoteMediator(api, database)
-        ).flow
+    fun getCharacters(filter: String): Flow<PagingData<CharacterData>> {
+        return if (filter.isBlank()) {
+            Pager(
+                config = PagingConfig(pageSize = PAGE_SIZE),
+                pagingSourceFactory = { database.characterDao().getAllCharacters() },
+                remoteMediator = CharacterRemoteMediator(api, database)
+            ).flow
+        } else {
+            Pager(
+                config = PagingConfig(pageSize = PAGE_SIZE),
+                pagingSourceFactory = { database.characterDao().charactersByFilter(filter) },
+                remoteMediator = CharacterRemoteMediator(api, database)
+            ).flow
+        }
     }
 
     companion object {

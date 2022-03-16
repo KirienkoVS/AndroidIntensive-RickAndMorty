@@ -57,7 +57,7 @@ class CharacterRemoteMediator(
                     RemoteKeys(characterId = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 database.remoteKeysDao().insertAll(keys)
-                database.characterDao().insertAll(characters)
+                database.characterDao().insertCharacters(characters)
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {

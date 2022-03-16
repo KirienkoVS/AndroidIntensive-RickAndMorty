@@ -12,8 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
 import com.example.rickandmorty.model.CharacterData
 
-class CharacterAdapter(private val onClick: (Int, CharacterData) -> Unit)
-    : PagingDataAdapter<CharacterData, RecyclerView.ViewHolder>(CHARACTER_COMPARATOR) {
+class CharacterAdapter: PagingDataAdapter<CharacterData, RecyclerView.ViewHolder>(CHARACTER_COMPARATOR) {
 
     class CharacterViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val name: TextView = view.findViewById(R.id.character_name)
@@ -40,9 +39,9 @@ class CharacterAdapter(private val onClick: (Int, CharacterData) -> Unit)
             (holder as CharacterViewHolder).bind(characterData)
         }
 
-        holder.itemView.setOnClickListener {
-            getItem(position)?.let { it1 -> onClick(position, it1) }
-        }
+//        holder.itemView.setOnClickListener {
+//            getItem(position)?.let { it1 -> onClick(position, it1) }
+//        }
     }
 
     companion object {
