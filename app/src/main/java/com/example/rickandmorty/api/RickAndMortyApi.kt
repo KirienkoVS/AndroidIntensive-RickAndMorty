@@ -14,8 +14,11 @@ interface RickAndMortyApi {
 
     @GET("character/")
     suspend fun requestCharacters(
-        @Query("") filter: String,
-        @Query("page") page: Int
+        @Query("name") name: String?,
+        @Query("species") species: String?,
+        @Query("status") status: String?,
+        @Query("gender") gender: String?,
+        @Query("page") page: Int?
     ): CharacterRequestResponse
 
     companion object {
@@ -32,6 +35,7 @@ interface RickAndMortyApi {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
+                .validateEagerly(true)
                 .build()
                 .create(RickAndMortyApi::class.java)
         }

@@ -4,7 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 data class CharacterRequestResponse(
-    val results: List<CharacterData>
+    val results: List<CharacterData>,
+    val info: Info
 )
 @Entity(tableName = "characters")
 data class CharacterData(
@@ -14,4 +15,9 @@ data class CharacterData(
     val status: String,
     val gender: String,
     val image: String
+)
+
+data class Info(
+    val next: String?,
+    val prev: String?
 )

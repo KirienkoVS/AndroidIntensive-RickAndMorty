@@ -9,7 +9,7 @@ import androidx.room.Query
 interface RemoteKeysDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(remoteKeys: List<RemoteKeys>)
+    suspend fun insertKeys(remoteKeys: List<RemoteKeys>)
 
     @Query("SELECT * FROM remote_keys WHERE characterId = :characterId")
     suspend fun characterIdRemoteKeys(characterId: Int): RemoteKeys?

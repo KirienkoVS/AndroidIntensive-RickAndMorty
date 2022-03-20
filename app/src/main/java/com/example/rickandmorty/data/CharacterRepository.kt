@@ -1,9 +1,7 @@
 package com.example.rickandmorty.data
 
-import androidx.paging.ExperimentalPagingApi
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
+import android.util.Log
+import androidx.paging.*
 import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.db.CharacterDatabase
 import com.example.rickandmorty.model.CharacterData
@@ -15,21 +13,29 @@ class CharacterRepository(
     private val database: CharacterDatabase
 ) {
 
-    fun getCharacters(filter: String, filterGroup: String): Flow<PagingData<CharacterData>> {
-        val apiFilter = "%$filterGroup=$filter%"
-        return if (filter.isBlank()) {
-            Pager(
-                config = PagingConfig(pageSize = PAGE_SIZE),
-                pagingSourceFactory = { database.characterDao().getAllCharacters() },
-                remoteMediator = CharacterRemoteMediator(filter, api, database)
-            ).flow
-        } else {
-            Pager(
-                config = PagingConfig(pageSize = PAGE_SIZE),
-                pagingSourceFactory = { database.characterDao().charactersByFilter(filter) },
-                remoteMediator = CharacterRemoteMediator(apiFilter, api, database)
-            ).flow
+    fun getCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
+        Log.d("Queries ${this.javaClass.name}", "${queries.entries}")
+
+        val name = if (queries.get("name").isNullOrBlank()) "empty" else queries.get("name")
+        val species = if (queries.get("species").isNullOrBlank()) "empty" else queries.get("species")
+        val status = if (queries.get("status").isNullOrBlank()) "empty" else queries.get("status")
+        val gender = if (queries.get("gender").isNullOrBlank()) "empty" else queries.get("gender")
+
+        fun pagingSourceFactory(): () -> PagingSource<Int, CharacterData> {
+            return { database.characterDao().charactersByFilter(
+                name = if (name == "empty") null else name,
+                species = if (species == "empty") null else species,
+                status = if (status == "empty") null else status,
+                gender = if (gender == "empty") null else gender)
+            }
         }
+
+        return Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE),
+            pagingSourceFactory = pagingSourceFactory(),
+            remoteMediator = CharacterRemoteMediator(queries, api, database)
+        ).flow
+
     }
 
     companion object {

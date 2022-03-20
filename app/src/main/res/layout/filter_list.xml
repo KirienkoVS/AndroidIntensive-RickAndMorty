@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/constraint_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/editText_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="character name.."
+        app:endIconMode="clear_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        style="@style/header_style"
+        app:layout_constraintTop_toBottomOf="@id/editText_layout"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <CheckBox
+        android:id="@+id/alive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="alive"
+        android:layout_marginStart="12dp"
+        android:transitionName="status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status" />
+
+    <CheckBox
+        android:id="@+id/dead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="dead"
+        android:layout_marginStart="12dp"
+        android:transitionName="status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alive" />
+
+    <CheckBox
+        android:id="@+id/unknown_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="unknown"
+        android:layout_marginStart="12dp"
+        android:transitionName="status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dead" />
+
+    <TextView
+        android:id="@+id/gender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gender"
+        style="@style/header_style"
+        app:layout_constraintTop_toBottomOf="@id/unknown_status"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <CheckBox
+        android:id="@+id/male"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="male"
+        android:layout_marginStart="12dp"
+        android:transitionName="gender"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gender" />
+
+    <CheckBox
+        android:id="@+id/female"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="female"
+        android:layout_marginStart="12dp"
+        android:transitionName="gender"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/male" />
+
+    <CheckBox
+        android:id="@+id/genderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="genderless"
+        android:layout_marginStart="12dp"
+        android:transitionName="gender"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/female" />
+
+    <CheckBox
+        android:id="@+id/unknown_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="unknown"
+        android:layout_marginStart="12dp"
+        android:transitionName="gender"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/genderless" />
+
+    <TextView
+        android:id="@+id/species"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Species"
+        style="@style/header_style"
+        app:layout_constraintTop_toBottomOf="@id/unknown_gender"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <CheckBox
+        android:id="@+id/human"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="human"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/species" />
+
+    <CheckBox
+        android:id="@+id/alien"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="alien"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/human" />
+
+    <CheckBox
+        android:id="@+id/poopybutthole"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="poopybutthole"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alien" />
+
+    <CheckBox
+        android:id="@+id/humanoid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="humanoid"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/poopybutthole" />
+
+    <CheckBox
+        android:id="@+id/mythological_creature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="mythological creature"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/humanoid" />
+
+    <CheckBox
+        android:id="@+id/robot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="robot"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mythological_creature" />
+
+    <CheckBox
+        android:id="@+id/animal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="animal"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/robot" />
+
+    <CheckBox
+        android:id="@+id/cronenberg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="cronenberg"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/animal" />
+
+    <CheckBox
+        android:id="@+id/disease"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="disease"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cronenberg" />
+
+    <CheckBox
+        android:id="@+id/unknown_species"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="unknown"
+        android:layout_marginStart="12dp"
+        android:transitionName="species"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/disease" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

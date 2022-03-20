@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/filter"
+        android:title="Filter"
+        android:icon="@drawable/ic_filter"
+        app:showAsAction="always" />
+        <!--<menu>
+            <group
+                android:id="@+id/group_status"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/alive"
+                    android:title="alive"/>
+                <item
+                    android:id="@+id/dead"
+                    android:title="dead"/>
+                <item
+                    android:id="@+id/unknown_status"
+                    android:title="unknown"/>
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/species"
+        android:title="Species">
+        <menu>
+            <group
+                android:id="@+id/group_species"
+                android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/human"
+                        android:title="human"/>
+                    <item
+                        android:id="@+id/alien"
+                        android:title="alien"/>
+                    <item
+                        android:id="@+id/poopybutthole"
+                        android:title="poopybutthole"/>
+                    <item
+                        android:id="@+id/humanoid"
+                        android:title="humanoid"/>
+                    <item
+                        android:id="@+id/mythological_creature"
+                        android:title="mythological creature"/>
+                    <item
+                        android:id="@+id/robot"
+                        android:title="robot"/>
+                    <item
+                        android:id="@+id/animal"
+                        android:title="animal"/>
+                    <item
+                        android:id="@+id/cronenberg"
+                        android:title="cronenberg"/>
+                    <item
+                        android:id="@+id/disease"
+                        android:title="disease"/>
+                    <item
+                        android:id="@+id/unknown_species"
+                        android:title="unknown"/>
+                </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/gender"
+        android:title="Gender">
+        <menu>
+            <group
+                android:id="@+id/group_gender"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/female"
+                    android:title="female"/>
+                <item
+                    android:id="@+id/male"
+                    android:title="male"/>
+                <item
+                    android:id="@+id/genderless"
+                    android:title="genderless"/>
+                <item
+                    android:id="@+id/unknown_gender"
+                    android:title="unknown"/>
+            </group>
+        </menu>
+    </item>-->
+
+    <!--<item
+        android:id="@+id/filter_action"
+        android:icon="@drawable/ic_filter"
+        android:title="FilterBy"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/status"
+                android:title="Status"/>
+            <group
+                android:id="@+id/group_status"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/alive"
+                    android:title="alive"/>
+                <item
+                    android:id="@+id/dead"
+                    android:title="dead"/>
+                <item
+                    android:id="@+id/unknown_status"
+                    android:title="unknown"/>
+            </group>
+
+            <item
+                android:id="@+id/species"
+                android:title="Species"/>
+            <group
+                android:id="@+id/group_species"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/human"
+                    android:title="human"/>
+                <item
+                    android:id="@+id/alien"
+                    android:title="alien"/>
+                <item
+                    android:id="@+id/poopybutthole"
+                    android:title="poopybutthole"/>
+                <item
+                    android:id="@+id/humanoid"
+                    android:title="humanoid"/>
+                <item
+                    android:id="@+id/mythological_creature"
+                    android:title="humanoid"/>
+                <item
+                    android:id="@+id/robot"
+                    android:title="robot"/>
+                <item
+                    android:id="@+id/animal"
+                    android:title="animal"/>
+                <item
+                    android:id="@+id/cronenberg"
+                    android:title="cronenberg"/>
+                <item
+                    android:id="@+id/disease"
+                    android:title="disease"/>
+                <item
+                    android:id="@+id/unknown_species"
+                    android:title="mythological creature"/>
+            </group>
+        </menu>
+
+    </item>-->
+
+    <item
+        android:id="@+id/search_action"
+        android:icon="?android:attr/actionModeWebSearchDrawable"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+</menu>

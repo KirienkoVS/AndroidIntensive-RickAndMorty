@@ -1,5 +1,6 @@
 package com.example.rickandmorty.data
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -14,7 +15,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class)
 class CharacterRemoteMediator(
-    private val filter: String,
+    private var queries: Map<String, String>,
     private val api: RickAndMortyApi,
     private val database: CharacterDatabase
     ) : RemoteMediator<Int, CharacterData>() {
@@ -42,47 +43,39 @@ class CharacterRemoteMediator(
         }
 
         try {
-            if (filter.isBlank()) {
-                val response = api.requestCharacters("", page)
-                val characters = response.results
-                val endOfPaginationReached = characters.isEmpty()
+            val response = api.requestCharacters(
+                name = queries.get("name"),
+                species = queries.get("species"),
+                status = queries.get("status"),
+                gender = queries.get("gender"),
+                page
+            )
+            Log.d("Info ${this.javaClass.name}", "Queries - ${queries.entries}")
 
-                database.withTransaction {
-                    // clear all tables in the database
-                    if (loadType == LoadType.REFRESH) {
-                        database.remoteKeysDao().clearRemoteKeys()
-                        database.characterDao().clearCharacters()
-                    }
-                    val prevKey = if (page == FIRST_PAGE_INDEX) null else page - 1
-                    val nextKey = if (endOfPaginationReached) null else page + 1
-                    val keys = characters.map {
-                        RemoteKeys(characterId = it.id, prevKey = prevKey, nextKey = nextKey)
-                    }
-                    database.remoteKeysDao().insertAll(keys)
-                    database.characterDao().insertCharacters(characters)
-                }
-                return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
-            } else {
-                val response = api.requestCharacters(filter, page)
-                val characters = response.results
-                val endOfPaginationReached = characters.isEmpty()
+            val characters = response.results
+            Log.i("Info ${this.javaClass.name}", "InfoPrevKey - ${response.info.prev} InfoNextKey - ${response.info.next}")
 
-                database.withTransaction {
-                    // clear all tables in the database
-                    if (loadType == LoadType.REFRESH) {
-                        database.remoteKeysDao().clearRemoteKeys()
-                        database.characterDao().clearCharacters()
-                    }
-                    val prevKey = if (page == FIRST_PAGE_INDEX) null else page - 1
-                    val nextKey = if (endOfPaginationReached) null else page + 1
-                    val keys = characters.map {
-                        RemoteKeys(characterId = it.id, prevKey = prevKey, nextKey = nextKey)
-                    }
-                    database.remoteKeysDao().insertAll(keys)
-                    database.characterDao().insertCharacters(characters)
+            val endOfPaginationReached = response.info.next == null
+            Log.i("Info ${this.javaClass.name}", "endOfPaginationReached - $endOfPaginationReached")
+
+            database.withTransaction {
+                if (loadType == LoadType.REFRESH) {
+                    database.remoteKeysDao().clearRemoteKeys()
+                    database.characterDao().clearCharacters()
                 }
-                return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+                val prevKey = if (page == FIRST_PAGE_INDEX) null else page - 1
+                val nextKey = if (endOfPaginationReached) null else page + 1
+
+                Log.i("Info ${this.javaClass.name}", "loadType - $loadType")
+                Log.i("Info ${this.javaClass.name}", "prevKey - $prevKey nextKey - $nextKey")
+
+                val keys = characters.map {
+                    RemoteKeys(characterId = it.id, prevKey = prevKey, nextKey = nextKey)
+                }
+                database.remoteKeysDao().insertKeys(keys)
+                database.characterDao().insertCharacters(characters)
             }
+            return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {
             return MediatorResult.Error(exception)
         } catch (exception: HttpException) {

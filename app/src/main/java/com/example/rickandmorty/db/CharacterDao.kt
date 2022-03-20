@@ -13,11 +13,17 @@ interface CharacterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacters(characters: List<CharacterData>)
 
-    @Query("SELECT * FROM characters")
-    fun getAllCharacters(): PagingSource<Int, CharacterData>
-
-    @Query("SELECT * FROM characters WHERE status = :filter OR gender = :filter")
-    fun charactersByFilter(filter: String): PagingSource<Int, CharacterData>
+    @Query("SELECT * FROM characters WHERE " +
+            "(name LIKE :name OR :name IS NULL) AND " +
+            "(species LIKE :species OR :species IS NULL) AND " +
+            "(status LIKE :status OR :status IS NULL) AND " +
+            "(gender LIKE :gender OR :gender IS NULL)")
+    fun charactersByFilter(
+        name: String?,
+        species: String?,
+        status: String?,
+        gender: String?
+    ): PagingSource<Int, CharacterData>
 
     @Query("DELETE FROM characters")
     suspend fun clearCharacters()
