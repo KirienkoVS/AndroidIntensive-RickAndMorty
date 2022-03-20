@@ -16,7 +16,11 @@ class CharacterRepository(
     fun getCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
         Log.d("Queries ${this.javaClass.name}", "${queries.entries}")
 
-        val name = if (queries.get("name").isNullOrBlank()) "empty" else queries.get("name")
+        val name = if (queries.get("name").isNullOrBlank()) {
+            "empty"
+        } else {
+            "%${queries.get("name")}%"
+        }
         val species = if (queries.get("species").isNullOrBlank()) "empty" else queries.get("species")
         val status = if (queries.get("status").isNullOrBlank()) "empty" else queries.get("status")
         val gender = if (queries.get("gender").isNullOrBlank()) "empty" else queries.get("gender")

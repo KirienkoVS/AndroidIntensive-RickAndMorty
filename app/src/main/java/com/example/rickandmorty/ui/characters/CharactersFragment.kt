@@ -92,11 +92,9 @@ class CharactersFragment : Fragment() {
                         filterMap.put(it.transitionName, it.text.toString())
                     } else if (filterMap[it.transitionName].isNullOrBlank()){
                         filterMap.put(it.transitionName, "")
-//                        filterMap.put("name", "")
                     }
                 }
                 filterMap.put("name", nameEditText.text.toString())
-//                Toast.makeText(activity, "${filterMap.entries}", Toast.LENGTH_SHORT).show()
                 viewModel.setFilter(filterMap)
             }
             setNegativeButton("Cancel") { _, _ -> }

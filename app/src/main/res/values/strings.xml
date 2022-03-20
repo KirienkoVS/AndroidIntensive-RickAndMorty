@@ -7,4 +7,23 @@
     <string name="species">Species:</string>
     <string name="status">Status:</string>
     <string name="gender">Gender:</string>
+    <string name="filterby">FilterBy:</string>
+    <string name="character_name">character name..</string>
+    <string name="alive">alive</string>
+    <string name="dead">dead</string>
+    <string name="unknown">unknown</string>
+    <string name="male">male</string>
+    <string name="female">female</string>
+    <string name="genderless">genderless</string>
+    <string name="human">human</string>
+    <string name="alien">alien</string>
+    <string name="poopybutthole">poopybutthole</string>
+    <string name="humanoid">humanoid</string>
+    <string name="mythological_creature">mythological creature</string>
+    <string name="robot">robot</string>
+    <string name="animal">animal</string>
+    <string name="cronenberg">cronenberg</string>
+    <string name="disease">disease</string>
+    <string name="filter">Filter</string>
+    <string name="search">Search</string>
 </resources>
