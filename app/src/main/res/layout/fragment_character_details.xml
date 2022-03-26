@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.characters.CharacterDetailsFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/character_imageView"
+            android:layout_width="115dp"
+            android:layout_height="115dp"
+            android:contentDescription="@string/character_imageview"
+            app:layout_constraintStart_toStartOf="@id/image_layout"
+            app:layout_constraintTop_toTopOf="@id/image_layout"
+            tools:srcCompat="@drawable/morty_smith" />
+
+        <TextView
+            android:id="@+id/character_name_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/character_species_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/species"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintTop_toBottomOf="@id/character_name_textview" />
+
+        <TextView
+            android:id="@+id/character_status_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintTop_toBottomOf="@id/character_species_textview" />
+
+        <TextView
+            android:id="@+id/character_gender_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/gender"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintTop_toBottomOf="@id/character_status_textview" />
+
+        <TextView
+            android:id="@+id/character_type_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/type"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintTop_toBottomOf="@id/character_gender_textview" />
+
+        <TextView
+            android:id="@+id/character_created_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/created"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintTop_toBottomOf="@id/character_type_textview" />
+        
+        <!--//////-->
+
+        <TextView
+            android:id="@+id/character_name"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/character_species_textview"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Morty Smith" />
+
+        <TextView
+            android:id="@+id/character_species"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/character_species_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_name"
+            tools:text="Human" />
+
+        <TextView
+            android:id="@+id/character_status"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/character_species_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_species"
+            tools:text="Alive" />
+
+        <TextView
+            android:id="@+id/character_gender"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/character_species_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_status"
+            tools:text="Male" />
+
+        <TextView
+            android:id="@+id/character_type"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/character_species_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_gender"
+            tools:text="unknown" />
+
+        <TextView
+            android:id="@+id/character_created"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/character_species_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_type"
+            tools:text="2017-11-04" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/origin_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_layout">
+
+        <TextView
+            android:id="@+id/character_origin_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/origin"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/origin_layout" />
+
+        <TextView
+            android:id="@+id/character_origin_name"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="26dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toEndOf="@id/character_origin_textview"
+            app:layout_constraintTop_toTopOf="@id/origin_layout"
+            tools:text="unknown" />
+
+        <TextView
+            android:id="@+id/character_origin_url"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="26dp"
+            android:layout_marginBottom="8dp"
+            android:autoLink="web"
+            app:layout_constraintStart_toEndOf="@id/character_origin_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_origin_name"
+            app:layout_constraintBottom_toBottomOf="@id/origin_layout"
+            tools:text="unknown" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/location_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/origin_layout">
+
+        <TextView
+            android:id="@+id/character_location_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/location"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/location_layout" />
+
+        <TextView
+            android:id="@+id/character_location_name"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toEndOf="@id/character_location_textview"
+            app:layout_constraintTop_toTopOf="@id/location_layout"
+            tools:text="Citadel of Ricks" />
+
+        <TextView
+            android:id="@+id/character_location_url"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintStart_toEndOf="@id/character_location_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_location_name"
+            app:layout_constraintBottom_toBottomOf="@id/location_layout"
+            tools:text="https://rickandmortyapi.com/api/location/3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/episode_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:padding="8dp"
+        android:background="@drawable/border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/location_layout">
+
+        <TextView
+            android:id="@+id/character_url_textview"
+            style="@style/text_vew_style"
+            android:layout_marginStart="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/url"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/episode_layout"
+            app:layout_constraintTop_toTopOf="@id/episode_layout" />
+
+        <TextView
+            android:id="@+id/character_image_textview"
+            style="@style/text_vew_style"
+            android:layout_marginStart="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/image"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/character_url_textview" />
+
+        <!--//////-->
+
+        <TextView
+            android:id="@+id/character_url"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:autoLink="web"
+            app:layout_constraintStart_toEndOf="@id/character_image_textview"
+            app:layout_constraintTop_toTopOf="@id/episode_layout"
+            tools:text="https://rickandmortyapi.com/api/character/2" />
+
+        <TextView
+            android:id="@+id/character_imageUrl"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:autoLink="web"
+            app:layout_constraintStart_toEndOf="@id/character_image_textview"
+            app:layout_constraintTop_toBottomOf="@id/character_url"
+            tools:text="https://rickandmortyapi.com/api/character/avatar/2.jpeg" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_layout">
+
+        <TextView
+            android:id="@+id/character_episode_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/episode"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/character_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

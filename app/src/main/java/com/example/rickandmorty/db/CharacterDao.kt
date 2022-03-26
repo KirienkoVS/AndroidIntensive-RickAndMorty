@@ -1,5 +1,6 @@
 package com.example.rickandmorty.db
 
+import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
@@ -25,6 +26,10 @@ interface CharacterDao {
         gender: String?
     ): PagingSource<Int, CharacterData>
 
+    @Query("SELECT * FROM characters WHERE id = :id")
+    fun getCharacterDetails(id: Int): LiveData<CharacterData>
+
     @Query("DELETE FROM characters")
     suspend fun clearCharacters()
+
 }

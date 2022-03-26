@@ -21,6 +21,15 @@ interface RickAndMortyApi {
         @Query("page") page: Int?
     ): CharacterRequestResponse
 
+//    @GET("character/")
+//    suspend fun requestCharacterDetails(
+//        @Query("name") name: String?,
+//        @Query("species") species: String?,
+//        @Query("status") status: String?,
+//        @Query("gender") gender: String?,
+//        @Query("page") page: Int?
+//    ): CharacterDetailsResponse
+
     companion object {
         private const val BASE_URL = "https://rickandmortyapi.com/api/"
 

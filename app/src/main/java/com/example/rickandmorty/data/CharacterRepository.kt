@@ -1,6 +1,6 @@
 package com.example.rickandmorty.data
 
-import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.paging.*
 import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.db.CharacterDatabase
@@ -14,7 +14,6 @@ class CharacterRepository(
 ) {
 
     fun getCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
-        Log.d("Queries ${this.javaClass.name}", "${queries.entries}")
 
         val name = if (queries.get("name").isNullOrBlank()) {
             "empty"
@@ -40,6 +39,10 @@ class CharacterRepository(
             remoteMediator = CharacterRemoteMediator(queries, api, database)
         ).flow
 
+    }
+
+    fun getCharacterDetails(id: Int): LiveData<CharacterData> {
+        return database.characterDao().getCharacterDetails(id)
     }
 
     companion object {

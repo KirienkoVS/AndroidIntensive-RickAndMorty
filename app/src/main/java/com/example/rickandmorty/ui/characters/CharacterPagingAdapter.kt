@@ -1,10 +1,13 @@
 package com.example.rickandmorty.ui.characters
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +15,7 @@ import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
 import com.example.rickandmorty.model.CharacterData
 
-class CharacterAdapter: PagingDataAdapter<CharacterData, RecyclerView.ViewHolder>(CHARACTER_COMPARATOR) {
+class CharacterPagingAdapter: PagingDataAdapter<CharacterData, RecyclerView.ViewHolder>(CHARACTER_COMPARATOR) {
 
     class CharacterViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val name: TextView = view.findViewById(R.id.character_name)
@@ -34,14 +37,19 @@ class CharacterAdapter: PagingDataAdapter<CharacterData, RecyclerView.ViewHolder
         return CharacterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.character_item, parent, false))
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         getItem(position)?.let { characterData ->
             (holder as CharacterViewHolder).bind(characterData)
         }
 
-//        holder.itemView.setOnClickListener {
-//            getItem(position)?.let { it1 -> onClick(position, it1) }
-//        }
+        holder.itemView.setOnClickListener { view ->
+            val characterID = getItem(position)?.id
+            if (characterID != null) {
+                val action = CharactersFragmentDirections.actionCharactersPageToCharacterDetailsFragment(characterID = characterID)
+                view.findNavController().navigate(action)
+            }
+        }
     }
 
     companion object {
@@ -55,4 +63,5 @@ class CharacterAdapter: PagingDataAdapter<CharacterData, RecyclerView.ViewHolder
             }
         }
     }
+
 }

@@ -25,7 +25,7 @@ class CharactersFragment : Fragment() {
 
     private lateinit var viewModel: CharacterViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var characterAdapter: CharacterAdapter
+    private lateinit var characterPagingAdapter: CharacterPagingAdapter
     private lateinit var filterMap: MutableMap<String, String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,8 +38,8 @@ class CharactersFragment : Fragment() {
         _binding = CharactersFragmentBinding.inflate(inflater, container, false)
 
         recyclerView = binding.characterRecyclerview
-        characterAdapter = CharacterAdapter()
-        recyclerView.adapter = characterAdapter
+        characterPagingAdapter = CharacterPagingAdapter()
+        recyclerView.adapter = characterPagingAdapter
         filterMap = mutableMapOf()
 
         viewModel = ViewModelProvider(
@@ -50,7 +50,7 @@ class CharactersFragment : Fragment() {
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
                 viewModel.requestCharacters(queries).collectLatest {
-                    characterAdapter.submitData(it)
+                    characterPagingAdapter.submitData(it)
                 }
             }
         }
@@ -64,16 +64,17 @@ class CharactersFragment : Fragment() {
         val filterListLayout = inflater.inflate(R.layout.filter_list, null)
         val customTitle = inflater.inflate(R.layout.dialog_title, null)
         val nameEditText = filterListLayout.findViewById<EditText>(R.id.edit_text)
-        val builder = MaterialAlertDialogBuilder(requireContext())
-        
-        val filterList = mutableListOf<CheckBox>()
+        val dialog = MaterialAlertDialogBuilder(requireContext())
 
+        // gets checkboxes from filter_list.xml
+        val filterList = mutableListOf<CheckBox>()
         filterListLayout.findViewById<ConstraintLayout>(R.id.constraint_layout).forEach {
             if (it is CheckBox) {
                 filterList.add(it)
             }
         }
 
+        // remembers checkboxes flags
         filterList.forEach { checkBox ->
             filterMap.entries.forEach { filter ->
                 if (checkBox.text == filter.value && checkBox.transitionName == filter.key) {
@@ -82,7 +83,8 @@ class CharactersFragment : Fragment() {
             }
         }
 
-        with(builder) {
+        // dialog builder
+        with(dialog) {
             setView(filterListLayout)
             setCustomTitle(customTitle)
             setCancelable(false)

@@ -1,6 +1,5 @@
 package com.example.rickandmorty.data
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -33,16 +32,17 @@ class CharacterRemoteMediator(
             }
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
-                // If remoteKeys is null, that means the refresh result is not in the database yet.
+                /*// If remoteKeys is null, that means the refresh result is not in the database yet.
                 // We can return Success with endOfPaginationReached = false because Paging
                 // will call this method again if RemoteKeys becomes non-null.
                 // If remoteKeys is NOT NULL but its nextKey is null, that means we've reached
-                // the end of pagination for append.
+                // the end of pagination for append.*/
                 remoteKeys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
             }
         }
 
         try {
+
             val response = api.requestCharacters(
                 name = queries.get("name"),
                 species = queries.get("species"),
@@ -50,28 +50,33 @@ class CharacterRemoteMediator(
                 gender = queries.get("gender"),
                 page
             )
-            Log.d("Info ${this.javaClass.name}", "Queries - ${queries.entries}")
 
-            val characters = response.results
-            Log.i("Info ${this.javaClass.name}", "InfoPrevKey - ${response.info.prev} InfoNextKey - ${response.info.next}")
-
+            val charactersInfo = response.results
             val endOfPaginationReached = response.info.next == null
-            Log.i("Info ${this.javaClass.name}", "endOfPaginationReached - $endOfPaginationReached")
 
             database.withTransaction {
+
                 if (loadType == LoadType.REFRESH) {
                     database.remoteKeysDao().clearRemoteKeys()
                     database.characterDao().clearCharacters()
                 }
+
                 val prevKey = if (page == FIRST_PAGE_INDEX) null else page - 1
                 val nextKey = if (endOfPaginationReached) null else page + 1
 
-                Log.i("Info ${this.javaClass.name}", "loadType - $loadType")
-                Log.i("Info ${this.javaClass.name}", "prevKey - $prevKey nextKey - $nextKey")
-
-                val keys = characters.map {
+                val keys = charactersInfo.map {
                     RemoteKeys(characterId = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
+
+                val characters = charactersInfo.map {
+                    CharacterData(
+                        id = it.id, name = it.name, species = it.species, status = it.status, gender = it.gender,
+                        image = it.image, type = it.type, url = it.url, created = it.created, originName = it.origin.name,
+                        originUrl = it.origin.url, locationName = it.location.name, locationUrl = it.location.url,
+                        episode = it.episode
+                    )
+                }
+
                 database.remoteKeysDao().insertKeys(keys)
                 database.characterDao().insertCharacters(characters)
             }
