@@ -22,11 +22,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupBottomNavigation()
-
     }
 
     private fun setupBottomNavigation() {
-
         val navigationView: BottomNavigationView = binding.bottomNavigationView
         val navController = findNavController(R.id.nav_host_fragment_container)
 
@@ -39,12 +37,6 @@ class MainActivity : AppCompatActivity() {
         )
 
         navigationView.setupWithNavController(navController)
-
-        /**
-        Sets up the ActionBar returned by AppCompatActivity.getSupportActionBar for use with a NavController.
-        By calling this method, the title in the action bar will automatically be updated when the destination
-        changes (assuming there is a valid label).
-         */
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
 }

@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.Injection
 import com.example.rickandmorty.databinding.FragmentCharacterDetailsBinding
@@ -34,23 +35,26 @@ class CharacterDetailsFragment : Fragment() {
     private lateinit var locationUrl: TextView
 
     private var characterID: Int = 0
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
-
         _binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
 
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideCharacterViewModelFactory(requireContext()))[CharacterViewModel::class.java]
+        characterID = arguments?.getInt(CHARACTER_ID) ?: error("Should provide character ID")
 
-        characterID = arguments?.getInt(CHARACTER_ID) ?: error("Character ID must not be Null")
-
+        initializeViewModel()
         bindViews()
         setViews()
         setRecyclerView()
 
         return binding.root
+    }
+
+    private fun initializeViewModel() {
+        viewModel = ViewModelProvider(
+            this,
+            Injection.provideCharacterViewModelFactory(requireContext()))[CharacterViewModel::class.java]
     }
 
     private fun bindViews() {
@@ -68,6 +72,7 @@ class CharacterDetailsFragment : Fragment() {
             originUrl = characterOriginUrl
             locationName = characterLocationName
             locationUrl = characterLocationUrl
+            recyclerView = characterRecyclerview
         }
     }
 
@@ -92,11 +97,17 @@ class CharacterDetailsFragment : Fragment() {
     }
 
     private fun setRecyclerView() {
-        viewModel.requestCharacterDetails(characterID)?.let {
-            it.observe(viewLifecycleOwner) { character ->
-                val recyclerView = binding.characterRecyclerview
-                val recyclerViewAdapter = CharacterRecyclerViewAdapter(character.episode)
-                recyclerView.adapter = recyclerViewAdapter
+        viewModel.requestCharacterDetails(characterID)?.let { characterLiveData ->
+            characterLiveData.observe(viewLifecycleOwner) { characterData ->
+                val episodeUrlList = characterData.episode
+
+                viewModel.requestCharacterEpisodes(episodeUrlList)?.let { episodeLiveData ->
+                    episodeLiveData.observe(viewLifecycleOwner) { episodeDataList ->
+                        val recyclerViewAdapter = CharacterDetailsAdapter()
+                        recyclerViewAdapter.episodeList = episodeDataList
+                        recyclerView.adapter = recyclerViewAdapter
+                    }
+                }
             }
         }
     }

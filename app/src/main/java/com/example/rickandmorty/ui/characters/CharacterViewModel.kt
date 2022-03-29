@@ -2,8 +2,9 @@ package com.example.rickandmorty.ui.characters
 
 import androidx.lifecycle.*
 import androidx.paging.PagingData
-import com.example.rickandmorty.data.CharacterRepository
+import com.example.rickandmorty.data.characters.CharacterRepository
 import com.example.rickandmorty.model.CharacterData
+import com.example.rickandmorty.model.EpisodeData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,7 @@ class CharacterViewModel(private val repository: CharacterRepository): ViewModel
         return repository.getCharacters(queries)/*.cachedIn(viewModelScope)*/
     }
 
+
     private var characterDetails: LiveData<CharacterData>? = null
 
     fun requestCharacterDetails(id: Int): LiveData<CharacterData>? {
@@ -36,6 +38,16 @@ class CharacterViewModel(private val repository: CharacterRepository): ViewModel
             characterDetails = repository.getCharacterDetails(id)
         }
         return characterDetails
+    }
+
+
+    private var characterEpisodes: LiveData<List<EpisodeData>>? = null
+
+    fun requestCharacterEpisodes(episodeUrlList: List<String>): LiveData<List<EpisodeData>>? {
+        viewModelScope.launch {
+            characterEpisodes = repository.getCharacterEpisodes(episodeUrlList)
+        }
+        return characterEpisodes
     }
 
 }

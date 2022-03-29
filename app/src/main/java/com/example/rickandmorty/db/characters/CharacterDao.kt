@@ -1,4 +1,4 @@
-package com.example.rickandmorty.db
+package com.example.rickandmorty.db.characters
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource

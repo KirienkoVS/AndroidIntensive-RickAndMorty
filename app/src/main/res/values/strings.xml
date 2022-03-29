@@ -36,4 +36,9 @@
     <string name="episode">Episode:</string>
     <string name="url">URL:</string>
     <string name="image">Image:</string>
+    <string name="air_date">Air date:</string>
+    <string name="episode_name">episode name…</string>
+    <string name="episode_number">episode number…</string>
+    <string name="episode_id">ID:</string>
+    <string name="episode_characters">Characters:</string>
 </resources>

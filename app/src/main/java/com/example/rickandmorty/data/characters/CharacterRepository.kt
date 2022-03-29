@@ -1,16 +1,18 @@
-package com.example.rickandmorty.data
+package com.example.rickandmorty.data.characters
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import androidx.paging.*
 import com.example.rickandmorty.api.RickAndMortyApi
-import com.example.rickandmorty.db.CharacterDatabase
+import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
+import com.example.rickandmorty.model.EpisodeData
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalPagingApi::class)
 class CharacterRepository(
     private val api: RickAndMortyApi,
-    private val database: CharacterDatabase
+    private val database: AppDatabase
 ) {
 
     fun getCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
@@ -43,6 +45,25 @@ class CharacterRepository(
 
     fun getCharacterDetails(id: Int): LiveData<CharacterData> {
         return database.characterDao().getCharacterDetails(id)
+    }
+
+    suspend fun getCharacterEpisodes(episodeUrlList: List<String>): LiveData<List<EpisodeData>> {
+        var query = ""
+
+        episodeUrlList.forEach { episodeUrl ->
+            val episodeNumber = episodeUrl.substringAfterLast("/")
+            query += "$episodeNumber,"
+        }
+        
+        val episodeData: LiveData<List<EpisodeData>> = liveData {
+            val response = api.requestSingleEpisode(query).map {
+                EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
+                    characters = it.characters, url = it.url, created = it.created)
+            }
+            emit(response)
+        }
+
+        return episodeData
     }
 
     companion object {

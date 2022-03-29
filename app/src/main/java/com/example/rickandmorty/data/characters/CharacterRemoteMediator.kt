@@ -1,4 +1,4 @@
-package com.example.rickandmorty.data
+package com.example.rickandmorty.data.characters
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -6,8 +6,8 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.rickandmorty.api.RickAndMortyApi
-import com.example.rickandmorty.db.CharacterDatabase
-import com.example.rickandmorty.db.RemoteKeys
+import com.example.rickandmorty.db.AppDatabase
+import com.example.rickandmorty.db.characters.CharacterRemoteKeys
 import com.example.rickandmorty.model.CharacterData
 import retrofit2.HttpException
 import java.io.IOException
@@ -16,7 +16,7 @@ import java.io.IOException
 class CharacterRemoteMediator(
     private var queries: Map<String, String>,
     private val api: RickAndMortyApi,
-    private val database: CharacterDatabase
+    private val database: AppDatabase
     ) : RemoteMediator<Int, CharacterData>() {
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, CharacterData>): MediatorResult {
@@ -57,7 +57,7 @@ class CharacterRemoteMediator(
             database.withTransaction {
 
                 if (loadType == LoadType.REFRESH) {
-                    database.remoteKeysDao().clearRemoteKeys()
+                    database.characterRemoteKeysDao().clearRemoteKeys()
                     database.characterDao().clearCharacters()
                 }
 
@@ -65,7 +65,7 @@ class CharacterRemoteMediator(
                 val nextKey = if (endOfPaginationReached) null else page + 1
 
                 val keys = charactersInfo.map {
-                    RemoteKeys(characterId = it.id, prevKey = prevKey, nextKey = nextKey)
+                    CharacterRemoteKeys(characterId = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
 
                 val characters = charactersInfo.map {
@@ -77,7 +77,7 @@ class CharacterRemoteMediator(
                     )
                 }
 
-                database.remoteKeysDao().insertKeys(keys)
+                database.characterRemoteKeysDao().insertKeys(keys)
                 database.characterDao().insertCharacters(characters)
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
@@ -89,29 +89,29 @@ class CharacterRemoteMediator(
     }
 
     // LoadType.REFRESH
-    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, CharacterData>): RemoteKeys? {
+    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, CharacterData>): CharacterRemoteKeys? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let { characterId ->
-                database.remoteKeysDao().characterIdRemoteKeys(characterId)
+                database.characterRemoteKeysDao().characterIdRemoteKeys(characterId)
             }
         }
     }
 
     // LoadType.PREPEND
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, CharacterData>): RemoteKeys? {
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, CharacterData>): CharacterRemoteKeys? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { character ->
                 // Get the remote keys of the first items retrieved
-                database.remoteKeysDao().characterIdRemoteKeys(character.id)
+                database.characterRemoteKeysDao().characterIdRemoteKeys(character.id)
             }
     }
 
     // LoadType.APPEND
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, CharacterData>): RemoteKeys? {
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, CharacterData>): CharacterRemoteKeys? {
         // Get the last page that was retrieved, that contained items. From that last page, get the last item.
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { character ->
-                database.remoteKeysDao().characterIdRemoteKeys(character.id)
+                database.characterRemoteKeysDao().characterIdRemoteKeys(character.id)
             }
     }
 

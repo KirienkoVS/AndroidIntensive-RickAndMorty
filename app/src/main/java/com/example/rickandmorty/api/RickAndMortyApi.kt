@@ -1,13 +1,14 @@
 package com.example.rickandmorty.api
 
 import android.util.Log
-import com.example.rickandmorty.model.CharacterRequestResponse
+import com.example.rickandmorty.model.CharacterData
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RickAndMortyApi {
@@ -21,14 +22,22 @@ interface RickAndMortyApi {
         @Query("page") page: Int?
     ): CharacterRequestResponse
 
-//    @GET("character/")
-//    suspend fun requestCharacterDetails(
-//        @Query("name") name: String?,
-//        @Query("species") species: String?,
-//        @Query("status") status: String?,
-//        @Query("gender") gender: String?,
-//        @Query("page") page: Int?
-//    ): CharacterDetailsResponse
+    @GET("character/{id}")
+    suspend fun requestSingleCharacter(
+        @Path("id") id: String
+    ): List<CharacterData>
+
+    @GET("episode/")
+    suspend fun requestEpisodes(
+        @Query("name") name: String?,
+        @Query("episode") episode: String?,
+        @Query("page") page: Int?
+    ): EpisodeRequestResponse
+
+    @GET("episode/{id}")
+    suspend fun requestSingleEpisode(
+        @Path("id") id: String
+    ): List<EpisodeResponse>
 
     companion object {
         private const val BASE_URL = "https://rickandmortyapi.com/api/"

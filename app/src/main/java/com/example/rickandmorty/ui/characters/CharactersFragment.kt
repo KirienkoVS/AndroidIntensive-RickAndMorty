@@ -26,7 +26,7 @@ class CharactersFragment : Fragment() {
     private lateinit var viewModel: CharacterViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var characterPagingAdapter: CharacterPagingAdapter
-    private lateinit var filterMap: MutableMap<String, String>
+    private lateinit var characterFilterMap: MutableMap<String, String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,15 +37,25 @@ class CharactersFragment : Fragment() {
 
         _binding = CharactersFragmentBinding.inflate(inflater, container, false)
 
-        recyclerView = binding.characterRecyclerview
-        characterPagingAdapter = CharacterPagingAdapter()
-        recyclerView.adapter = characterPagingAdapter
-        filterMap = mutableMapOf()
+        initializeViewModel()
+        setUpCharacterPagingAdapter()
 
+        characterFilterMap = mutableMapOf()
+
+        return binding.root
+    }
+
+    private fun initializeViewModel() {
         viewModel = ViewModelProvider(
             this,
             Injection.provideCharacterViewModelFactory(requireContext())
         ).get(CharacterViewModel::class.java)
+    }
+
+    private fun setUpCharacterPagingAdapter() {
+        recyclerView = binding.characterRecyclerview
+        characterPagingAdapter = CharacterPagingAdapter()
+        recyclerView.adapter = characterPagingAdapter
 
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
@@ -54,19 +64,17 @@ class CharactersFragment : Fragment() {
                 }
             }
         }
-
-        return binding.root
     }
 
     @SuppressLint("InflateParams")
     private fun showFilterDialog() {
         val inflater = requireActivity().layoutInflater
-        val filterListLayout = inflater.inflate(R.layout.filter_list, null)
+        val filterListLayout = inflater.inflate(R.layout.characters_filter, null)
         val customTitle = inflater.inflate(R.layout.dialog_title, null)
         val nameEditText = filterListLayout.findViewById<EditText>(R.id.edit_text)
         val dialog = MaterialAlertDialogBuilder(requireContext())
 
-        // gets checkboxes from filter_list.xml
+        // gets checkboxes from characters_filter.xml
         val filterList = mutableListOf<CheckBox>()
         filterListLayout.findViewById<ConstraintLayout>(R.id.constraint_layout).forEach {
             if (it is CheckBox) {
@@ -76,7 +84,7 @@ class CharactersFragment : Fragment() {
 
         // remembers checkboxes flags
         filterList.forEach { checkBox ->
-            filterMap.entries.forEach { filter ->
+            characterFilterMap.entries.forEach { filter ->
                 if (checkBox.text == filter.value && checkBox.transitionName == filter.key) {
                     checkBox.isChecked = true
                 }
@@ -91,20 +99,20 @@ class CharactersFragment : Fragment() {
             setPositiveButton("Apply") { _, _ ->
                 filterList.forEach {
                     if (it.isChecked) {
-                        filterMap.put(it.transitionName, it.text.toString())
-                    } else if (filterMap[it.transitionName].isNullOrBlank()){
-                        filterMap.put(it.transitionName, "")
+                        characterFilterMap.put(it.transitionName, it.text.toString())
+                    } else if (characterFilterMap[it.transitionName].isNullOrBlank()){
+                        characterFilterMap.put(it.transitionName, "")
                     }
                 }
-                filterMap.put("name", nameEditText.text.toString())
-                viewModel.setFilter(filterMap)
+                characterFilterMap.put("name", nameEditText.text.toString())
+                viewModel.setFilter(characterFilterMap)
             }
             setNegativeButton("Cancel") { _, _ -> }
             setNeutralButton("Clear", null)
             create().apply {
                 setOnShowListener {
                     getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-                        filterMap.clear()
+                        characterFilterMap.clear()
                         filterList.forEach { it.isChecked = false }
                     }
                 }

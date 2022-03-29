@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:padding="8dp"
+    android:background="@drawable/border">
+
+    <TextView
+        android:id="@+id/episode_id_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/episode_id"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/episode_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textIsSelectable="true"
+        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="28" />
+
+    <TextView
+        android:id="@+id/episode_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_id_textview" />
+
+    <TextView
+        android:id="@+id/episode_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textIsSelectable="true"
+        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"
+        app:layout_constraintTop_toBottomOf="@id/episode_id"
+        tools:text="The Ricklantis Mixup" />
+
+    <TextView
+        android:id="@+id/episode_episode_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/episode"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_name_textview" />
+
+    <TextView
+        android:id="@+id/episode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textIsSelectable="true"
+        tools:text="S03E07"
+        app:layout_constraintTop_toBottomOf="@id/episode_name"
+        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+
+    <TextView
+        android:id="@+id/episode_date_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/air_date"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_episode_textview" />
+
+    <TextView
+        android:id="@+id/episode_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        tools:text="September 10, 2017"
+        app:layout_constraintTop_toBottomOf="@id/episode"
+        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+
+    <TextView
+        android:id="@+id/episode_url_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/url"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_date_textview" />
+
+    <TextView
+        android:id="@+id/episode_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        tools:text="https://rickandmortyapi.com/api/episode/28"
+        android:autoLink="web"
+        app:layout_constraintTop_toBottomOf="@id/episode_date"
+        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+
+    <TextView
+        android:id="@+id/episode_created_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/created"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_url_textview" />
+
+    <TextView
+        android:id="@+id/episode_created"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        tools:text="2017-11-10"
+        app:layout_constraintTop_toBottomOf="@id/episode_url"
+        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+
+    <TextView
+        android:id="@+id/episode_characters_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/episode_characters"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_created_textview" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/episode_characters_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/episode_characters_textview" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
