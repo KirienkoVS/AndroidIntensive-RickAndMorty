@@ -1,4 +1,4 @@
-package com.example.rickandmorty.data.episodes
+package com.example.rickandmorty.data.locations
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
@@ -6,56 +6,61 @@ import androidx.paging.*
 import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
-import com.example.rickandmorty.model.EpisodeData
+import com.example.rickandmorty.model.LocationData
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalPagingApi::class)
-class EpisodeRepository(
+class LocationRepository(
     private val api: RickAndMortyApi,
     private val database: AppDatabase
 ) {
 
-    fun getEpisodes(queries: Map<String, String>): Flow<PagingData<EpisodeData>> {
+    fun getLocations(queries: Map<String, String>): Flow<PagingData<LocationData>> {
 
         val name = if (queries.get("name").isNullOrBlank()) {
             "empty"
         } else "%${queries.get("name")}%"
 
-        val episode = if (queries.get("episode").isNullOrBlank()) {
+        val type = if (queries.get("type").isNullOrBlank()) {
             "empty"
-        } else "%${queries.get("episode")}%"
+        } else "%${queries.get("type")}%"
 
-        fun pagingSourceFactory(): () -> PagingSource<Int, EpisodeData> {
-            return { database.episodeDao().episodesByFilter(
+        val dimension = if (queries.get("dimension").isNullOrBlank()) {
+            "empty"
+        } else "%${queries.get("dimension")}%"
+
+        fun pagingSourceFactory(): () -> PagingSource<Int, LocationData> {
+            return { database.locationDao().locationsByFilter(
                 name = if (name == "empty") null else name,
-                episode = if (episode == "empty") null else episode)
+                type = if (type == "empty") null else type,
+                dimension = if (dimension == "empty") null else dimension)
             }
         }
 
         return Pager(
             config = PagingConfig(pageSize = PAGE_SIZE),
             pagingSourceFactory = pagingSourceFactory(),
-            remoteMediator = EpisodeRemoteMediator(queries, api, database)
+            remoteMediator = LocationRemoteMediator(queries, api, database)
         ).flow
 
     }
 
-    fun getEpisodeDetails(id: Int): LiveData<EpisodeData> {
-        return database.episodeDao().getEpisodeDetails(id)
+    fun getLocationDetails(id: Int): LiveData<LocationData> {
+        return database.locationDao().getLocationDetails(id)
     }
 
-    suspend fun getEpisodeCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
+    suspend fun getLocationResidents(residentUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
 
         var apiQuery = ""
         val dbQuery = mutableListOf<Int>()
 
-        characterUrlList.forEach { characterUrl ->
-            val characterID = characterUrl.substringAfterLast("/").toInt()
-            apiQuery += "$characterID,"
-            dbQuery.add(characterID)
+        residentUrlList.forEach { residentUrl ->
+            val residentID = residentUrl.substringAfterLast("/").toInt()
+            apiQuery += "$residentID,"
+            dbQuery.add(residentID)
         }
 
-        val characterData = if (isOnline) {
+        val residentData = if (isOnline) {
             liveData {
                 val apiResponse = api.requestSingleCharacter(apiQuery).map {
                     CharacterData(
@@ -70,7 +75,7 @@ class EpisodeRepository(
             database.characterDao().getLocationOrEpisodeCharacters(dbQuery)
         }
 
-        return characterData
+        return residentData
     }
 
     companion object {

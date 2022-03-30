@@ -41,9 +41,9 @@ class EpisodeViewModel(private val repository: EpisodeRepository): ViewModel() {
 
     private var episodeCharacters: LiveData<List<CharacterData>>? = null
 
-    fun requestEpisodeCharacters(characterUrlList: List<String>): LiveData<List<CharacterData>>? {
+    fun requestEpisodeCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>>? {
         viewModelScope.launch {
-            episodeCharacters = repository.getEpisodeCharacters(characterUrlList)
+            episodeCharacters = repository.getEpisodeCharacters(characterUrlList, isOnline)
         }
         return episodeCharacters
     }

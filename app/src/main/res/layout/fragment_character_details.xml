@@ -148,17 +148,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/character_created" />
 
-    <TextView
-        android:id="@+id/character_origin_textview"
-        style="@style/text_vew_style"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/origin"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/character_origin_url"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/line4" />
+        <TextView
+            android:id="@+id/character_origin_textview"
+            style="@style/text_vew_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/origin"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/character_origin_url"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line4" />
 
         <TextView
             android:id="@+id/character_origin_name"

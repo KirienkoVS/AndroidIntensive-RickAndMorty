@@ -30,7 +30,6 @@ class EpisodesFragment : Fragment()  {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
         _binding = EpisodesFragmentBinding.inflate(inflater, container, false)
 
         episodeFilterMap = mutableMapOf()

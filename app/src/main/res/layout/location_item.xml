@@ -12,7 +12,7 @@
     android:background="@drawable/border">
 
     <TextView
-        android:id="@+id/episode_name_textview"
+        android:id="@+id/location_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/name"
@@ -22,50 +22,50 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/episode_name"
+        android:id="@+id/location_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/episode_episode_textview"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Pilot" />
+        tools:text="Earth" />
 
     <TextView
-        android:id="@+id/episode_episode_textview"
+        android:id="@+id/location_type_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/episode"
+        android:text="@string/type"
         android:textStyle="bold"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_name_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_name_textview" />
 
     <TextView
-        android:id="@+id/episode_episode"
+        android:id="@+id/location_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        tools:text="S01E01"
-        app:layout_constraintTop_toBottomOf="@id/episode_name"
-        app:layout_constraintStart_toEndOf="@id/episode_episode_textview"/>
+        tools:text="Planet"
+        app:layout_constraintTop_toBottomOf="@id/location_name"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
     <TextView
-        android:id="@+id/episode_date_textview"
+        android:id="@+id/location_dimension_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/air_date"
+        android:text="@string/dimension"
         android:textStyle="bold"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_episode_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_type_textview" />
 
     <TextView
-        android:id="@+id/episode_date"
+        android:id="@+id/location_dimension"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        tools:text="December 2, 2013"
-        app:layout_constraintTop_toBottomOf="@id/episode_episode"
-        app:layout_constraintStart_toEndOf="@id/episode_episode_textview"/>
+        tools:text="Dimension C-137"
+        app:layout_constraintTop_toBottomOf="@id/location_type"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

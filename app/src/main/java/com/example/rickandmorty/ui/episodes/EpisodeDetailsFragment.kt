@@ -24,14 +24,16 @@ class EpisodeDetailsFragment: Fragment() {
     private lateinit var airDate: TextView
     private lateinit var url: TextView
     private lateinit var created: TextView
-    private lateinit var recyclerView: RecyclerView
 
     private var episodeID = 0
+    private var isOnline = true
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = EpisodeDetailsFragmentBinding.inflate(inflater, container, false)
 
+        isOnline = Injection.isOnline(requireContext())
         episodeID = arguments?.getInt(EPISODE_ID) ?: error("Should provide episode ID")
 
         initializeViewModel()
@@ -78,15 +80,20 @@ class EpisodeDetailsFragment: Fragment() {
             episodeLiveData.observe(viewLifecycleOwner) { episodeData ->
                 val characterUrlList = episodeData.characters
 
-                viewModel.requestEpisodeCharacters(characterUrlList)?.let { characterLiveData ->
+                viewModel.requestEpisodeCharacters(characterUrlList, isOnline)?.let { characterLiveData ->
                     characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
-                        val recyclerViewAdapter = EpisodeRecyclerViewAdapter()
+                        val recyclerViewAdapter = EpisodeDetailsAdapter()
                         recyclerViewAdapter.characterList = characterDataList
                         recyclerView.adapter = recyclerViewAdapter
                     }
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
     companion object {

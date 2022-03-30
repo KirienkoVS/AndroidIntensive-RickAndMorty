@@ -10,7 +10,7 @@
     android:background="@drawable/border">
 
     <TextView
-        android:id="@+id/episode_id_textview"
+        android:id="@+id/location_id_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/id"
@@ -19,125 +19,125 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/episode_id"
+        android:id="@+id/location_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="28" />
+        tools:text="3" />
 
     <TextView
-        android:id="@+id/episode_name_textview"
+        android:id="@+id/location_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/name"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_id_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_id_textview" />
 
     <TextView
-        android:id="@+id/episode_name"
+        android:id="@+id/location_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textIsSelectable="true"
-        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"
-        app:layout_constraintTop_toBottomOf="@id/episode_id"
-        tools:text="The Ricklantis Mixup" />
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"
+        app:layout_constraintTop_toBottomOf="@id/location_id"
+        tools:text="Citadel of Ricks" />
 
     <TextView
-        android:id="@+id/episode_episode_textview"
+        android:id="@+id/location_type_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/episode"
+        android:text="@string/type"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_name_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_name_textview" />
 
     <TextView
-        android:id="@+id/episode"
+        android:id="@+id/location_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textIsSelectable="true"
-        tools:text="S03E07"
-        app:layout_constraintTop_toBottomOf="@id/episode_name"
-        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+        tools:text="Space station"
+        app:layout_constraintTop_toBottomOf="@id/location_name"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
     <TextView
-        android:id="@+id/episode_date_textview"
+        android:id="@+id/location_dimension_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/air_date"
+        android:text="@string/dimension"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_episode_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_type_textview" />
 
     <TextView
-        android:id="@+id/episode_date"
+        android:id="@+id/location_dimension"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        tools:text="September 10, 2017"
-        app:layout_constraintTop_toBottomOf="@id/episode"
-        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+        tools:text="unknown"
+        app:layout_constraintTop_toBottomOf="@id/location_type"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
     <TextView
-        android:id="@+id/episode_url_textview"
+        android:id="@+id/location_url_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/url"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_date_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_dimension_textview" />
 
     <TextView
-        android:id="@+id/episode_url"
+        android:id="@+id/location_url"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        tools:text="https://rickandmortyapi.com/api/episode/28"
+        tools:text="https://rickandmortyapi.com/api/location/3"
         android:autoLink="web"
-        app:layout_constraintTop_toBottomOf="@id/episode_date"
-        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+        app:layout_constraintTop_toBottomOf="@id/location_dimension"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
     <TextView
-        android:id="@+id/episode_created_textview"
+        android:id="@+id/location_created_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/created"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_url_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_url_textview" />
 
     <TextView
-        android:id="@+id/episode_created"
+        android:id="@+id/location_created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         tools:text="2017-11-10"
-        app:layout_constraintTop_toBottomOf="@id/episode_url"
-        app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
+        app:layout_constraintTop_toBottomOf="@id/location_url"
+        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
     <TextView
-        android:id="@+id/episode_characters_textview"
+        android:id="@+id/location_residents_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/episode_characters"
+        android:text="@string/residents"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_created_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_created_textview" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/episode_characters_recyclerview"
+        android:id="@+id/location_residents_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/episode_characters_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_residents_textview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

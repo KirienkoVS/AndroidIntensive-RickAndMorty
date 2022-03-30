@@ -1,4 +1,4 @@
-package com.example.rickandmorty.ui.episodes
+package com.example.rickandmorty.ui.locations
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,42 +11,42 @@ import com.bumptech.glide.Glide
 import com.example.rickandmorty.R
 import com.example.rickandmorty.model.CharacterData
 
-class EpisodeDetailsAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class LocationDetailsAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var characterList = listOf<CharacterData>()
+    var residentsList = listOf<CharacterData>()
 
-    class EpisodeCharactersViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    class LocationResidentsViewHolder(view: View): RecyclerView.ViewHolder(view) {
         private val name: TextView = view.findViewById(R.id.character_name)
         private val species: TextView = view.findViewById(R.id.character_species)
         private val status: TextView = view.findViewById(R.id.character_status)
         private val gender: TextView = view.findViewById(R.id.character_gender)
         private val image: ImageView = view.findViewById(R.id.character_imageview)
 
-        fun bind(character: CharacterData) {
-            name.text = character.name
-            species.text = character.species
-            status.text = character.status
-            gender.text = character.gender
-            Glide.with(image).load(character.image).into(image)
+        fun bind(resident: CharacterData) {
+            name.text = resident.name
+            species.text = resident.species
+            status.text = resident.status
+            gender.text = resident.gender
+            Glide.with(image).load(resident.image).into(image)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return EpisodeCharactersViewHolder(LayoutInflater.from(parent.context).inflate(
+        return LocationResidentsViewHolder(LayoutInflater.from(parent.context).inflate(
             R.layout.character_item, parent, false)
         )
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val character = characterList[position]
-        (holder as EpisodeCharactersViewHolder).bind(character)
+        val resident = residentsList[position]
+        (holder as LocationResidentsViewHolder).bind(resident)
 
         holder.itemView.setOnClickListener { view ->
-            val characterID = character.id
-            val action = EpisodeDetailsFragmentDirections.actionEpisodeDetailsFragmentToCharacterDetailsFragment(characterID = characterID)
+            val residentID = resident.id
+            val action = LocationDetailsFragmentDirections.actionLocationDetailsFragmentToCharacterDetailsFragment(characterID = residentID)
             view.findNavController().navigate(action)
         }
     }
 
-    override fun getItemCount() = characterList.size
+    override fun getItemCount() = residentsList.size
 }

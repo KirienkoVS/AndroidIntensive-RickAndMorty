@@ -47,20 +47,27 @@ class CharacterRepository(
         return database.characterDao().getCharacterDetails(id)
     }
 
-    suspend fun getCharacterEpisodes(episodeUrlList: List<String>): LiveData<List<EpisodeData>> {
-        var query = ""
+    suspend fun getCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>> {
+
+        var apiQuery = ""
+        val dbQuery = mutableListOf<Int>()
 
         episodeUrlList.forEach { episodeUrl ->
-            val episodeNumber = episodeUrl.substringAfterLast("/")
-            query += "$episodeNumber,"
+            val episodeID = episodeUrl.substringAfterLast("/").toInt()
+            apiQuery += "$episodeID,"
+            dbQuery.add(episodeID)
         }
-        
-        val episodeData: LiveData<List<EpisodeData>> = liveData {
-            val response = api.requestSingleEpisode(query).map {
-                EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
-                    characters = it.characters, url = it.url, created = it.created)
+
+        val episodeData = if (isOnline) {
+            liveData {
+                val apiResponse = api.requestSingleEpisode(apiQuery).map {
+                    EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
+                        characters = it.characters, url = it.url, created = it.created)
+                }
+                emit(apiResponse)
             }
-            emit(response)
+        } else {
+            database.episodeDao().getCharacterEpisodes(dbQuery)
         }
 
         return episodeData

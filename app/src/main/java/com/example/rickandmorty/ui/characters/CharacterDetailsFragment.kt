@@ -34,13 +34,15 @@ class CharacterDetailsFragment : Fragment() {
     private lateinit var locationName: TextView
     private lateinit var locationUrl: TextView
 
-    private var characterID: Int = 0
+    private var isOnline = true
+    private var characterID = 0
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
 
+        isOnline = Injection.isOnline(requireContext())
         characterID = arguments?.getInt(CHARACTER_ID) ?: error("Should provide character ID")
 
         initializeViewModel()
@@ -101,7 +103,7 @@ class CharacterDetailsFragment : Fragment() {
             characterLiveData.observe(viewLifecycleOwner) { characterData ->
                 val episodeUrlList = characterData.episode
 
-                viewModel.requestCharacterEpisodes(episodeUrlList)?.let { episodeLiveData ->
+                viewModel.requestCharacterEpisodes(episodeUrlList, isOnline)?.let { episodeLiveData ->
                     episodeLiveData.observe(viewLifecycleOwner) { episodeDataList ->
                         val recyclerViewAdapter = CharacterDetailsAdapter()
                         recyclerViewAdapter.episodeList = episodeDataList

@@ -17,10 +17,13 @@ interface EpisodeDao {
     @Query("SELECT * FROM episodes WHERE " +
             "(name LIKE :name OR :name IS NULL) AND " +
             "(episodeNumber LIKE :episode OR :episode IS NULL)")
-    fun episodesByFilter(name: String?, episode: String?, ): PagingSource<Int, EpisodeData>
+    fun episodesByFilter(name: String?, episode: String?): PagingSource<Int, EpisodeData>
 
     @Query("SELECT * FROM episodes WHERE id = :id")
     fun getEpisodeDetails(id: Int): LiveData<EpisodeData>
+
+    @Query("SELECT * FROM episodes WHERE id IN (:id)")
+    fun getCharacterEpisodes(id: List<Int>): LiveData<List<EpisodeData>>
 
     @Query("DELETE FROM episodes")
     suspend fun clearEpisodes()

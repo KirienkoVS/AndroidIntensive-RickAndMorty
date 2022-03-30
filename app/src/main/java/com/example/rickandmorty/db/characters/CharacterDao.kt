@@ -29,6 +29,9 @@ interface CharacterDao {
     @Query("SELECT * FROM characters WHERE id = :id")
     fun getCharacterDetails(id: Int): LiveData<CharacterData>
 
+    @Query("SELECT * FROM characters WHERE id IN (:id)")
+    fun getLocationOrEpisodeCharacters(id: List<Int>): LiveData<List<CharacterData>>
+
     @Query("DELETE FROM characters")
     suspend fun clearCharacters()
 
