@@ -1,5 +1,6 @@
 package com.example.rickandmorty.data.episodes
 
+import android.database.sqlite.SQLiteException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.paging.*
@@ -47,12 +48,13 @@ class EpisodeRepository(
     }
 
     fun getEpisodeCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
-
         var apiQuery = ""
+        val dbQuery = mutableListOf<Int>()
 
         characterUrlList.forEach { characterUrl ->
             val characterID = characterUrl.substringAfterLast("/").toInt()
             apiQuery += "$characterID,"
+            dbQuery.add(characterID)
         }
 
         return if (isOnline) {
@@ -72,7 +74,13 @@ class EpisodeRepository(
             } catch (exception: HttpException) {
                 error (exception)
             }
-        } else error("No data available! Check internet connection")
+        } else {
+            try {
+                database.characterDao().getLocationOrEpisodeCharacters(dbQuery)
+            } catch (exception: SQLiteException) {
+                error (exception)
+            }
+        }
 
     }
 

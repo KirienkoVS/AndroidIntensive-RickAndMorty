@@ -22,6 +22,9 @@ interface EpisodeDao {
     @Query("SELECT * FROM episodes WHERE id = :id")
     fun getEpisodeDetails(id: Int): LiveData<EpisodeData>
 
+    @Query("SELECT * FROM episodes WHERE id IN (:id)")
+    fun getCharacterEpisodes(id: List<Int>): LiveData<List<EpisodeData>>
+
     @Query("DELETE FROM episodes")
     suspend fun clearEpisodes()
 
