@@ -24,7 +24,7 @@ interface RickAndMortyApi {
     @GET("character/{id}")
     suspend fun requestSingleCharacter(
         @Path("id") id: String
-    ): List<CharacterInfo>//List<CharacterData>
+    ): List<CharacterInfo>
 
 
     @GET("episode/")
@@ -63,7 +63,6 @@ interface RickAndMortyApi {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
-                .validateEagerly(true)
                 .build()
                 .create(RickAndMortyApi::class.java)
         }

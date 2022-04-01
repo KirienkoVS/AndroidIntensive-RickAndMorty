@@ -27,7 +27,6 @@
     <string name="disease">disease</string>
     <string name="filter">Filter</string>
     <string name="search">Search</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="origin">Origin:</string>
     <string name="location">Location:</string>
@@ -122,5 +121,5 @@
     <string name="filter_by_location_dimension">location dimension…</string>
     <string name="residents">Residents:</string>
     <string name="retry">Retry</string>
-    <string name="no_results">No results 😓</string>
+    <string name="no_results">No results available 😓\n Check internet connection</string>
 </resources>

@@ -8,6 +8,8 @@ import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.LocationData
 import kotlinx.coroutines.flow.Flow
+import retrofit2.HttpException
+import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class)
 class LocationRepository(
@@ -52,31 +54,31 @@ class LocationRepository(
     suspend fun getLocationResidents(residentUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
 
         var apiQuery = ""
-        val dbQuery = mutableListOf<Int>()
 
         residentUrlList.forEach { residentUrl ->
             val residentID = residentUrl.substringAfterLast("/").toInt()
             apiQuery += "$residentID,"
-            dbQuery.add(residentID)
         }
 
-        val residentData = if (isOnline) {
-            liveData {
-                val apiResponse = api.requestSingleCharacter(apiQuery).map {
-                    CharacterData(
-                        id = it.id, name = it.name, species = it.species, status = it.status, gender = it.gender,
-                        image = it.image, type = it.type, created = it.created, originName = it.origin.name,
-                        locationName = it.location.name, episode = it.episode
-                    )
+        return if (isOnline) {
+            try {
+                liveData {
+                    val apiResponse = api.requestSingleCharacter(apiQuery).map {
+                        CharacterData(
+                            id = it.id, name = it.name, species = it.species, status = it.status, gender = it.gender,
+                            image = it.image, type = it.type, created = it.created, originName = it.origin.name,
+                            locationName = it.location.name, episode = it.episode
+                        )
+                    }
+                    database.characterDao().insertCharacters(apiResponse)
+                    emit(apiResponse)
                 }
-                database.characterDao().insertCharacters(apiResponse)
-                emit(apiResponse)
+            } catch (exception: IOException) {
+                error (exception)
+            } catch (exception: HttpException) {
+                error (exception)
             }
-        } else {
-            database.characterDao().getLocationOrEpisodeCharacters(dbQuery)
-        }
-
-        return residentData
+        } else error("No data available! Check internet connection")
     }
 
     companion object {

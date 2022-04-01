@@ -35,6 +35,7 @@ class LocationDetailsFragment : Fragment() {
         _binding = LocationDetailsFragmentBinding.inflate(inflater, container, false)
 
         isOnline = Injection.isOnline(requireContext())
+
         arguments?.apply {
             locationID = this.getInt(LOCATION_ID)
             locationName = this.getString(LOCATION_NAME) ?: error("Should provide location name")
@@ -91,6 +92,9 @@ class LocationDetailsFragment : Fragment() {
                     val residentsUrlList = location.residents
                     viewModel.requestLocationCharacters(residentsUrlList, isOnline)?.let { characterLiveData ->
                         characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
+                            if (characterDataList == null) {
+                                Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                            }
                             val recyclerViewAdapter = LocationDetailsAdapter()
                             recyclerViewAdapter.residentsList = characterDataList
                             recyclerView.adapter = recyclerViewAdapter

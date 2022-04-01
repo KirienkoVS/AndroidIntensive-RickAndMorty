@@ -9,6 +9,8 @@ import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
 import com.example.rickandmorty.model.LocationData
 import kotlinx.coroutines.flow.Flow
+import retrofit2.HttpException
+import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class)
 class CharacterRepository(
@@ -49,29 +51,29 @@ class CharacterRepository(
     }
 
     fun getCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>> {
-
         var apiQuery = ""
-        val dbQuery = mutableListOf<Int>()
 
         episodeUrlList.forEach { episodeUrl ->
             val episodeID = episodeUrl.substringAfterLast("/").toInt()
             apiQuery += "$episodeID,"
-            dbQuery.add(episodeID)
         }
 
-        val episodeData = if (isOnline) {
-            liveData {
-                val apiResponse = api.requestSingleEpisode(apiQuery).map {
-                    EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
-                        characters = it.characters, url = it.url, created = it.created)
+        return if (isOnline) {
+            try {
+                liveData {
+                    val apiResponse = api.requestSingleEpisode(apiQuery).map {
+                        EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
+                            characters = it.characters, url = it.url, created = it.created)
+                    }
+                    database.episodeDao().insertEpisodes(apiResponse) // does it need?
+                    emit(apiResponse)
                 }
-                database.episodeDao().insertEpisodes(apiResponse)
-                emit(apiResponse)
+            } catch (exception: IOException) {
+                error (exception)
+            } catch (exception: HttpException) {
+                error (exception)
             }
-        } else {
-            database.episodeDao().getCharacterEpisodes(dbQuery)
-        }
-        return episodeData
+        } else error("No data available! Check internet connection")
     }
 
     suspend fun getCharacterLocation(location: String, origin: String, isOnline: Boolean) {

@@ -90,7 +90,7 @@ class CharacterDetailsFragment : Fragment() {
                 locationName.text = character.locationName.ifBlank { "unknown" }
                 Glide.with(requireContext()).load(character.image).into(imageView)
 
-                requestCharacterLocation(character.locationName, character.originName, isOnline) // location null check?
+                requestCharacterLocation(character.locationName, character.originName, isOnline) // location empty string check?
             }
         }
     }
