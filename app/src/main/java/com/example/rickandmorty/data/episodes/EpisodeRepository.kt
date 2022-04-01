@@ -44,7 +44,7 @@ class EpisodeRepository(
         return database.episodeDao().getEpisodeDetails(id)
     }
 
-    suspend fun getEpisodeCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
+    fun getEpisodeCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
 
         var apiQuery = ""
         val dbQuery = mutableListOf<Int>()
@@ -60,10 +60,11 @@ class EpisodeRepository(
                 val apiResponse = api.requestSingleCharacter(apiQuery).map {
                     CharacterData(
                         id = it.id, name = it.name, species = it.species, status = it.status, gender = it.gender,
-                        image = it.image, type = it.type, url = it.url, created = it.created, originName = "",
-                        originUrl = "", locationName = "", locationUrl = "", episode = it.episode
+                        image = it.image, type = it.type, created = it.created, originName = it.origin.name,
+                        locationName = it.location.name, episode = it.episode
                     )
                 }
+                database.characterDao().insertCharacters(apiResponse)
                 emit(apiResponse)
             }
         } else {

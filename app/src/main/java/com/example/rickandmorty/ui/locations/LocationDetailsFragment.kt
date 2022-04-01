@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -22,10 +23,10 @@ class LocationDetailsFragment : Fragment() {
     private lateinit var name: TextView
     private lateinit var type: TextView
     private lateinit var dimension: TextView
-    private lateinit var url: TextView
     private lateinit var created: TextView
 
     private var locationID = 0
+    private var locationName = ""
     private var isOnline = true
     private lateinit var recyclerView: RecyclerView
 
@@ -34,7 +35,10 @@ class LocationDetailsFragment : Fragment() {
         _binding = LocationDetailsFragmentBinding.inflate(inflater, container, false)
 
         isOnline = Injection.isOnline(requireContext())
-        locationID = arguments?.getInt(LOCATION_ID) ?: error("Should provide location ID")
+        arguments?.apply {
+            locationID = this.getInt(LOCATION_ID)
+            locationName = this.getString(LOCATION_NAME) ?: error("Should provide location name")
+        }
 
         initializeViewModel()
         bindViews()
@@ -57,35 +61,40 @@ class LocationDetailsFragment : Fragment() {
             name = locationName
             type = locationType
             dimension = locationDimension
-            url = locationUrl
             created = locationCreated
             recyclerView = locationResidentsRecyclerview
         }
     }
 
     private fun setViews() {
-        viewModel.requestLocationDetails(locationID)?.let {
-            it.observe(viewLifecycleOwner) { location->
-                id.text = location.id.toString()
-                name.text = location.name
-                type.text = location.type.ifBlank { "unknown" }
-                dimension.text = location.dimension.ifBlank { "unknown" }
-                url.text = location.url
-                created.text = location.created.subSequence(0, 10)
+        viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
+            locationLiveData.observe(viewLifecycleOwner) { location->
+                if (location == null) {
+                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                } else {
+                    id.text = location.id.toString()
+                    name.text = location.name
+                    type.text = location.type.ifBlank { "unknown" }
+                    dimension.text = location.dimension.ifBlank { "unknown" }
+                    created.text = location.created.subSequence(0, 10)
+                }
             }
         }
     }
 
     private fun setRecyclerView() {
-        viewModel.requestLocationDetails(locationID)?.let { locationLiveData ->
-            locationLiveData.observe(viewLifecycleOwner) { locationData ->
-                val residentsUrlList = locationData.residents
-
-                viewModel.requestLocationCharacters(residentsUrlList, isOnline)?.let { characterLiveData ->
-                    characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
-                        val recyclerViewAdapter = LocationDetailsAdapter()
-                        recyclerViewAdapter.residentsList = characterDataList
-                        recyclerView.adapter = recyclerViewAdapter
+        viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
+            locationLiveData.observe(viewLifecycleOwner) { location ->
+                if (location == null) {
+                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                } else {
+                    val residentsUrlList = location.residents
+                    viewModel.requestLocationCharacters(residentsUrlList, isOnline)?.let { characterLiveData ->
+                        characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
+                            val recyclerViewAdapter = LocationDetailsAdapter()
+                            recyclerViewAdapter.residentsList = characterDataList
+                            recyclerView.adapter = recyclerViewAdapter
+                        }
                     }
                 }
             }
@@ -99,5 +108,6 @@ class LocationDetailsFragment : Fragment() {
 
     companion object {
         const val LOCATION_ID = "locationID"
+        const val LOCATION_NAME = "locationName"
     }
 }

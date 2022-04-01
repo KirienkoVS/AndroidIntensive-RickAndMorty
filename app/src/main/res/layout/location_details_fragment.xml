@@ -85,32 +85,13 @@
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
     <TextView
-        android:id="@+id/location_url_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/url"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_dimension_textview" />
-
-    <TextView
-        android:id="@+id/location_url"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        tools:text="https://rickandmortyapi.com/api/location/3"
-        android:autoLink="web"
-        app:layout_constraintTop_toBottomOf="@id/location_dimension"
-        app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
-
-    <TextView
         android:id="@+id/location_created_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/created"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_url_textview" />
+        app:layout_constraintTop_toBottomOf="@id/location_dimension_textview" />
 
     <TextView
         android:id="@+id/location_created"
@@ -118,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         tools:text="2017-11-10"
-        app:layout_constraintTop_toBottomOf="@id/location_url"
+        app:layout_constraintTop_toBottomOf="@id/location_dimension"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
 
     <TextView

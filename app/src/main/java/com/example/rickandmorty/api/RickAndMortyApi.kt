@@ -1,8 +1,6 @@
 package com.example.rickandmorty.api
 
 import android.util.Log
-import com.example.rickandmorty.model.CharacterData
-import com.example.rickandmorty.model.LocationData
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
@@ -26,7 +24,7 @@ interface RickAndMortyApi {
     @GET("character/{id}")
     suspend fun requestSingleCharacter(
         @Path("id") id: String
-    ): List<CharacterData>
+    ): List<CharacterInfo>//List<CharacterData>
 
 
     @GET("episode/")
@@ -50,10 +48,6 @@ interface RickAndMortyApi {
         @Query("page") page: Int?
     ): LocationRequestResponse
 
-    @GET("location/{id}")
-    suspend fun requestSingleLocation(
-        @Path("id") id: String
-    ): List<LocationData>
 
     companion object {
         private const val BASE_URL = "https://rickandmortyapi.com/api/"

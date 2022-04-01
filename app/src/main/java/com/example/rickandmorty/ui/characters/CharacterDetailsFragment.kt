@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.Injection
@@ -21,22 +23,19 @@ class CharacterDetailsFragment : Fragment() {
     private lateinit var viewModel: CharacterViewModel
 
     private lateinit var imageView: ImageView
-    private lateinit var imageUrl: TextView
     private lateinit var name: TextView
     private lateinit var species: TextView
     private lateinit var status: TextView
     private lateinit var gender: TextView
     private lateinit var type: TextView
-    private lateinit var url: TextView
     private lateinit var created: TextView
     private lateinit var originName: TextView
-    private lateinit var originUrl: TextView
     private lateinit var locationName: TextView
-    private lateinit var locationUrl: TextView
 
     private var isOnline = true
     private var characterID = 0
     private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerViewAdapter: CharacterDetailsAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
@@ -48,7 +47,10 @@ class CharacterDetailsFragment : Fragment() {
         initializeViewModel()
         bindViews()
         setViews()
-        setRecyclerView()
+        setUpRecyclerView()
+
+        originName.setOnClickListener { navigateToLocation(originName.text.toString()) }
+        locationName.setOnClickListener { navigateToLocation(locationName.text.toString()) }
 
         return binding.root
     }
@@ -62,19 +64,16 @@ class CharacterDetailsFragment : Fragment() {
     private fun bindViews() {
         with(binding) {
             imageView = characterImageView
-            imageUrl = characterImageUrl
             name = characterName
             species = characterSpecies
             status = characterStatus
             gender = characterGender
             type = characterType
-            url = characterUrl
             created = characterCreated
             originName = characterOriginName
-            originUrl = characterOriginUrl
             locationName = characterLocationName
-            locationUrl = characterLocationUrl
             recyclerView = characterRecyclerview
+            recyclerViewAdapter = CharacterDetailsAdapter()
         }
     }
 
@@ -82,36 +81,47 @@ class CharacterDetailsFragment : Fragment() {
         viewModel.requestCharacterDetails(characterID)?.let {
             it.observe(viewLifecycleOwner) { character->
                 name.text = character.name
-                imageUrl.text = character.image
                 species.text = character.species
                 status.text = character.status
                 gender.text = character.gender
                 type.text = character.type.ifBlank { "unknown" }
-                url.text = character.url
                 created.text = character.created.subSequence(0, 10)
-                originName.text = character.originName
-                originUrl.text = character.originUrl.ifBlank { "unknown" }
+                originName.text = character.originName.ifBlank { "unknown" }
                 locationName.text = character.locationName.ifBlank { "unknown" }
-                locationUrl.text = character.locationUrl.ifBlank { "unknown" }
-                Glide.with(requireContext()).load("${imageUrl.text}").into(imageView)
+                Glide.with(requireContext()).load(character.image).into(imageView)
+
+                requestCharacterLocation(character.locationName, character.originName, isOnline) // location null check?
             }
         }
     }
 
-    private fun setRecyclerView() {
+    private fun setUpRecyclerView() {
         viewModel.requestCharacterDetails(characterID)?.let { characterLiveData ->
             characterLiveData.observe(viewLifecycleOwner) { characterData ->
                 val episodeUrlList = characterData.episode
 
                 viewModel.requestCharacterEpisodes(episodeUrlList, isOnline)?.let { episodeLiveData ->
                     episodeLiveData.observe(viewLifecycleOwner) { episodeDataList ->
-                        val recyclerViewAdapter = CharacterDetailsAdapter()
                         recyclerViewAdapter.episodeList = episodeDataList
                         recyclerView.adapter = recyclerViewAdapter
                     }
                 }
             }
         }
+    }
+
+    private fun navigateToLocation(destination: String) {
+        if (destination == "unknown") {
+            Toast.makeText(activity, "Unknown location!", Toast.LENGTH_SHORT).show()
+        } else {
+            val action =
+                CharacterDetailsFragmentDirections.actionCharacterDetailsFragmentToLocationDetailsFragment(locationName = destination)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun requestCharacterLocation(location: String, origin: String, isOnline: Boolean) {
+        viewModel.requestCharacterLocation(location, origin, isOnline)
     }
 
     override fun onDestroy() {

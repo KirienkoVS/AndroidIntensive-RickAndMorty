@@ -156,7 +156,6 @@
             android:layout_marginTop="8dp"
             android:text="@string/origin"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/character_origin_url"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line4" />
 
@@ -166,28 +165,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:textColor="#367DF8"
             app:layout_constraintStart_toEndOf="@id/character_location_textview"
             app:layout_constraintTop_toBottomOf="@id/line4"
             tools:text="unknown" />
-
-        <TextView
-            android:id="@+id/character_origin_url"
-            style="@style/text_vew_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            app:layout_constraintStart_toEndOf="@id/character_location_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_origin_name"
-            tools:text="unknown" />
-
-        <View
-            android:id="@+id/line1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="#DCD9D9"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/character_origin_url" />
 
         <TextView
             android:id="@+id/character_location_textview"
@@ -197,9 +178,8 @@
             android:layout_marginTop="8dp"
             android:text="@string/location"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/character_location_url"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line1" />
+            app:layout_constraintTop_toBottomOf="@id/character_origin_name" />
 
         <TextView
             android:id="@+id/character_location_name"
@@ -207,80 +187,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:textColor="#367DF8"
             app:layout_constraintStart_toEndOf="@id/character_location_textview"
-            app:layout_constraintTop_toBottomOf="@id/line1"
+            app:layout_constraintTop_toBottomOf="@id/character_origin_name"
             tools:text="Citadel of Ricks" />
-
-        <TextView
-            android:id="@+id/character_location_url"
-            style="@style/text_vew_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:autoLink="web"
-            app:layout_constraintStart_toEndOf="@id/character_location_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_location_name"
-            tools:text="https://rickandmortyapi.com/api/location/3" />
-
-        <View
-            android:id="@+id/line2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="#DCD9D9"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/character_location_url" />
-
-        <TextView
-            android:id="@+id/character_url_textview"
-            style="@style/text_vew_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/url"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line2" />
-
-        <TextView
-            android:id="@+id/character_url"
-            style="@style/text_vew_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:autoLink="web"
-            app:layout_constraintStart_toEndOf="@id/character_location_textview"
-            app:layout_constraintTop_toBottomOf="@id/line2"
-            tools:text="https://rickandmortyapi.com/api/character/2" />
-
-        <TextView
-            android:id="@+id/character_image_textview"
-            style="@style/text_vew_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/image"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/character_url_textview" />
-
-        <TextView
-            android:id="@+id/character_imageUrl"
-            style="@style/text_vew_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            app:layout_constraintStart_toEndOf="@id/character_location_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_url"
-            tools:text="https://rickandmortyapi.com/api/character/avatar/2.jpeg" />
-
-        <View
-            android:id="@+id/line3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="#DCD9D9"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/character_imageUrl" />
 
         <TextView
             android:id="@+id/character_episode_textview"
@@ -291,17 +201,29 @@
             android:text="@string/episode"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line3" />
+            app:layout_constraintTop_toBottomOf="@id/character_location_name" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/character_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/character_episode_textview" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/character_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/character_episode_textview" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/character_recyclerview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/character_location_name" />
         
 </androidx.constraintlayout.widget.ConstraintLayout>
 

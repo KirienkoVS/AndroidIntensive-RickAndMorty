@@ -32,9 +32,9 @@ class LocationViewModel(private val repository: LocationRepository): ViewModel()
 
     private var locationDetails: LiveData<LocationData>? = null
 
-    fun requestLocationDetails(id: Int): LiveData<LocationData>? {
+    fun requestLocationDetails(id: Int, name: String): LiveData<LocationData>? {
         viewModelScope.launch {
-            locationDetails = repository.getLocationDetails(id)
+            locationDetails = repository.getLocationDetails(id, name)
         }
         return locationDetails
     }

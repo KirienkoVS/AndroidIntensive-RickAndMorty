@@ -7,6 +7,7 @@ import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
+import com.example.rickandmorty.model.LocationData
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalPagingApi::class)
@@ -47,7 +48,7 @@ class CharacterRepository(
         return database.characterDao().getCharacterDetails(id)
     }
 
-    suspend fun getCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>> {
+    fun getCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>> {
 
         var apiQuery = ""
         val dbQuery = mutableListOf<Int>()
@@ -64,13 +65,29 @@ class CharacterRepository(
                     EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
                         characters = it.characters, url = it.url, created = it.created)
                 }
+                database.episodeDao().insertEpisodes(apiResponse)
                 emit(apiResponse)
             }
         } else {
             database.episodeDao().getCharacterEpisodes(dbQuery)
         }
-
         return episodeData
+    }
+
+    suspend fun getCharacterLocation(location: String, origin: String, isOnline: Boolean) {
+        if (isOnline) {
+            val locationResponse = api.requestLocations(location, type = "", dimension = "", page = 0).results.map {
+                LocationData(id = it.id, name = it.name, type = it.type, dimension = it.dimension,
+                residents = it.residents, url = it.url, created = it.created)
+            }
+            database.locationDao().insertLocations(locationResponse)
+
+            val originResponse = api.requestLocations(origin, type = "", dimension = "", page = 0).results.map {
+                LocationData(id = it.id, name = it.name, type = it.type, dimension = it.dimension,
+                    residents = it.residents, url = it.url, created = it.created)
+            }
+            database.locationDao().insertLocations(originResponse)
+        }
     }
 
     companion object {

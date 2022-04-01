@@ -50,6 +50,12 @@ class CharacterViewModel(private val repository: CharacterRepository): ViewModel
         return characterEpisodes
     }
 
+    fun requestCharacterLocation(location: String, origin: String, isOnline: Boolean) {
+        viewModelScope.launch {
+            repository.getCharacterLocation(location, origin, isOnline)
+        }
+    }
+
 }
 
 

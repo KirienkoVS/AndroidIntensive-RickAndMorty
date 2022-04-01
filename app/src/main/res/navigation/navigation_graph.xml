@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_characterDetailsFragment_to_episodeDetailsFragment"
             app:destination="@id/episodeDetailsFragment" />
+        <action
+            android:id="@+id/action_characterDetailsFragment_to_locationDetailsFragment"
+            app:destination="@id/locationDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/episodeDetailsFragment"
@@ -65,10 +68,15 @@
         android:label="Location details">
         <argument
             android:name="locationID"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="0" />
         <action
             android:id="@+id/action_locationDetailsFragment_to_characterDetailsFragment"
             app:destination="@id/characterDetailsFragment" />
+        <argument
+            android:name="locationName"
+            app:argType="string"
+            android:defaultValue='""' />
     </fragment>
 
 </navigation>

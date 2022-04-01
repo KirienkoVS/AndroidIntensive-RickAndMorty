@@ -3,6 +3,7 @@ package com.example.rickandmorty
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -13,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -21,13 +23,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupBottomNavigation()
+        navController = findNavController(R.id.nav_host_fragment_container)
+
+        setupBottomNavigationAndActionBar()
     }
 
-    private fun setupBottomNavigation() {
-        val navigationView: BottomNavigationView = binding.bottomNavigationView
-        val navController = findNavController(R.id.nav_host_fragment_container)
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
 
+    private fun setupBottomNavigationAndActionBar() {
+        val navigationView: BottomNavigationView = binding.bottomNavigationView
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.characters_page,
@@ -35,7 +41,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.episodes_page
             )
         )
-
         navigationView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
     }

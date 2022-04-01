@@ -62,13 +62,8 @@ class EpisodeRemoteMediator(
 
                 val episodes = episodesInfo.map {
                     EpisodeData(
-                        id = it.id,
-                        name = it.name,
-                        airDate = it.air_date,
-                        episodeNumber = it.episode,
-                        characters = it.characters,
-                        url = it.url,
-                        created = it.created,
+                        id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
+                        characters = it.characters, url = it.url, created = it.created,
                     )
                 }
 

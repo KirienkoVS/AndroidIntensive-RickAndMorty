@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
@@ -41,6 +42,8 @@ class CharactersFragment : Fragment() {
 
         characterFilterMap = mutableMapOf()
 
+//        binding.retryButton.setOnClickListener { characterPagingAdapter.retry() }
+
         return binding.root
     }
 
@@ -54,7 +57,11 @@ class CharactersFragment : Fragment() {
     private fun setUpCharacterPagingAdapter() {
         recyclerView = binding.characterRecyclerview
         characterPagingAdapter = CharacterPagingAdapter()
-        recyclerView.adapter = characterPagingAdapter
+
+        recyclerView.adapter = characterPagingAdapter/*.withLoadStateHeaderAndFooter(
+            header = CharacterLoadStateAdapter { characterPagingAdapter.retry() },
+            footer = CharacterLoadStateAdapter { characterPagingAdapter.retry() }
+        )*/
 
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
@@ -63,6 +70,36 @@ class CharactersFragment : Fragment() {
                 }
             }
         }
+
+
+        /*characterPagingAdapter.addLoadStateListener { loadState ->
+
+            // Show empty list
+            val isListEmpty = loadState.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
+            binding.emptyList.isVisible = isListEmpty
+
+            // Show a retry header if there was an error refreshing, and items were previously
+            // cached OR default to the default prepend state
+            header.loadState = loadState.mediator
+                ?.refresh
+                ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }
+                ?: loadState.prepend
+
+            // Only show the list if refresh succeeds, either from the the local db or the remote
+            recyclerView.isVisible = loadState.source.refresh is LoadState.NotLoading || loadState.mediator?.refresh is LoadState.NotLoading
+            // Show loading spinner during initial load or refresh
+            binding.progressBar.isVisible = loadState.mediator?.refresh is LoadState.Loading
+            // Show the retry state if initial load or refresh fails and there are no items
+            binding.retryButton.isVisible = loadState.mediator?.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
+            // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
+            val errorState = loadState.source.append as? LoadState.Error
+                ?: loadState.source.prepend as? LoadState.Error
+                ?: loadState.append as? LoadState.Error
+                ?: loadState.prepend as? LoadState.Error
+
+            errorState?.let { Toast.makeText(activity, "${it.error}", Toast.LENGTH_LONG).show() }
+        }*/
+
     }
 
     @SuppressLint("InflateParams")
@@ -132,6 +169,19 @@ class CharactersFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search_action)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
     }
 
     override fun onDestroy() {

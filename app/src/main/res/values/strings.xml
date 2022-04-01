@@ -121,4 +121,6 @@
     <string name="filter_by_location_type">location type…</string>
     <string name="filter_by_location_dimension">location dimension…</string>
     <string name="residents">Residents:</string>
+    <string name="retry">Retry</string>
+    <string name="no_results">No results 😓</string>
 </resources>

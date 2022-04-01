@@ -45,8 +45,8 @@ class LocationRepository(
 
     }
 
-    fun getLocationDetails(id: Int): LiveData<LocationData> {
-        return database.locationDao().getLocationDetails(id)
+    fun getLocationDetails(id: Int, name: String): LiveData<LocationData> {
+        return database.locationDao().getLocationDetails(id, name)
     }
 
     suspend fun getLocationResidents(residentUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
@@ -65,10 +65,11 @@ class LocationRepository(
                 val apiResponse = api.requestSingleCharacter(apiQuery).map {
                     CharacterData(
                         id = it.id, name = it.name, species = it.species, status = it.status, gender = it.gender,
-                        image = it.image, type = it.type, url = it.url, created = it.created, originName = "",
-                        originUrl = "", locationName = "", locationUrl = "", episode = it.episode
+                        image = it.image, type = it.type, created = it.created, originName = it.origin.name,
+                        locationName = it.location.name, episode = it.episode
                     )
                 }
+                database.characterDao().insertCharacters(apiResponse)
                 emit(apiResponse)
             }
         } else {

@@ -71,9 +71,8 @@ class CharacterRemoteMediator(
                 val characters = charactersInfo.map {
                     CharacterData(
                         id = it.id, name = it.name, species = it.species, status = it.status, gender = it.gender,
-                        image = it.image, type = it.type, url = it.url, created = it.created, originName = it.origin.name,
-                        originUrl = it.origin.url, locationName = it.location.name, locationUrl = it.location.url,
-                        episode = it.episode
+                        image = it.image, type = it.type, created = it.created, originName = it.origin.name,
+                        locationName = it.location.name, episode = it.episode
                     )
                 }
 

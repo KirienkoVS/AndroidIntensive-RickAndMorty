@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +23,6 @@ class EpisodeDetailsFragment: Fragment() {
     private lateinit var name: TextView
     private lateinit var episodeNumber: TextView
     private lateinit var airDate: TextView
-    private lateinit var url: TextView
     private lateinit var created: TextView
 
     private var episodeID = 0
@@ -56,35 +56,40 @@ class EpisodeDetailsFragment: Fragment() {
             name = episodeName
             episodeNumber = episode
             airDate = episodeDate
-            url = episodeUrl
             created = episodeCreated
             recyclerView = episodeCharactersRecyclerview
         }
     }
 
     private fun setViews() {
-        viewModel.requestEpisodeDetails(episodeID)?.let {
-            it.observe(viewLifecycleOwner) { episode->
-                id.text = episode.id.toString()
-                name.text = episode.name
-                episodeNumber.text = episode.episodeNumber
-                airDate.text = episode.airDate
-                url.text = episode.url
-                created.text = episode.created.subSequence(0, 10)
+        viewModel.requestEpisodeDetails(episodeID)?.let { episodeLiveData ->
+            episodeLiveData.observe(viewLifecycleOwner) { episode ->
+                if (episode == null) {
+                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                } else {
+                    id.text = episode.id.toString()
+                    name.text = episode.name
+                    episodeNumber.text = episode.episodeNumber
+                    airDate.text = episode.airDate
+                    created.text = episode.created.subSequence(0, 10)
+                }
             }
         }
     }
 
     private fun setRecyclerView() {
         viewModel.requestEpisodeDetails(episodeID)?.let { episodeLiveData ->
-            episodeLiveData.observe(viewLifecycleOwner) { episodeData ->
-                val characterUrlList = episodeData.characters
-
-                viewModel.requestEpisodeCharacters(characterUrlList, isOnline)?.let { characterLiveData ->
-                    characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
-                        val recyclerViewAdapter = EpisodeDetailsAdapter()
-                        recyclerViewAdapter.characterList = characterDataList
-                        recyclerView.adapter = recyclerViewAdapter
+            episodeLiveData.observe(viewLifecycleOwner) { episode ->
+                if (episode == null) {
+                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                } else {
+                    val characterUrlList = episode.characters
+                    viewModel.requestEpisodeCharacters(characterUrlList, isOnline)?.let { characterLiveData ->
+                        characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
+                            val recyclerViewAdapter = EpisodeDetailsAdapter()
+                            recyclerViewAdapter.characterList = characterDataList
+                            recyclerView.adapter = recyclerViewAdapter
+                        }
                     }
                 }
             }
