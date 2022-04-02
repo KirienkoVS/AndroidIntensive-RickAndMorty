@@ -27,12 +27,12 @@ class LocationsFragment : Fragment()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        locationFilterMap = mutableMapOf()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = LocationsFragmentBinding.inflate(inflater, container, false)
 
-        locationFilterMap = mutableMapOf()
         initializeViewModel()
         setUpLocationPagingAdapter()
 
@@ -70,11 +70,25 @@ class LocationsFragment : Fragment()  {
         val dimensionEditText = filterLayout.findViewById<EditText>(R.id.location_dimension_edit_text)
         val dialog = MaterialAlertDialogBuilder(requireContext())
 
+        val filterList = mutableListOf<EditText>(
+            nameEditText,
+            typeEditText,
+            dimensionEditText
+        )
+
+        // restores editTexts text
+        filterList.forEach { editText ->
+            locationFilterMap.entries.forEach { filter ->
+                if (editText.transitionName == filter.key) {
+                    editText.setText(filter.value)
+                }
+            }
+        }
+
         // dialog builder
         with(dialog) {
             setView(filterLayout)
             setCustomTitle(customTitle)
-            setCancelable(false)
             setPositiveButton("Apply") { _, _ ->
                 locationFilterMap.put("name", nameEditText.text.toString())
                 locationFilterMap.put("type", typeEditText.text.toString())

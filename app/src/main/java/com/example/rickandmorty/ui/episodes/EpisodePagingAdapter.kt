@@ -34,14 +34,11 @@ class EpisodePagingAdapter: PagingDataAdapter<EpisodeData, RecyclerView.ViewHold
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        getItem(position)?.let { episodeData ->
-            (holder as EpisodeViewHolder).bind(episodeData)
-        }
+        getItem(position)?.let { episode ->
+            (holder as EpisodeViewHolder).bind(episode)
 
-        holder.itemView.setOnClickListener { view ->
-            val episodeID = getItem(position)?.id
-            if (episodeID != null) {
-                val action = EpisodesFragmentDirections.actionEpisodesPageToEpisodeDetailsFragment(episodeID = episodeID)
+            holder.itemView.setOnClickListener { view ->
+                val action = EpisodesFragmentDirections.actionEpisodesPageToEpisodeDetailsFragment(episodeID = episode.id)
                 view.findNavController().navigate(action)
             }
         }

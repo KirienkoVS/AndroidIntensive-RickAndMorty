@@ -27,12 +27,12 @@ class EpisodesFragment : Fragment()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        episodeFilterMap = mutableMapOf()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = EpisodesFragmentBinding.inflate(inflater, container, false)
 
-        episodeFilterMap = mutableMapOf()
         initializeViewModel()
         setUpEpisodePagingAdapter()
 
@@ -63,17 +63,30 @@ class EpisodesFragment : Fragment()  {
     @SuppressLint("InflateParams")
     private fun showFilterDialog() {
         val inflater = requireActivity().layoutInflater
-        val filterListLayout = inflater.inflate(R.layout.episodes_filter, null)
+        val filterLayout = inflater.inflate(R.layout.episodes_filter, null)
         val customTitle = inflater.inflate(R.layout.dialog_title, null)
-        val nameEditText = filterListLayout.findViewById<EditText>(R.id.episode_name_edit_text)
-        val numberEditText = filterListLayout.findViewById<EditText>(R.id.episode_number_edit_text)
+        val nameEditText = filterLayout.findViewById<EditText>(R.id.episode_name_edit_text)
+        val numberEditText = filterLayout.findViewById<EditText>(R.id.episode_number_edit_text)
         val dialog = MaterialAlertDialogBuilder(requireContext())
+
+        val filterList = mutableListOf<EditText>(
+            nameEditText,
+            numberEditText
+        )
+
+        // restores editTexts text
+        filterList.forEach { editText ->
+            episodeFilterMap.entries.forEach { filter ->
+                if (editText.transitionName == filter.key) {
+                    editText.setText(filter.value)
+                }
+            }
+        }
 
         // dialog builder
         with(dialog) {
-            setView(filterListLayout)
+            setView(filterLayout)
             setCustomTitle(customTitle)
-            setCancelable(false)
             setPositiveButton("Apply") { _, _ ->
                 episodeFilterMap.put("name", nameEditText.text.toString())
                 episodeFilterMap.put("episode", numberEditText.text.toString())

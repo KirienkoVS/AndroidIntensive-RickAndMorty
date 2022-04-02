@@ -7,7 +7,6 @@ import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
@@ -35,6 +34,7 @@ class CharactersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        characterFilterMap = mutableMapOf()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -43,10 +43,6 @@ class CharactersFragment : Fragment() {
         initViewModel()
         initPagingAdapter()
         initSwipeToRefresh()
-
-        characterFilterMap = mutableMapOf()
-
-//        binding.retryButton.setOnClickListener { characterPagingAdapter.retry() }
 
         return binding.root
     }
@@ -62,19 +58,6 @@ class CharactersFragment : Fragment() {
         recyclerView = binding.characterRecyclerview
         characterPagingAdapter = CharacterPagingAdapter()
 
-        val header = CharacterLoadStateAdapter { characterPagingAdapter.retry() }
-
-        recyclerView.adapter = characterPagingAdapter.withLoadStateHeaderAndFooter(
-            header = header,
-            footer = CharacterLoadStateAdapter { characterPagingAdapter.retry() }
-        )
-
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            characterPagingAdapter.loadStateFlow.collectLatest { loadStates ->
-                binding.swipeRefresh.isRefreshing = loadStates.mediator?.refresh is LoadState.Loading
-            }
-        }
-
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
                 viewModel.requestCharacters(queries).collectLatest {
@@ -83,22 +66,29 @@ class CharactersFragment : Fragment() {
             }
         }
 
+        val header = CharacterLoadStateAdapter { characterPagingAdapter.retry() }
+        recyclerView.adapter = characterPagingAdapter.withLoadStateHeaderAndFooter(
+            header = header,
+            footer = CharacterLoadStateAdapter { characterPagingAdapter.retry() }
+        )
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            characterPagingAdapter.loadStateFlow.collectLatest { loadStates ->
+                binding.swipeRefresh.isRefreshing = loadStates.mediator?.refresh is LoadState.Loading
+            }
+        }
         characterPagingAdapter.addLoadStateListener { loadState ->
             val isListEmpty = loadState.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
             binding.emptyList.isVisible = isListEmpty
-
             header.loadState = loadState.mediator
                 ?.refresh
                 ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }
                 ?: loadState.prepend
-
-            recyclerView.isVisible = loadState.source.refresh is LoadState.NotLoading || loadState.mediator?.refresh is LoadState.NotLoading
-
+            recyclerView.isVisible = loadState.source.refresh is LoadState.NotLoading ||
+                    loadState.mediator?.refresh is LoadState.NotLoading
             val errorState = loadState.source.append as? LoadState.Error
                 ?: loadState.source.prepend as? LoadState.Error
                 ?: loadState.append as? LoadState.Error
                 ?: loadState.prepend as? LoadState.Error
-
             errorState?.let { Toast.makeText(activity, "${it.error}", Toast.LENGTH_LONG).show() }
         }
     }
@@ -110,20 +100,20 @@ class CharactersFragment : Fragment() {
     @SuppressLint("InflateParams")
     private fun showFilterDialog() {
         val inflater = requireActivity().layoutInflater
-        val filterListLayout = inflater.inflate(R.layout.characters_filter, null)
+        val filterLayout = inflater.inflate(R.layout.characters_filter, null)
         val customTitle = inflater.inflate(R.layout.dialog_title, null)
-        val nameEditText = filterListLayout.findViewById<EditText>(R.id.edit_text)
+        val nameEditText = filterLayout.findViewById<EditText>(R.id.edit_text)
         val dialog = MaterialAlertDialogBuilder(requireContext())
 
         // gets checkboxes from characters_filter.xml
         val filterList = mutableListOf<CheckBox>()
-        filterListLayout.findViewById<ConstraintLayout>(R.id.constraint_layout).forEach {
+        filterLayout.findViewById<ConstraintLayout>(R.id.constraint_layout).forEach {
             if (it is CheckBox) {
                 filterList.add(it)
             }
         }
 
-        // remembers checkboxes flags
+        // restores checkboxes flags
         filterList.forEach { checkBox ->
             characterFilterMap.entries.forEach { filter ->
                 if (checkBox.text == filter.value && checkBox.transitionName == filter.key) {
@@ -132,9 +122,16 @@ class CharactersFragment : Fragment() {
             }
         }
 
+        // restores editText text
+        characterFilterMap.entries.forEach { filter ->
+            if (nameEditText.transitionName == filter.key) {
+                nameEditText.setText(filter.value)
+            }
+        }
+
         // dialog builder
         with(dialog) {
-            setView(filterListLayout)
+            setView(filterLayout)
             setCustomTitle(customTitle)
             setCancelable(false)
             setPositiveButton("Apply") { _, _ ->
@@ -154,6 +151,7 @@ class CharactersFragment : Fragment() {
                 setOnShowListener {
                     getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
                         characterFilterMap.clear()
+                        nameEditText.text.clear()
                         filterList.forEach { it.isChecked = false }
                     }
                 }
@@ -178,19 +176,6 @@ class CharactersFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
-
-        val searchItem = menu.findItem(R.id.search_action)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
-            }
-        })
     }
 
     override fun onDestroy() {

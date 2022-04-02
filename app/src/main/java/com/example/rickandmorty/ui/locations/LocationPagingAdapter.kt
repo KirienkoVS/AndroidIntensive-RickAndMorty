@@ -34,14 +34,11 @@ class LocationPagingAdapter: PagingDataAdapter<LocationData, RecyclerView.ViewHo
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        getItem(position)?.let { LocationData ->
-            (holder as LocationViewHolder).bind(LocationData)
-        }
+        getItem(position)?.let { location ->
+            (holder as LocationViewHolder).bind(location)
 
-        holder.itemView.setOnClickListener { view ->
-            val locationID = getItem(position)?.id
-            if (locationID != null) {
-                val action = LocationsFragmentDirections.actionLocationsPageToLocationDetailsFragment(locationID = locationID)
+            holder.itemView.setOnClickListener { view ->
+                val action = LocationsFragmentDirections.actionLocationsPageToLocationDetailsFragment(locationID = location.id)
                 view.findNavController().navigate(action)
             }
         }

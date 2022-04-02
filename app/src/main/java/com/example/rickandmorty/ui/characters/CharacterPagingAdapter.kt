@@ -39,17 +39,15 @@ class CharacterPagingAdapter: PagingDataAdapter<CharacterData, RecyclerView.View
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        getItem(position)?.let { characterData ->
-            (holder as CharacterViewHolder).bind(characterData)
-        }
+        getItem(position)?.let { character ->
+            (holder as CharacterViewHolder).bind(character)
 
-        holder.itemView.setOnClickListener { view ->
-            val characterID = getItem(position)?.id
-            if (characterID != null) {
-                val action = CharactersFragmentDirections.actionCharactersPageToCharacterDetailsFragment(characterID = characterID)
+            holder.itemView.setOnClickListener { view ->
+                val action = CharactersFragmentDirections.actionCharactersPageToCharacterDetailsFragment(characterID = character.id)
                 view.findNavController().navigate(action)
             }
         }
+
     }
 
     companion object {

@@ -24,11 +24,11 @@ class LocationDetailsFragment : Fragment() {
     private lateinit var type: TextView
     private lateinit var dimension: TextView
     private lateinit var created: TextView
+    private lateinit var recyclerView: RecyclerView
 
+    private var isOnline = true
     private var locationID = 0
     private var locationName = ""
-    private var isOnline = true
-    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
@@ -84,21 +84,28 @@ class LocationDetailsFragment : Fragment() {
     }
 
     private fun setRecyclerView() {
+        val recyclerViewAdapter = LocationDetailsAdapter()
+
         viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
             locationLiveData.observe(viewLifecycleOwner) { location ->
                 if (location == null) {
                     Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
                 } else {
                     val residentsUrlList = location.residents
-                    viewModel.requestLocationCharacters(residentsUrlList, isOnline)?.let { characterLiveData ->
-                        characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
-                            if (characterDataList == null) {
-                                Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                    if (residentsUrlList.isNotEmpty()) {
+                        viewModel.requestLocationCharacters(residentsUrlList, isOnline)?.let { characterLiveData ->
+                            characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
+                                if (characterDataList == null) {
+                                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                                } else {
+                                    recyclerViewAdapter.residentsList = characterDataList
+                                    recyclerView.adapter = recyclerViewAdapter
+                                }
                             }
-                            val recyclerViewAdapter = LocationDetailsAdapter()
-                            recyclerViewAdapter.residentsList = characterDataList
-                            recyclerView.adapter = recyclerViewAdapter
                         }
+                    } else {
+                        recyclerView.visibility = View.GONE
+                        binding.emptyLocation.visibility = View.VISIBLE
                     }
                 }
             }
