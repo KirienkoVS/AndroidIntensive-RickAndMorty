@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.Injection
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.CharactersFragmentBinding
+import com.example.rickandmorty.ui.LoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 
@@ -66,10 +67,11 @@ class CharactersFragment : Fragment() {
             }
         }
 
-        val header = CharacterLoadStateAdapter { characterPagingAdapter.retry() }
+        val header = LoadStateAdapter { characterPagingAdapter.retry() }
+
         recyclerView.adapter = characterPagingAdapter.withLoadStateHeaderAndFooter(
             header = header,
-            footer = CharacterLoadStateAdapter { characterPagingAdapter.retry() }
+            footer = LoadStateAdapter { characterPagingAdapter.retry() }
         )
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             characterPagingAdapter.loadStateFlow.collectLatest { loadStates ->
@@ -78,7 +80,7 @@ class CharactersFragment : Fragment() {
         }
         characterPagingAdapter.addLoadStateListener { loadState ->
             val isListEmpty = loadState.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
-            binding.emptyList.isVisible = isListEmpty
+            binding.emptyTextView.isVisible = isListEmpty
             header.loadState = loadState.mediator
                 ?.refresh
                 ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }

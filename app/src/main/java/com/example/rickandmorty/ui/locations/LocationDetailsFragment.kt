@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.Injection
+import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.LocationDetailsFragmentBinding
 
 class LocationDetailsFragment : Fragment() {
@@ -41,15 +41,15 @@ class LocationDetailsFragment : Fragment() {
             locationName = this.getString(LOCATION_NAME) ?: error("Should provide location name")
         }
 
-        initializeViewModel()
+        initiViewModel()
         bindViews()
         setViews()
-        setRecyclerView()
+        initRecyclerView()
 
         return binding.root
     }
 
-    private fun initializeViewModel() {
+    private fun initiViewModel() {
         viewModel = ViewModelProvider(
             this,
             Injection.provideLocationViewModelFactory(requireContext())
@@ -70,41 +70,44 @@ class LocationDetailsFragment : Fragment() {
     private fun setViews() {
         viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
             locationLiveData.observe(viewLifecycleOwner) { location->
-                if (location == null) {
-                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
-                } else {
+                if (location != null) {
                     id.text = location.id.toString()
                     name.text = location.name
                     type.text = location.type.ifBlank { "unknown" }
                     dimension.text = location.dimension.ifBlank { "unknown" }
                     created.text = location.created.subSequence(0, 10)
+                } else {
+                    binding.emptyLocation.apply {
+                        visibility = View.VISIBLE
+                        text = resources.getString(R.string.no_locations)
+                    }
                 }
             }
         }
     }
 
-    private fun setRecyclerView() {
+    private fun initRecyclerView() {
         val recyclerViewAdapter = LocationDetailsAdapter()
 
         viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
             locationLiveData.observe(viewLifecycleOwner) { location ->
-                if (location == null) {
-                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
-                } else {
+                if (location != null) {
                     val residentsUrlList = location.residents
                     if (residentsUrlList.isNotEmpty()) {
                         viewModel.requestLocationCharacters(residentsUrlList, isOnline)?.let { characterLiveData ->
-                            characterLiveData.observe(viewLifecycleOwner) { characterDataList ->
-                                if (characterDataList == null) {
-                                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
-                                } else {
-                                    recyclerViewAdapter.residentsList = characterDataList
+                            characterLiveData.observe(viewLifecycleOwner) { characterList ->
+                                if (characterList.isNotEmpty()) {
+                                    recyclerViewAdapter.residentsList = characterList
                                     recyclerView.adapter = recyclerViewAdapter
+                                } else {
+                                    binding.emptyLocation.apply {
+                                        visibility = View.VISIBLE
+                                        text = resources.getString(R.string.no_residents)
+                                    }
                                 }
                             }
                         }
                     } else {
-                        recyclerView.visibility = View.GONE
                         binding.emptyLocation.visibility = View.VISIBLE
                     }
                 }

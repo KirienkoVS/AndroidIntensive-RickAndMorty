@@ -26,7 +26,8 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <TextView android:id="@+id/emptyList"
+    <TextView
+        android:id="@+id/empty_textView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:gravity="center"

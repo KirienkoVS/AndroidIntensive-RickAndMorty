@@ -1,4 +1,4 @@
-package com.example.rickandmorty.ui.characters
+package com.example.rickandmorty.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,11 +8,11 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.LoadStateItemBinding
-import com.example.rickandmorty.ui.characters.CharacterLoadStateAdapter.CharacterLoadStateViewHolder
+import com.example.rickandmorty.ui.LoadStateAdapter.LoadStateViewHolder
 
-class CharacterLoadStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<CharacterLoadStateViewHolder>() {
+class LoadStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<LoadStateViewHolder>() {
 
-    class CharacterLoadStateViewHolder(
+    class LoadStateViewHolder(
         private val binding: LoadStateItemBinding,
         retry: () -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -25,25 +25,25 @@ class CharacterLoadStateAdapter(private val retry: () -> Unit) : LoadStateAdapte
             if (loadState is LoadState.Error) {
                 binding.errorMsg.text = loadState.error.localizedMessage
             }
-            binding.progressBar.isVisible = loadState is LoadState.Loading
+//            binding.progressBar.isVisible = loadState is LoadState.Loading
             binding.retryButton.isVisible = loadState is LoadState.Error
             binding.errorMsg.isVisible = loadState is LoadState.Error
         }
 
         companion object {
-            fun create(parent: ViewGroup, retry: () -> Unit): CharacterLoadStateViewHolder {
+            fun create(parent: ViewGroup, retry: () -> Unit): LoadStateViewHolder {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.load_state_item, parent, false)
                 val binding = LoadStateItemBinding.bind(view)
-                return CharacterLoadStateViewHolder(binding, retry)
+                return LoadStateViewHolder(binding, retry)
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): CharacterLoadStateViewHolder {
-        return CharacterLoadStateViewHolder.create(parent, retry)
+    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadStateViewHolder {
+        return LoadStateViewHolder.create(parent, retry)
     }
 
-    override fun onBindViewHolder(holder: CharacterLoadStateViewHolder, loadState: LoadState) {
+    override fun onBindViewHolder(holder: LoadStateViewHolder, loadState: LoadState) {
         holder.bind(loadState)
     }
 }

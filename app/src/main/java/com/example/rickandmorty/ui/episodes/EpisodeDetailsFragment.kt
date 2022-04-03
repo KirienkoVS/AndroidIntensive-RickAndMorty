@@ -36,15 +36,15 @@ class EpisodeDetailsFragment: Fragment() {
         isOnline = Injection.isOnline(requireContext())
         episodeID = arguments?.getInt(EPISODE_ID) ?: error("Should provide episode ID")
 
-        initializeViewModel()
+        initViewModel()
         bindViews()
         setViews()
-        setRecyclerView()
+        initRecyclerView()
 
         return binding.root
     }
 
-    private fun initializeViewModel() {
+    private fun initViewModel() {
         viewModel = ViewModelProvider(
             this,
             Injection.provideEpisodeViewModelFactory(requireContext()))[EpisodeViewModel::class.java]
@@ -77,7 +77,7 @@ class EpisodeDetailsFragment: Fragment() {
         }
     }
 
-    private fun setRecyclerView() {
+    private fun initRecyclerView() {
         viewModel.requestEpisodeDetails(episodeID)?.let { episodeLiveData ->
             episodeLiveData.observe(viewLifecycleOwner) { episode ->
                 if (episode == null) {

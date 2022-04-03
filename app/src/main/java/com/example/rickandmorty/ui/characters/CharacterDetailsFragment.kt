@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -44,10 +45,10 @@ class CharacterDetailsFragment : Fragment() {
         isOnline = Injection.isOnline(requireContext())
         characterID = arguments?.getInt(CHARACTER_ID) ?: error("Should provide character ID")
 
-        initializeViewModel()
+        initiViewModel()
         bindViews()
         setViews()
-        setUpRecyclerView()
+        initRecyclerView()
 
         originName.setOnClickListener { navigateToLocation(originName.text.toString()) }
         locationName.setOnClickListener { navigateToLocation(locationName.text.toString()) }
@@ -55,7 +56,7 @@ class CharacterDetailsFragment : Fragment() {
         return binding.root
     }
 
-    private fun initializeViewModel() {
+    private fun initiViewModel() {
         viewModel = ViewModelProvider(
             this,
             Injection.provideCharacterViewModelFactory(requireContext()))[CharacterViewModel::class.java]
@@ -95,15 +96,20 @@ class CharacterDetailsFragment : Fragment() {
         }
     }
 
-    private fun setUpRecyclerView() {
+    private fun initRecyclerView() {
         viewModel.requestCharacterDetails(characterID)?.let { characterLiveData ->
             characterLiveData.observe(viewLifecycleOwner) { characterData ->
                 val episodeUrlList = characterData.episode
 
                 viewModel.requestCharacterEpisodes(episodeUrlList, isOnline)?.let { episodeLiveData ->
-                    episodeLiveData.observe(viewLifecycleOwner) { episodeDataList ->
-                        recyclerViewAdapter.episodeList = episodeDataList
-                        recyclerView.adapter = recyclerViewAdapter
+                    episodeLiveData.observe(viewLifecycleOwner) { episodeList ->
+                        if (episodeList.isNotEmpty()) {
+                            recyclerViewAdapter.episodeList = episodeList
+                            recyclerView.adapter = recyclerViewAdapter
+                            recyclerView.isEmpty()
+                        } else {
+                            binding.emptyEpisodes.visibility = View.VISIBLE
+                        }
                     }
                 }
             }

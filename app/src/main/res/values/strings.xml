@@ -48,4 +48,7 @@
     <string name="retry">Retry</string>
     <string name="no_results">No results available 😓\n Check internet connection</string>
     <string name="empty_location">There is no residents!\n Nobody wants to live here.</string>
+    <string name="no_residents">Residents are not available.\n Check internet connection.</string>
+    <string name="no_locations">No results available.\n Check internet connection.</string>
+    <string name="no_episodes">Episodes are not available.\n Check internet connection.</string>
 </resources>

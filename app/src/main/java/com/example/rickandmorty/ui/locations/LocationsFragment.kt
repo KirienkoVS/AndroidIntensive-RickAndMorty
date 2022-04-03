@@ -1,16 +1,21 @@
 package com.example.rickandmorty.ui.locations
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.Injection
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.LocationsFragmentBinding
+import com.example.rickandmorty.ui.LoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 
@@ -33,23 +38,23 @@ class LocationsFragment : Fragment()  {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = LocationsFragmentBinding.inflate(inflater, container, false)
 
-        initializeViewModel()
-        setUpLocationPagingAdapter()
+        initViewModel()
+        initPagingAdapter()
+        initSwipeToRefresh()
 
         return binding.root
     }
 
-    private fun initializeViewModel() {
+    private fun initViewModel() {
         viewModel = ViewModelProvider(
             this,
             Injection.provideLocationViewModelFactory(requireContext())
         ).get(LocationViewModel::class.java)
     }
 
-    private fun setUpLocationPagingAdapter() {
+    private fun initPagingAdapter() {
         recyclerView = binding.locationRecyclerview
         locationPagingAdapter = LocationPagingAdapter()
-        recyclerView.adapter = locationPagingAdapter
 
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
@@ -58,6 +63,37 @@ class LocationsFragment : Fragment()  {
                 }
             }
         }
+
+        val header = LoadStateAdapter { locationPagingAdapter.retry() }
+
+        recyclerView.adapter = locationPagingAdapter.withLoadStateHeaderAndFooter(
+            header = header,
+            footer = LoadStateAdapter { locationPagingAdapter.retry() }
+        )
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            locationPagingAdapter.loadStateFlow.collectLatest { loadStates ->
+                binding.swipeRefresh.isRefreshing = loadStates.mediator?.refresh is LoadState.Loading
+            }
+        }
+        locationPagingAdapter.addLoadStateListener { loadState ->
+            val isListEmpty = loadState.refresh is LoadState.Error && locationPagingAdapter.itemCount == 0
+            binding.emptyTextView.isVisible = isListEmpty
+            header.loadState = loadState.mediator
+                ?.refresh
+                ?.takeIf { it is LoadState.Error && locationPagingAdapter.itemCount > 0 }
+                ?: loadState.prepend
+            recyclerView.isVisible = loadState.source.refresh is LoadState.NotLoading ||
+                    loadState.mediator?.refresh is LoadState.NotLoading
+            val errorState = loadState.source.append as? LoadState.Error
+                ?: loadState.source.prepend as? LoadState.Error
+                ?: loadState.append as? LoadState.Error
+                ?: loadState.prepend as? LoadState.Error
+            errorState?.let { Toast.makeText(activity, "${it.error}", Toast.LENGTH_LONG).show() }
+        }
+    }
+
+    private fun initSwipeToRefresh() {
+        binding.swipeRefresh.setOnRefreshListener { locationPagingAdapter.refresh() }
     }
 
     @SuppressLint("InflateParams")
@@ -96,6 +132,17 @@ class LocationsFragment : Fragment()  {
                 viewModel.setFilter(locationFilterMap)
             }
             setNegativeButton("Cancel") { _, _ -> }
+            setNeutralButton("Clear", null)
+            create().apply {
+                setOnShowListener {
+                    getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                        locationFilterMap.clear()
+                        nameEditText.text.clear()
+                        typeEditText.text.clear()
+                        dimensionEditText.text.clear()
+                    }
+                }
+            }
         }.show()
     }
 
@@ -103,6 +150,10 @@ class LocationsFragment : Fragment()  {
         return when(item.itemId) {
             R.id.filter -> {
                 showFilterDialog()
+                true
+            }
+            R.id.menu_refresh -> {
+                locationPagingAdapter.refresh()
                 true
             }
             else -> super.onOptionsItemSelected(item)
