@@ -1,14 +1,20 @@
 package com.example.rickandmorty.ui.episodes
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.rickandmorty.data.episodes.EpisodeRepository
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EpisodeViewModel(private val repository: EpisodeRepository): ViewModel() {
+@HiltViewModel
+class EpisodeViewModel @Inject constructor(private val repository: EpisodeRepository): ViewModel() {
 
     private val _queries = MutableLiveData<MutableMap<String, String>>()
     val queries: LiveData<MutableMap<String, String>> = _queries
@@ -48,15 +54,4 @@ class EpisodeViewModel(private val repository: EpisodeRepository): ViewModel() {
         return episodeCharacters
     }
 
-}
-
-
-class EpisodeViewModelFactory(private val repository: EpisodeRepository): ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(EpisodeViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return EpisodeViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 }

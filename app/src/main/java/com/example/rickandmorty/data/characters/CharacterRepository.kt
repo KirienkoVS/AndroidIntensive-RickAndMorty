@@ -12,9 +12,10 @@ import com.example.rickandmorty.model.LocationData
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-class CharacterRepository(
+class CharacterRepository @Inject constructor(
     private val api: RickAndMortyApi,
     private val database: AppDatabase
 ) {

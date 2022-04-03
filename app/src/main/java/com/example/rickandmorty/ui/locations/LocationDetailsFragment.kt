@@ -6,18 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rickandmorty.Injection
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.LocationDetailsFragmentBinding
+import com.example.rickandmorty.isOnline
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LocationDetailsFragment : Fragment() {
 
     private var _binding: LocationDetailsFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: LocationViewModel
+    private val viewModel: LocationViewModel by viewModels()
 
     private lateinit var id: TextView
     private lateinit var name: TextView
@@ -34,26 +36,18 @@ class LocationDetailsFragment : Fragment() {
     ): View {
         _binding = LocationDetailsFragmentBinding.inflate(inflater, container, false)
 
-        isOnline = Injection.isOnline(requireContext())
+        isOnline = isOnline(requireContext())
 
         arguments?.apply {
             locationID = this.getInt(LOCATION_ID)
             locationName = this.getString(LOCATION_NAME) ?: error("Should provide location name")
         }
 
-        initiViewModel()
         bindViews()
         setViews()
         initRecyclerView()
 
         return binding.root
-    }
-
-    private fun initiViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideLocationViewModelFactory(requireContext())
-        ).get(LocationViewModel::class.java)
     }
 
     private fun bindViews() {

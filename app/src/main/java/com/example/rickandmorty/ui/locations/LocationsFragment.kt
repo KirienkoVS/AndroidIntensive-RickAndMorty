@@ -8,26 +8,31 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rickandmorty.Injection
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.LocationsFragmentBinding
+import com.example.rickandmorty.isOnline
 import com.example.rickandmorty.ui.LoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class LocationsFragment : Fragment()  {
 
     private var _binding: LocationsFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: LocationViewModel
+    private val viewModel: LocationViewModel by viewModels()
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var locationPagingAdapter: LocationPagingAdapter
     private lateinit var locationFilterMap: MutableMap<String, String>
+
+    private var isOnline = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,18 +43,12 @@ class LocationsFragment : Fragment()  {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = LocationsFragmentBinding.inflate(inflater, container, false)
 
-        initViewModel()
+        isOnline = isOnline(requireContext())
+
         initPagingAdapter()
         initSwipeToRefresh()
 
         return binding.root
-    }
-
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideLocationViewModelFactory(requireContext())
-        ).get(LocationViewModel::class.java)
     }
 
     private fun initPagingAdapter() {
@@ -77,13 +76,24 @@ class LocationsFragment : Fragment()  {
         }
         locationPagingAdapter.addLoadStateListener { loadState ->
             val isListEmpty = loadState.refresh is LoadState.Error && locationPagingAdapter.itemCount == 0
-            binding.emptyTextView.isVisible = isListEmpty
+
+            if (isListEmpty && isOnline) {
+                binding.emptyTextView.apply {
+                    visibility = View.VISIBLE
+                    text = resources.getString(R.string.no_match)
+                }
+            } else if (isListEmpty) {
+                binding.emptyTextView.isVisible = isListEmpty
+            } else binding.emptyTextView.visibility = View.GONE
+
             header.loadState = loadState.mediator
                 ?.refresh
                 ?.takeIf { it is LoadState.Error && locationPagingAdapter.itemCount > 0 }
                 ?: loadState.prepend
+
             recyclerView.isVisible = loadState.source.refresh is LoadState.NotLoading ||
                     loadState.mediator?.refresh is LoadState.NotLoading
+
             val errorState = loadState.source.append as? LoadState.Error
                 ?: loadState.source.prepend as? LoadState.Error
                 ?: loadState.append as? LoadState.Error

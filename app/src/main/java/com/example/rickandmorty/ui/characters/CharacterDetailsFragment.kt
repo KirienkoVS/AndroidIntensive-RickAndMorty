@@ -9,19 +9,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.rickandmorty.Injection
 import com.example.rickandmorty.databinding.FragmentCharacterDetailsBinding
+import com.example.rickandmorty.isOnline
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CharacterDetailsFragment : Fragment() {
 
     private var _binding: FragmentCharacterDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: CharacterViewModel
+    private val viewModel: CharacterViewModel by viewModels()
 
     private lateinit var imageView: ImageView
     private lateinit var name: TextView
@@ -42,10 +44,9 @@ class CharacterDetailsFragment : Fragment() {
     ): View {
         _binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
 
-        isOnline = Injection.isOnline(requireContext())
+        isOnline = isOnline(requireContext())
         characterID = arguments?.getInt(CHARACTER_ID) ?: error("Should provide character ID")
 
-        initiViewModel()
         bindViews()
         setViews()
         initRecyclerView()
@@ -54,12 +55,6 @@ class CharacterDetailsFragment : Fragment() {
         locationName.setOnClickListener { navigateToLocation(locationName.text.toString()) }
 
         return binding.root
-    }
-
-    private fun initiViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideCharacterViewModelFactory(requireContext()))[CharacterViewModel::class.java]
     }
 
     private fun bindViews() {

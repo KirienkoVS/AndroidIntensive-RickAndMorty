@@ -1,14 +1,20 @@
 package com.example.rickandmorty.ui.characters
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.rickandmorty.data.characters.CharacterRepository
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CharacterViewModel(private val repository: CharacterRepository): ViewModel() {
+@HiltViewModel
+class CharacterViewModel @Inject constructor(private val repository: CharacterRepository): ViewModel() {
 
     private val _queries = MutableLiveData<MutableMap<String, String>>()
     val queries: LiveData<MutableMap<String, String>> = _queries
@@ -27,7 +33,7 @@ class CharacterViewModel(private val repository: CharacterRepository): ViewModel
     }
 
     fun requestCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
-        return repository.getCharacters(queries)/*.cachedIn(viewModelScope)*/
+        return repository.getCharacters(queries)
     }
 
 
@@ -56,15 +62,4 @@ class CharacterViewModel(private val repository: CharacterRepository): ViewModel
         }
     }
 
-}
-
-
-class CharacterViewModelFactory(private val repository: CharacterRepository): ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CharacterViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return CharacterViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 }

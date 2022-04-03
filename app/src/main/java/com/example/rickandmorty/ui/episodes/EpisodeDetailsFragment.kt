@@ -7,17 +7,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rickandmorty.Injection
 import com.example.rickandmorty.databinding.EpisodeDetailsFragmentBinding
+import com.example.rickandmorty.isOnline
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class EpisodeDetailsFragment: Fragment() {
 
     private var _binding: EpisodeDetailsFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: EpisodeViewModel
+    private val viewModel: EpisodeViewModel by viewModels()
 
     private lateinit var id: TextView
     private lateinit var name: TextView
@@ -33,21 +35,14 @@ class EpisodeDetailsFragment: Fragment() {
     ): View {
         _binding = EpisodeDetailsFragmentBinding.inflate(inflater, container, false)
 
-        isOnline = Injection.isOnline(requireContext())
+        isOnline = isOnline(requireContext())
         episodeID = arguments?.getInt(EPISODE_ID) ?: error("Should provide episode ID")
 
-        initViewModel()
         bindViews()
         setViews()
         initRecyclerView()
 
         return binding.root
-    }
-
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideEpisodeViewModelFactory(requireContext()))[EpisodeViewModel::class.java]
     }
 
     private fun bindViews() {

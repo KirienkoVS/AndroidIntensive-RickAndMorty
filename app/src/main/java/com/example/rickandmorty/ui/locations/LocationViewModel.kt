@@ -1,14 +1,20 @@
 package com.example.rickandmorty.ui.locations
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.rickandmorty.data.locations.LocationRepository
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.LocationData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LocationViewModel(private val repository: LocationRepository): ViewModel() {
+@HiltViewModel
+class LocationViewModel @Inject constructor(private val repository: LocationRepository): ViewModel() {
 
     private val _queries = MutableLiveData<MutableMap<String, String>>()
     val queries: LiveData<MutableMap<String, String>> = _queries
@@ -49,15 +55,4 @@ class LocationViewModel(private val repository: LocationRepository): ViewModel()
         return locationCharacters
     }
 
-}
-
-
-class LocationViewModelFactory(private val repository: LocationRepository): ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return LocationViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 }

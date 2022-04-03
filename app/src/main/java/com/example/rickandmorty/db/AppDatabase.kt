@@ -1,8 +1,6 @@
 package com.example.rickandmorty.db
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.rickandmorty.db.characters.CharacterDao
@@ -37,22 +35,4 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun locationDao(): LocationDao
     abstract fun locationRemoteKeysDao(): LocationRemoteKeysDao
-
-
-    companion object {
-
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getInstance(context: Context): AppDatabase =
-            INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "AppDatabase.db"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-    }
 }

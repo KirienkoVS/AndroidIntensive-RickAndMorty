@@ -11,9 +11,10 @@ import com.example.rickandmorty.model.LocationData
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-class LocationRepository(
+class LocationRepository @Inject constructor(
     private val api: RickAndMortyApi,
     private val database: AppDatabase
 ) {
@@ -76,15 +77,15 @@ class LocationRepository(
                     emit(apiResponse)
                 }
             } catch (exception: IOException) {
-                error (exception)
+                error(exception)
             } catch (exception: HttpException) {
-                error (exception)
+                error(exception)
             }
         } else {
             try {
                 database.characterDao().getLocationOrEpisodeCharacters(dbQuery)
             } catch (exception: SQLiteException) {
-                error (exception)
+                error(exception)
             }
         }
     }
