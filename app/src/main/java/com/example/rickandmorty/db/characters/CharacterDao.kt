@@ -35,4 +35,13 @@ interface CharacterDao {
     @Query("DELETE FROM characters")
     suspend fun clearCharacters()
 
+    @Query("SELECT * FROM characters WHERE " +
+            "(name LIKE :query OR :query IS NULL) OR " +
+            "(species LIKE :query OR :query IS NULL) OR " +
+            "(status LIKE :query OR :query IS NULL) OR " +
+            "(gender LIKE :query OR :query IS NULL)")
+    fun charactersBySearch(
+        query: String?
+    ): PagingSource<Int, CharacterData>
+
 }

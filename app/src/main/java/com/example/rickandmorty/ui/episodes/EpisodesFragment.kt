@@ -5,20 +5,21 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
-import android.widget.Toast
-import androidx.core.view.isVisible
+import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.EpisodesFragmentBinding
+import com.example.rickandmorty.initLoadStateAdapter
 import com.example.rickandmorty.isOnline
-import com.example.rickandmorty.ui.LoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class EpisodesFragment : Fragment()  {
@@ -29,8 +30,10 @@ class EpisodesFragment : Fragment()  {
     private val viewModel: EpisodeViewModel by viewModels()
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var episodePagingAdapter: EpisodePagingAdapter
+    private lateinit var pagingAdapter: EpisodePagingAdapter
     private lateinit var episodeFilterMap: MutableMap<String, String>
+    private lateinit var emptyTextView: TextView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private var isOnline = true
 
@@ -44,6 +47,10 @@ class EpisodesFragment : Fragment()  {
         _binding = EpisodesFragmentBinding.inflate(inflater, container, false)
 
         isOnline = isOnline(requireContext())
+        recyclerView = binding.episodeRecyclerview
+        emptyTextView = binding.emptyTextView
+        swipeRefresh = binding.swipeRefresh
+        pagingAdapter = EpisodePagingAdapter()
 
         initPagingAdapter()
         initSwipeToRefresh()
@@ -52,58 +59,32 @@ class EpisodesFragment : Fragment()  {
     }
 
     private fun initPagingAdapter() {
-        recyclerView = binding.episodeRecyclerview
-        episodePagingAdapter = EpisodePagingAdapter()
-
-        viewModel.queries.observe(viewLifecycleOwner) { queries ->
-            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                viewModel.requestEpisodes(queries).collectLatest {
-                    episodePagingAdapter.submitData(it)
-                }
-            }
-        }
-
-        val header = LoadStateAdapter { episodePagingAdapter.retry() }
-
-        recyclerView.adapter = episodePagingAdapter.withLoadStateHeaderAndFooter(
-            header = header,
-            footer = LoadStateAdapter { episodePagingAdapter.retry() }
+        displayEpisodes()
+        initLoadStateAdapter(
+            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
         )
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            episodePagingAdapter.loadStateFlow.collectLatest { loadStates ->
-                binding.swipeRefresh.isRefreshing = loadStates.mediator?.refresh is LoadState.Loading
-            }
-        }
-        episodePagingAdapter.addLoadStateListener { loadState ->
-            val isListEmpty = loadState.refresh is LoadState.Error && episodePagingAdapter.itemCount == 0
-
-            if (isListEmpty && isOnline) {
-                binding.emptyTextView.apply {
-                    visibility = View.VISIBLE
-                    text = resources.getString(R.string.no_match)
-                }
-            } else if (isListEmpty) {
-                binding.emptyTextView.isVisible = isListEmpty
-            } else binding.emptyTextView.visibility = View.GONE
-
-            header.loadState = loadState.mediator
-                ?.refresh
-                ?.takeIf { it is LoadState.Error && episodePagingAdapter.itemCount > 0 }
-                ?: loadState.prepend
-
-            recyclerView.isVisible = loadState.source.refresh is LoadState.NotLoading ||
-                    loadState.mediator?.refresh is LoadState.NotLoading
-
-            val errorState = loadState.source.append as? LoadState.Error
-                ?: loadState.source.prepend as? LoadState.Error
-                ?: loadState.append as? LoadState.Error
-                ?: loadState.prepend as? LoadState.Error
-            errorState?.let { Toast.makeText(activity, "${it.error}", Toast.LENGTH_LONG).show() }
-        }
     }
 
     private fun initSwipeToRefresh() {
-        binding.swipeRefresh.setOnRefreshListener { episodePagingAdapter.refresh() }
+        binding.swipeRefresh.setOnRefreshListener { pagingAdapter.refresh() }
+    }
+
+    private fun displayEpisodes() {
+        viewModel.queries.observe(viewLifecycleOwner) { queries ->
+            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+                viewModel.requestEpisodes(queries).collectLatest {
+                    pagingAdapter.submitData(it)
+                }
+            }
+        }
+    }
+
+    private fun displayFoundEpisodes(search: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.searchEpisodes(search).collectLatest {
+                pagingAdapter.submitData(it)
+            }
+        }
     }
 
     @SuppressLint("InflateParams")
@@ -159,7 +140,7 @@ class EpisodesFragment : Fragment()  {
                 true
             }
             R.id.menu_refresh -> {
-                episodePagingAdapter.refresh()
+                pagingAdapter.refresh()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -169,6 +150,24 @@ class EpisodesFragment : Fragment()  {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search_action)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.isNotBlank()) {
+                    displayFoundEpisodes(newText.lowercase())
+                } else {
+                    displayEpisodes()
+                }
+                return false
+            }
+        })
     }
 
     override fun onDestroy() {

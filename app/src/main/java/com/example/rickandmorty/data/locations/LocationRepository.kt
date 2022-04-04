@@ -90,6 +90,27 @@ class LocationRepository @Inject constructor(
         }
     }
 
+    fun searchLocations(query: String): Flow<PagingData<LocationData>> {
+
+        val dbQuery = if (query.isBlank()) {
+            "empty"
+        } else {
+            "%${query}%"
+        }
+
+        fun pagingSourceFactory(): () -> PagingSource<Int, LocationData> {
+            return { database.locationDao().locationsBySearch(query = if (dbQuery == "empty") null else dbQuery)
+            }
+        }
+
+        return Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE),
+            pagingSourceFactory = pagingSourceFactory(),
+//            remoteMediator = CharacterRemoteMediator(queries, api, database) // don`t know how implement this
+        ).flow
+
+    }
+
     companion object {
         const val PAGE_SIZE = 20
     }

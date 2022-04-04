@@ -26,4 +26,10 @@ interface LocationDao {
     @Query("DELETE FROM locations")
     suspend fun clearLocations()
 
+    @Query("SELECT * FROM locations WHERE " +
+            "(name LIKE :query OR :query IS NULL) OR " +
+            "(type LIKE :query OR :query IS NULL) OR " +
+            "(dimension LIKE :query OR :query IS NULL)")
+    fun locationsBySearch(query: String?): PagingSource<Int, LocationData>
+
 }

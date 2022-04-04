@@ -54,4 +54,8 @@ class EpisodeViewModel @Inject constructor(private val repository: EpisodeReposi
         return episodeCharacters
     }
 
+    fun searchEpisodes(query: String): Flow<PagingData<EpisodeData>> {
+        return repository.searchEpisodes(query)
+    }
+
 }

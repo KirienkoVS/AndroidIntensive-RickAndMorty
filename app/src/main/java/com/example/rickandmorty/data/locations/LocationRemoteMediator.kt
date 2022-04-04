@@ -15,7 +15,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalPagingApi::class)
 class LocationRemoteMediator(
-    private var queries: Map<String, String>,
+    private val queries: Map<String, String>,
     private val api: RickAndMortyApi,
     private val database: AppDatabase
 ) : RemoteMediator<Int, LocationData>() {

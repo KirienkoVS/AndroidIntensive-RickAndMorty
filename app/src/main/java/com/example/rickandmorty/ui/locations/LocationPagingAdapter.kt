@@ -22,8 +22,8 @@ class LocationPagingAdapter: PagingDataAdapter<LocationData, RecyclerView.ViewHo
 
         fun bind(location: LocationData) {
             name.text = location.name
-            type.text = location.type
-            dimension.text = location.dimension
+            type.text = location.type.ifBlank { "unknown" }
+            dimension.text = location.dimension.ifBlank { "unknown" }
         }
     }
 

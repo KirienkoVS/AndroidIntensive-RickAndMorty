@@ -62,4 +62,8 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
         }
     }
 
+    fun searchCharacters(query: String): Flow<PagingData<CharacterData>> {
+        return repository.searchCharacters(query)
+    }
+
 }

@@ -102,6 +102,27 @@ class CharacterRepository @Inject constructor(
         }
     }
 
+    fun searchCharacters(query: String): Flow<PagingData<CharacterData>> {
+
+        val dbQuery = if (query.isBlank()) {
+            "empty"
+        } else {
+            "%${query}%"
+        }
+
+        fun pagingSourceFactory(): () -> PagingSource<Int, CharacterData> {
+            return { database.characterDao().charactersBySearch(query = if (dbQuery == "empty") null else dbQuery)
+            }
+        }
+
+        return Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE),
+            pagingSourceFactory = pagingSourceFactory(),
+//            remoteMediator = CharacterRemoteMediator(queries, api, database) // don`t know how implement this
+        ).flow
+
+    }
+
     companion object {
         const val PAGE_SIZE = 20
     }

@@ -55,4 +55,8 @@ class LocationViewModel @Inject constructor(private val repository: LocationRepo
         return locationCharacters
     }
 
+    fun searchLocations(query: String): Flow<PagingData<LocationData>> {
+        return repository.searchLocations(query)
+    }
+
 }

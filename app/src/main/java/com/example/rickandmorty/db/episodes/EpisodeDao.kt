@@ -28,4 +28,9 @@ interface EpisodeDao {
     @Query("DELETE FROM episodes")
     suspend fun clearEpisodes()
 
+    @Query("SELECT * FROM episodes WHERE " +
+            "(name LIKE :query OR :query IS NULL) OR " +
+            "(episodeNumber LIKE :query OR :query IS NULL)")
+    fun episodesBySearch(query: String?): PagingSource<Int, EpisodeData>
+
 }

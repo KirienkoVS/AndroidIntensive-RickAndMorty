@@ -6,22 +6,23 @@ import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.Toast
+import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.CharactersFragmentBinding
+import com.example.rickandmorty.initLoadStateAdapter
 import com.example.rickandmorty.isOnline
-import com.example.rickandmorty.ui.LoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CharactersFragment : Fragment() {
@@ -32,8 +33,10 @@ class CharactersFragment : Fragment() {
     private val viewModel: CharacterViewModel by viewModels()
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var characterPagingAdapter: CharacterPagingAdapter
+    private lateinit var pagingAdapter: CharacterPagingAdapter
     private lateinit var characterFilterMap: MutableMap<String, String>
+    private lateinit var emptyTextView: TextView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
 
     private var isOnline = true
 
@@ -47,6 +50,10 @@ class CharactersFragment : Fragment() {
         _binding = CharactersFragmentBinding.inflate(inflater, container, false)
 
         isOnline = isOnline(requireContext())
+        recyclerView = binding.characterRecyclerview
+        emptyTextView = binding.emptyTextView
+        swipeRefresh = binding.swipeRefresh
+        pagingAdapter = CharacterPagingAdapter()
 
         initPagingAdapter()
         initSwipeToRefresh()
@@ -55,58 +62,32 @@ class CharactersFragment : Fragment() {
     }
 
     private fun initPagingAdapter() {
-        recyclerView = binding.characterRecyclerview
-        characterPagingAdapter = CharacterPagingAdapter()
-
-        viewModel.queries.observe(viewLifecycleOwner) { queries ->
-            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                viewModel.requestCharacters(queries).collectLatest {
-                    characterPagingAdapter.submitData(it)
-                }
-            }
-        }
-
-        val header = LoadStateAdapter { characterPagingAdapter.retry() }
-
-        recyclerView.adapter = characterPagingAdapter.withLoadStateHeaderAndFooter(
-            header = header,
-            footer = LoadStateAdapter { characterPagingAdapter.retry() }
+        displayCharacters()
+        initLoadStateAdapter(
+            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
         )
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            characterPagingAdapter.loadStateFlow.collectLatest { loadStates ->
-                binding.swipeRefresh.isRefreshing = loadStates.mediator?.refresh is LoadState.Loading
-            }
-        }
-        characterPagingAdapter.addLoadStateListener { loadState ->
-            val isListEmpty = loadState.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
-
-            if (isListEmpty && isOnline) {
-                binding.emptyTextView.apply {
-                    visibility = View.VISIBLE
-                    text = resources.getString(R.string.no_match)
-                }
-            } else if (isListEmpty) {
-                binding.emptyTextView.isVisible = isListEmpty
-            } else binding.emptyTextView.visibility = View.GONE
-
-            header.loadState = loadState.mediator
-                ?.refresh
-                ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }
-                ?: loadState.prepend
-
-            recyclerView.isVisible = loadState.source.refresh is LoadState.NotLoading ||
-                    loadState.mediator?.refresh is LoadState.NotLoading
-
-            val errorState = loadState.source.append as? LoadState.Error
-                ?: loadState.source.prepend as? LoadState.Error
-                ?: loadState.append as? LoadState.Error
-                ?: loadState.prepend as? LoadState.Error
-            errorState?.let { Toast.makeText(activity, "${it.error}", Toast.LENGTH_LONG).show() }
-        }
     }
 
     private fun initSwipeToRefresh() {
-        binding.swipeRefresh.setOnRefreshListener { characterPagingAdapter.refresh() }
+        binding.swipeRefresh.setOnRefreshListener { pagingAdapter.refresh() }
+    }
+
+    private fun displayCharacters() {
+        viewModel.queries.observe(viewLifecycleOwner) { queries ->
+            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+                viewModel.requestCharacters(queries).collectLatest {
+                    pagingAdapter.submitData(it)
+                }
+            }
+        }
+    }
+
+    private fun displayFoundCharacters(search: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.searchCharacters(search).collectLatest {
+                pagingAdapter.submitData(it)
+            }
+        }
     }
 
     @SuppressLint("InflateParams")
@@ -178,7 +159,7 @@ class CharactersFragment : Fragment() {
                 true
             }
             R.id.menu_refresh -> {
-                characterPagingAdapter.refresh()
+                pagingAdapter.refresh()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -188,6 +169,24 @@ class CharactersFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
+
+        val searchItem = menu.findItem(R.id.search_action)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.isNotBlank()) {
+                    displayFoundCharacters(newText.lowercase())
+                } else {
+                    displayCharacters()
+                }
+                return false
+            }
+        })
     }
 
     override fun onDestroy() {

@@ -84,6 +84,27 @@ class EpisodeRepository @Inject constructor(
         }
     }
 
+    fun searchEpisodes(query: String): Flow<PagingData<EpisodeData>> {
+
+        val dbQuery = if (query.isBlank()) {
+            "empty"
+        } else {
+            "%${query}%"
+        }
+
+        fun pagingSourceFactory(): () -> PagingSource<Int, EpisodeData> {
+            return { database.episodeDao().episodesBySearch(query = if (dbQuery == "empty") null else dbQuery)
+            }
+        }
+
+        return Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE),
+            pagingSourceFactory = pagingSourceFactory(),
+//            remoteMediator = CharacterRemoteMediator(queries, api, database) // don`t know how implement this
+        ).flow
+
+    }
+
     companion object {
         const val PAGE_SIZE = 20
     }
