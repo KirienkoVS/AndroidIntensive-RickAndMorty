@@ -3,9 +3,11 @@ package com.example.rickandmorty.ui.characters
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -50,26 +52,30 @@ class CharactersFragment : Fragment() {
         _binding = CharactersFragmentBinding.inflate(inflater, container, false)
 
         isOnline = isOnline(requireContext())
-        recyclerView = binding.characterRecyclerview
-        emptyTextView = binding.emptyTextView
-        swipeRefresh = binding.swipeRefresh
-        pagingAdapter = CharacterPagingAdapter()
 
+        bindViews()
         initPagingAdapter()
         initSwipeToRefresh()
+        initLoadStateAdapter(
+            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
+        )
 
         return binding.root
     }
 
+    private fun bindViews() {
+        recyclerView = binding.characterRecyclerview
+        emptyTextView = binding.emptyTextView
+        swipeRefresh = binding.swipeRefresh
+    }
+
     private fun initPagingAdapter() {
+        pagingAdapter = CharacterPagingAdapter()
         displayCharacters()
-        initLoadStateAdapter(
-            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
-        )
     }
 
     private fun initSwipeToRefresh() {
-        binding.swipeRefresh.setOnRefreshListener { pagingAdapter.refresh() }
+        swipeRefresh.setOnRefreshListener { pagingAdapter.refresh() }
     }
 
     private fun displayCharacters() {
@@ -153,6 +159,7 @@ class CharactersFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d("CharactersFragment", "onOptionsItemSelected")
         return when(item.itemId) {
             R.id.filter -> {
                 showFilterDialog()
@@ -172,6 +179,15 @@ class CharactersFragment : Fragment() {
 
         val searchItem = menu.findItem(R.id.search_action)
         val searchView = searchItem.actionView as SearchView
+        val searchViewCloseButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+
+        searchViewCloseButton.setOnClickListener {
+            searchView.apply {
+                onActionViewCollapsed()
+                searchItem.collapseActionView()
+            }
+            displayCharacters()
+        }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -181,8 +197,6 @@ class CharactersFragment : Fragment() {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotBlank()) {
                     displayFoundCharacters(newText.lowercase())
-                } else {
-                    displayCharacters()
                 }
                 return false
             }

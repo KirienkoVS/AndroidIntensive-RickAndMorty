@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -47,22 +48,26 @@ class EpisodesFragment : Fragment()  {
         _binding = EpisodesFragmentBinding.inflate(inflater, container, false)
 
         isOnline = isOnline(requireContext())
-        recyclerView = binding.episodeRecyclerview
-        emptyTextView = binding.emptyTextView
-        swipeRefresh = binding.swipeRefresh
-        pagingAdapter = EpisodePagingAdapter()
 
+        bindViews()
         initPagingAdapter()
         initSwipeToRefresh()
+        initLoadStateAdapter(
+            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
+        )
 
         return binding.root
     }
 
+    private fun bindViews() {
+        recyclerView = binding.episodeRecyclerview
+        emptyTextView = binding.emptyTextView
+        swipeRefresh = binding.swipeRefresh
+    }
+
     private fun initPagingAdapter() {
+        pagingAdapter = EpisodePagingAdapter()
         displayEpisodes()
-        initLoadStateAdapter(
-            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
-        )
     }
 
     private fun initSwipeToRefresh() {
@@ -153,6 +158,15 @@ class EpisodesFragment : Fragment()  {
 
         val searchItem = menu.findItem(R.id.search_action)
         val searchView = searchItem.actionView as SearchView
+        val searchViewCloseButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+
+        searchViewCloseButton.setOnClickListener {
+            searchView.apply {
+                onActionViewCollapsed()
+                searchItem.collapseActionView()
+            }
+            displayEpisodes()
+        }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -162,8 +176,6 @@ class EpisodesFragment : Fragment()  {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotBlank()) {
                     displayFoundEpisodes(newText.lowercase())
-                } else {
-                    displayEpisodes()
                 }
                 return false
             }

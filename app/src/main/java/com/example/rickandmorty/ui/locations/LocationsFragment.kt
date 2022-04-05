@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -47,22 +48,26 @@ class LocationsFragment : Fragment()  {
         _binding = LocationsFragmentBinding.inflate(inflater, container, false)
 
         isOnline = isOnline(requireContext())
-        recyclerView = binding.locationRecyclerview
-        emptyTextView = binding.emptyTextView
-        swipeRefresh = binding.swipeRefresh
-        pagingAdapter = LocationPagingAdapter()
 
+        bindViews()
         initPagingAdapter()
         initSwipeToRefresh()
+        initLoadStateAdapter(
+            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
+        )
 
         return binding.root
     }
 
+    private fun bindViews() {
+        recyclerView = binding.locationRecyclerview
+        emptyTextView = binding.emptyTextView
+        swipeRefresh = binding.swipeRefresh
+    }
+
     private fun initPagingAdapter() {
+        pagingAdapter = LocationPagingAdapter()
         displayLocations()
-        initLoadStateAdapter(
-            isOnline, emptyTextView, viewLifecycleOwner, recyclerView, activity, swipeRefresh, pagingAdapter
-        )
     }
 
     private fun initSwipeToRefresh() {
@@ -157,6 +162,15 @@ class LocationsFragment : Fragment()  {
 
         val searchItem = menu.findItem(R.id.search_action)
         val searchView = searchItem.actionView as SearchView
+        val searchViewCloseButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+
+        searchViewCloseButton.setOnClickListener {
+            searchView.apply {
+                onActionViewCollapsed()
+                searchItem.collapseActionView()
+            }
+            displayLocations()
+        }
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -166,8 +180,6 @@ class LocationsFragment : Fragment()  {
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isNotBlank()) {
                     displayFoundLocations(newText.lowercase())
-                } else {
-                    displayLocations()
                 }
                 return false
             }
