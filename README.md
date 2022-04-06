@@ -25,3 +25,8 @@
   - [Glide](https://bumptech.github.io/glide/) - for image loading.
   - [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) - for dependency injection.
   - [Kotlin coroutines](https://developer.android.com/topic/libraries/architecture/coroutines) - provide an API that enables to write asynchronous code.
+
+# Screenshots
+![Screenshot_1_1](https://user-images.githubusercontent.com/80069416/161974335-b0201fb1-bc2b-4e2a-8716-8c6ae3aa17f3.jpg) ![Screenshot_2_2](https://user-images.githubusercontent.com/80069416/161974353-1cce2e3c-bc3e-46ba-a03c-1068189b2437.jpg)
+
+
