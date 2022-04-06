@@ -48,6 +48,7 @@ class CharacterRemoteMediator(
                 species = queries.get("species"),
                 status = queries.get("status"),
                 gender = queries.get("gender"),
+                type = queries.get("type"),
                 page
             )
 

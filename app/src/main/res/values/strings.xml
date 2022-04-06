@@ -9,7 +9,7 @@
     <string name="gender">Gender:</string>
     <string name="type">Type:</string>
     <string name="filterby">Filter by:</string>
-    <string name="character_name">character name..</string>
+    <string name="character_name">character name…</string>
     <string name="alive">alive</string>
     <string name="dead">dead</string>
     <string name="unknown">unknown</string>
@@ -53,4 +53,5 @@
     <string name="no_locations">No results available.\n Check internet connection.</string>
     <string name="no_episodes">Episodes are not available.\n Check internet connection.</string>
     <string name="refresh">Refresh</string>
+    <string name="character_type">character type…</string>
 </resources>

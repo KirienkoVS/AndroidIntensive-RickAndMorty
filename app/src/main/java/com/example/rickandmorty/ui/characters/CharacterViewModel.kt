@@ -24,7 +24,8 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
             "name" to "",
             "species" to "",
             "status" to "",
-            "gender" to ""
+            "gender" to "",
+            "type" to ""
         )
     }
 

@@ -21,13 +21,8 @@ class EpisodeRepository @Inject constructor(
 
     fun getEpisodes(queries: Map<String, String>): Flow<PagingData<EpisodeData>> {
 
-        val name = if (queries.get("name").isNullOrBlank()) {
-            "empty"
-        } else "%${queries.get("name")}%"
-
-        val episode = if (queries.get("episode").isNullOrBlank()) {
-            "empty"
-        } else "%${queries.get("episode")}%"
+        val name = if (queries.get("name").isNullOrBlank()) "empty" else "%${queries.get("name")}%"
+        val episode = if (queries.get("episode").isNullOrBlank()) "empty" else "%${queries.get("episode")}%"
 
         fun pagingSourceFactory(): () -> PagingSource<Int, EpisodeData> {
             return { database.episodeDao().episodesByFilter(
@@ -85,12 +80,7 @@ class EpisodeRepository @Inject constructor(
     }
 
     fun searchEpisodes(query: String): Flow<PagingData<EpisodeData>> {
-
-        val dbQuery = if (query.isBlank()) {
-            "empty"
-        } else {
-            "%${query}%"
-        }
+        val dbQuery = if (query.isBlank()) "empty" else "%${query}%"
 
         fun pagingSourceFactory(): () -> PagingSource<Int, EpisodeData> {
             return { database.episodeDao().episodesBySearch(query = if (dbQuery == "empty") null else dbQuery)

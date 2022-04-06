@@ -52,9 +52,9 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(
-            appContext,
+            context,
             AppDatabase::class.java,
             "AppDatabase.db"
         ).build()

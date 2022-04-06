@@ -22,11 +22,8 @@ class CharacterRepository @Inject constructor(
 
     fun getCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
 
-        val name = if (queries.get("name").isNullOrBlank()) {
-            "empty"
-        } else {
-            "%${queries.get("name")}%"
-        }
+        val name = if (queries.get("name").isNullOrBlank()) "empty" else "%${queries.get("name")}%"
+        val type = if (queries.get("type").isNullOrBlank()) "empty" else "%${queries.get("type")}%"
         val species = if (queries.get("species").isNullOrBlank()) "empty" else queries.get("species")
         val status = if (queries.get("status").isNullOrBlank()) "empty" else queries.get("status")
         val gender = if (queries.get("gender").isNullOrBlank()) "empty" else queries.get("gender")
@@ -36,7 +33,8 @@ class CharacterRepository @Inject constructor(
                 name = if (name == "empty") null else name,
                 species = if (species == "empty") null else species,
                 status = if (status == "empty") null else status,
-                gender = if (gender == "empty") null else gender)
+                gender = if (gender == "empty") null else gender,
+                type = if (type == "empty") null else type)
             }
         }
 
@@ -103,12 +101,7 @@ class CharacterRepository @Inject constructor(
     }
 
     fun searchCharacters(query: String): Flow<PagingData<CharacterData>> {
-
-        val dbQuery = if (query.isBlank()) {
-            "empty"
-        } else {
-            "%${query}%"
-        }
+        val dbQuery = if (query.isBlank()) "empty" else "%${query}%"
 
         fun pagingSourceFactory(): () -> PagingSource<Int, CharacterData> {
             return { database.characterDao().charactersBySearch(query = if (dbQuery == "empty") null else dbQuery)

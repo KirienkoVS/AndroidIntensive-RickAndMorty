@@ -100,18 +100,62 @@ class CharactersFragment : Fragment() {
         val inflater = requireActivity().layoutInflater
         val filterLayout = inflater.inflate(R.layout.characters_filter, null)
         val customTitle = inflater.inflate(R.layout.dialog_title, null)
-        val nameEditText = filterLayout.findViewById<EditText>(R.id.edit_text)
+        val nameEditText = filterLayout.findViewById<EditText>(R.id.name_edit_text)
+        val typeEditText = filterLayout.findViewById<EditText>(R.id.type_edit_text)
         val dialog = MaterialAlertDialogBuilder(requireContext())
 
-        // gets all checkboxes from characters_filter.xml
+        val checkBoxList = getCheckBoxes(filterLayout)
+        val checkBoxGroups = groupCheckBoxes(checkBoxList)
+        val editTextList = listOf<EditText>(nameEditText, typeEditText)
+
+        restoreEditTextText(editTextList)
+        restoreCheckboxesFlags(checkBoxList)
+        preventMultipleCheckBoxSelections(checkBoxGroups)
+
+        // dialog builder
+        with(dialog) {
+            setView(filterLayout)
+            setCustomTitle(customTitle)
+            setCancelable(false)
+            setPositiveButton("Apply") { _, _ ->
+                checkBoxList.forEach {
+                    if (it.isChecked) {
+                        characterFilterMap.put(it.transitionName, it.text.toString())
+                    } else if (characterFilterMap[it.transitionName].isNullOrBlank()){
+                        characterFilterMap.put(it.transitionName, "")
+                    }
+                }
+                editTextList.forEach {
+                    characterFilterMap.put(it.transitionName, it.text.toString())
+                }
+                viewModel.setFilter(characterFilterMap)
+            }
+            setNegativeButton("Cancel") { _, _ -> }
+            setNeutralButton("Clear", null)
+            create().apply {
+                setOnShowListener {
+                    getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                        characterFilterMap.clear()
+                        nameEditText.text.clear()
+                        typeEditText.text.clear()
+                        checkBoxList.forEach { it.isChecked = false }
+                    }
+                }
+            }
+        }.show()
+    }
+
+    private fun getCheckBoxes(filterLayout: View): List<CheckBox> {
         val filterList = mutableListOf<CheckBox>()
         filterLayout.findViewById<ConstraintLayout>(R.id.constraint_layout).forEach {
             if (it is CheckBox) {
                 filterList.add(it)
             }
         }
+        return filterList
+    }
 
-        // grouping checkboxes
+    private fun groupCheckBoxes(filterList: List<CheckBox>): List<List<CheckBox>> {
         val statusCheckBoxGroup = mutableListOf<CheckBox>()
         val genderCheckBoxGroup = mutableListOf<CheckBox>()
         val speciesCheckBoxGroup = mutableListOf<CheckBox>()
@@ -123,12 +167,22 @@ class CharactersFragment : Fragment() {
                 "species" -> speciesCheckBoxGroup.add(it)
             }
         }
+        return listOf(statusCheckBoxGroup, genderCheckBoxGroup, speciesCheckBoxGroup)
+    }
 
-        preventsMultipleCheckBoxSelections(statusCheckBoxGroup)
-        preventsMultipleCheckBoxSelections(genderCheckBoxGroup)
-        preventsMultipleCheckBoxSelections(speciesCheckBoxGroup)
+    private fun preventMultipleCheckBoxSelections(checkBoxGroups: List<List<CheckBox>>) {
+        checkBoxGroups.forEach { checkBoxGroup ->
+            checkBoxGroup.forEach { checkBox ->
+                checkBox.setOnClickListener {
+                    if (checkBox.isChecked) {
+                        checkBoxGroup.filterNot { it.id == checkBox.id }.onEach { it.isChecked = false }
+                    }
+                }
+            }
+        }
+    }
 
-        // restores checkboxes flags
+    private fun restoreCheckboxesFlags(filterList: List<CheckBox>) {
         filterList.forEach { checkBox ->
             characterFilterMap.entries.forEach { filter ->
                 if (checkBox.text == filter.value && checkBox.transitionName == filter.key) {
@@ -136,49 +190,13 @@ class CharactersFragment : Fragment() {
                 }
             }
         }
-
-        // restores editText text
-        characterFilterMap.entries.forEach { filter ->
-            if (nameEditText.transitionName == filter.key) {
-                nameEditText.setText(filter.value)
-            }
-        }
-
-        // dialog builder
-        with(dialog) {
-            setView(filterLayout)
-            setCustomTitle(customTitle)
-            setCancelable(false)
-            setPositiveButton("Apply") { _, _ ->
-                filterList.forEach {
-                    if (it.isChecked) {
-                        characterFilterMap.put(it.transitionName, it.text.toString())
-                    } else if (characterFilterMap[it.transitionName].isNullOrBlank()){
-                        characterFilterMap.put(it.transitionName, "")
-                    }
-                }
-                characterFilterMap.put("name", nameEditText.text.toString())
-                viewModel.setFilter(characterFilterMap)
-            }
-            setNegativeButton("Cancel") { _, _ -> }
-            setNeutralButton("Clear", null)
-            create().apply {
-                setOnShowListener {
-                    getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-                        characterFilterMap.clear()
-                        nameEditText.text.clear()
-                        filterList.forEach { it.isChecked = false }
-                    }
-                }
-            }
-        }.show()
     }
 
-    private fun preventsMultipleCheckBoxSelections(checkBoxGroup: List<CheckBox>) {
-        checkBoxGroup.forEach { checkBox ->
-            checkBox.setOnClickListener {
-                if (checkBox.isChecked) {
-                    checkBoxGroup.filterNot { it.id == checkBox.id }.onEach { it.isChecked = false }
+    private fun restoreEditTextText(editTextList: List<EditText>) {
+        editTextList.forEach { editText ->
+            characterFilterMap.entries.forEach { filter ->
+                if (editText.transitionName == filter.key) {
+                    editText.setText(filter.value)
                 }
             }
         }

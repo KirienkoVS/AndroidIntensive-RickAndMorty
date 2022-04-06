@@ -21,17 +21,9 @@ class LocationRepository @Inject constructor(
 
     fun getLocations(queries: Map<String, String>): Flow<PagingData<LocationData>> {
 
-        val name = if (queries.get("name").isNullOrBlank()) {
-            "empty"
-        } else "%${queries.get("name")}%"
-
-        val type = if (queries.get("type").isNullOrBlank()) {
-            "empty"
-        } else "%${queries.get("type")}%"
-
-        val dimension = if (queries.get("dimension").isNullOrBlank()) {
-            "empty"
-        } else "%${queries.get("dimension")}%"
+        val name = if (queries.get("name").isNullOrBlank()) "empty" else "%${queries.get("name")}%"
+        val type = if (queries.get("type").isNullOrBlank()) "empty" else "%${queries.get("type")}%"
+        val dimension = if (queries.get("dimension").isNullOrBlank()) "empty" else "%${queries.get("dimension")}%"
 
         fun pagingSourceFactory(): () -> PagingSource<Int, LocationData> {
             return { database.locationDao().locationsByFilter(
@@ -91,12 +83,7 @@ class LocationRepository @Inject constructor(
     }
 
     fun searchLocations(query: String): Flow<PagingData<LocationData>> {
-
-        val dbQuery = if (query.isBlank()) {
-            "empty"
-        } else {
-            "%${query}%"
-        }
+        val dbQuery = if (query.isBlank()) "empty" else "%${query}%"
 
         fun pagingSourceFactory(): () -> PagingSource<Int, LocationData> {
             return { database.locationDao().locationsBySearch(query = if (dbQuery == "empty") null else dbQuery)

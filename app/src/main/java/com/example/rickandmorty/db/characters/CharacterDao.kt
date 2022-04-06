@@ -18,12 +18,14 @@ interface CharacterDao {
             "(name LIKE :name OR :name IS NULL) AND " +
             "(species LIKE :species OR :species IS NULL) AND " +
             "(status LIKE :status OR :status IS NULL) AND " +
-            "(gender LIKE :gender OR :gender IS NULL)")
+            "(gender LIKE :gender OR :gender IS NULL) AND " +
+            "(type LIKE :type OR :type IS NULL)")
     fun charactersByFilter(
         name: String?,
         species: String?,
         status: String?,
-        gender: String?
+        gender: String?,
+        type: String?
     ): PagingSource<Int, CharacterData>
 
     @Query("SELECT * FROM characters WHERE id = :id")
@@ -39,7 +41,8 @@ interface CharacterDao {
             "(name LIKE :query OR :query IS NULL) OR " +
             "(species LIKE :query OR :query IS NULL) OR " +
             "(status LIKE :query OR :query IS NULL) OR " +
-            "(gender LIKE :query OR :query IS NULL)")
+            "(gender LIKE :query OR :query IS NULL) OR " +
+            "(type LIKE :query OR :query IS NULL)")
     fun charactersBySearch(
         query: String?
     ): PagingSource<Int, CharacterData>
