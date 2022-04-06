@@ -106,7 +106,6 @@ class LocationRepository @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = PAGE_SIZE),
             pagingSourceFactory = pagingSourceFactory(),
-//            remoteMediator = CharacterRemoteMediator(queries, api, database) // don`t know how implement this
         ).flow
 
     }

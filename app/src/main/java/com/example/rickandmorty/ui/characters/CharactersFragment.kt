@@ -3,7 +3,6 @@ package com.example.rickandmorty.ui.characters
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
@@ -104,13 +103,30 @@ class CharactersFragment : Fragment() {
         val nameEditText = filterLayout.findViewById<EditText>(R.id.edit_text)
         val dialog = MaterialAlertDialogBuilder(requireContext())
 
-        // gets checkboxes from characters_filter.xml
+        // gets all checkboxes from characters_filter.xml
         val filterList = mutableListOf<CheckBox>()
         filterLayout.findViewById<ConstraintLayout>(R.id.constraint_layout).forEach {
             if (it is CheckBox) {
                 filterList.add(it)
             }
         }
+
+        // grouping checkboxes
+        val statusCheckBoxGroup = mutableListOf<CheckBox>()
+        val genderCheckBoxGroup = mutableListOf<CheckBox>()
+        val speciesCheckBoxGroup = mutableListOf<CheckBox>()
+
+        filterList.forEach {
+            when (it.transitionName) {
+                "status" -> statusCheckBoxGroup.add(it)
+                "gender" -> genderCheckBoxGroup.add(it)
+                "species" -> speciesCheckBoxGroup.add(it)
+            }
+        }
+
+        preventsMultipleCheckBoxSelections(statusCheckBoxGroup)
+        preventsMultipleCheckBoxSelections(genderCheckBoxGroup)
+        preventsMultipleCheckBoxSelections(speciesCheckBoxGroup)
 
         // restores checkboxes flags
         filterList.forEach { checkBox ->
@@ -158,8 +174,17 @@ class CharactersFragment : Fragment() {
         }.show()
     }
 
+    private fun preventsMultipleCheckBoxSelections(checkBoxGroup: List<CheckBox>) {
+        checkBoxGroup.forEach { checkBox ->
+            checkBox.setOnClickListener {
+                if (checkBox.isChecked) {
+                    checkBoxGroup.filterNot { it.id == checkBox.id }.onEach { it.isChecked = false }
+                }
+            }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d("CharactersFragment", "onOptionsItemSelected")
         return when(item.itemId) {
             R.id.filter -> {
                 showFilterDialog()

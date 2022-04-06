@@ -69,7 +69,7 @@ class CharacterRepository @Inject constructor(
                         EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
                             characters = it.characters, url = it.url, created = it.created)
                     }
-                    database.episodeDao().insertEpisodes(apiResponse) // does it need?
+                    database.episodeDao().insertEpisodes(apiResponse)
                     emit(apiResponse)
                 }
             } catch (exception: IOException) {
@@ -118,7 +118,6 @@ class CharacterRepository @Inject constructor(
         return Pager(
             config = PagingConfig(pageSize = PAGE_SIZE),
             pagingSourceFactory = pagingSourceFactory(),
-//            remoteMediator = CharacterRemoteMediator(queries, api, database) // don`t know how implement this
         ).flow
 
     }

@@ -11,4 +11,19 @@
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:textSize">14sp</item>
     </style>
+    <style name="item_style">
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:background">@drawable/border</item>
+    </style>
+    <style name="dialog_title">
+        <item name="android:background">@color/colorPrimaryNight</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
 </resources>
