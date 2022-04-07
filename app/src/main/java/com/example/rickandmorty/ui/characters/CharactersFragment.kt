@@ -146,21 +146,21 @@ class CharactersFragment : Fragment() {
     }
 
     private fun getCheckBoxes(filterLayout: View): List<CheckBox> {
-        val filterList = mutableListOf<CheckBox>()
+        val checkBoxList = mutableListOf<CheckBox>()
         filterLayout.findViewById<ConstraintLayout>(R.id.constraint_layout).forEach {
             if (it is CheckBox) {
-                filterList.add(it)
+                checkBoxList.add(it)
             }
         }
-        return filterList
+        return checkBoxList
     }
 
-    private fun groupCheckBoxes(filterList: List<CheckBox>): List<List<CheckBox>> {
+    private fun groupCheckBoxes(checkBoxList: List<CheckBox>): List<List<CheckBox>> {
         val statusCheckBoxGroup = mutableListOf<CheckBox>()
         val genderCheckBoxGroup = mutableListOf<CheckBox>()
         val speciesCheckBoxGroup = mutableListOf<CheckBox>()
 
-        filterList.forEach {
+        checkBoxList.forEach {
             when (it.transitionName) {
                 "status" -> statusCheckBoxGroup.add(it)
                 "gender" -> genderCheckBoxGroup.add(it)
@@ -182,8 +182,8 @@ class CharactersFragment : Fragment() {
         }
     }
 
-    private fun restoreCheckboxesFlags(filterList: List<CheckBox>) {
-        filterList.forEach { checkBox ->
+    private fun restoreCheckboxesFlags(checkBoxList: List<CheckBox>) {
+        checkBoxList.forEach { checkBox ->
             characterFilterMap.entries.forEach { filter ->
                 if (checkBox.text == filter.value && checkBox.transitionName == filter.key) {
                     checkBox.isChecked = true

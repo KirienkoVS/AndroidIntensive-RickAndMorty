@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.isEmpty
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -37,6 +37,7 @@ class CharacterDetailsFragment : Fragment() {
 
     private var isOnline = true
     private var characterID = 0
+    private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewAdapter: CharacterDetailsAdapter
 
@@ -50,6 +51,7 @@ class CharacterDetailsFragment : Fragment() {
         bindViews()
         setViews()
         initRecyclerView()
+        showProgressBar()
 
         originName.setOnClickListener { navigateToLocation(originName.text.toString()) }
         locationName.setOnClickListener { navigateToLocation(locationName.text.toString()) }
@@ -64,10 +66,11 @@ class CharacterDetailsFragment : Fragment() {
             species = characterSpecies
             status = characterStatus
             gender = characterGender
-            type = characterType
+            type = characterDetailsType
             created = characterCreated
             originName = characterOriginName
             locationName = characterLocationName
+            progressBar = episodeProgressBar
             recyclerView = characterRecyclerview
             recyclerViewAdapter = CharacterDetailsAdapter()
         }
@@ -101,12 +104,22 @@ class CharacterDetailsFragment : Fragment() {
                         if (episodeList.isNotEmpty()) {
                             recyclerViewAdapter.episodeList = episodeList
                             recyclerView.adapter = recyclerViewAdapter
-                            recyclerView.isEmpty()
+                            viewModel.setProgressBarVisibility(false)
                         } else {
                             binding.emptyEpisodes.visibility = View.VISIBLE
+                            viewModel.setProgressBarVisibility(false)
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun showProgressBar() {
+        viewModel.isProgressBarVisible.observe(viewLifecycleOwner) { isVisible ->
+            when(isVisible) {
+                true -> progressBar.visibility = View.VISIBLE
+                false -> progressBar.visibility = View.GONE
             }
         }
     }

@@ -16,6 +16,13 @@ import javax.inject.Inject
 @HiltViewModel
 class EpisodeViewModel @Inject constructor(private val repository: EpisodeRepository): ViewModel() {
 
+    private val _isProgressBarVisible = MutableLiveData(true)
+    val isProgressBarVisible: LiveData<Boolean> = _isProgressBarVisible
+
+    fun setProgressBarVisibility(isVisible: Boolean) {
+        _isProgressBarVisible.value = isVisible
+    }
+
     private val _queries = MutableLiveData<MutableMap<String, String>>()
     val queries: LiveData<MutableMap<String, String>> = _queries
 

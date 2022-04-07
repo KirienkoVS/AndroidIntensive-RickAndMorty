@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -29,6 +30,7 @@ class EpisodeDetailsFragment: Fragment() {
 
     private var episodeID = 0
     private var isOnline = true
+    private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -41,6 +43,7 @@ class EpisodeDetailsFragment: Fragment() {
         bindViews()
         setViews()
         initRecyclerView()
+        showProgressBar()
 
         return binding.root
     }
@@ -52,6 +55,7 @@ class EpisodeDetailsFragment: Fragment() {
             episodeNumber = episode
             airDate = episodeDate
             created = episodeCreated
+            progressBar = charactersProgressBar
             recyclerView = episodeCharactersRecyclerview
         }
     }
@@ -77,6 +81,7 @@ class EpisodeDetailsFragment: Fragment() {
             episodeLiveData.observe(viewLifecycleOwner) { episode ->
                 if (episode == null) {
                     Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                    viewModel.setProgressBarVisibility(false)
                 } else {
                     val characterUrlList = episode.characters
                     viewModel.requestEpisodeCharacters(characterUrlList, isOnline)?.let { characterLiveData ->
@@ -84,9 +89,19 @@ class EpisodeDetailsFragment: Fragment() {
                             val recyclerViewAdapter = EpisodeDetailsAdapter()
                             recyclerViewAdapter.characterList = characterDataList
                             recyclerView.adapter = recyclerViewAdapter
+                            viewModel.setProgressBarVisibility(false)
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun showProgressBar() {
+        viewModel.isProgressBarVisible.observe(viewLifecycleOwner) { isVisible ->
+            when(isVisible) {
+                true -> progressBar.visibility = View.VISIBLE
+                false -> progressBar.visibility = View.GONE
             }
         }
     }

@@ -36,7 +36,8 @@ class CharacterPagingAdapter: PagingDataAdapter<CharacterData, RecyclerView.View
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return CharacterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.character_item, parent, false))
+        return CharacterViewHolder(LayoutInflater.from(parent.context)
+            .inflate(R.layout.character_item, parent, false))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

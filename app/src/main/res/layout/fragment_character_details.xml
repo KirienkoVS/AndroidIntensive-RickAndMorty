@@ -122,7 +122,7 @@
             tools:text="Male" />
 
         <TextView
-            android:id="@+id/character_type"
+            android:id="@+id/character_details_type"
             style="@style/text_vew_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -136,11 +136,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/character_species_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_type"
+            app:layout_constraintTop_toBottomOf="@id/character_details_type"
             tools:text="2017-11-04" />
 
         <View
-            android:id="@+id/line4"
+            android:id="@+id/line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="8dp"
@@ -157,7 +157,7 @@
             android:text="@string/origin"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/line4" />
+            app:layout_constraintTop_toBottomOf="@id/line" />
 
         <TextView
             android:id="@+id/character_origin_name"
@@ -167,7 +167,7 @@
             android:layout_marginTop="8dp"
             android:textColor="#367DF8"
             app:layout_constraintStart_toEndOf="@id/character_location_textview"
-            app:layout_constraintTop_toBottomOf="@id/line4"
+            app:layout_constraintTop_toBottomOf="@id/line"
             tools:text="unknown" />
 
         <TextView
@@ -225,6 +225,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/character_episode_textview" />
+
+        <ProgressBar
+            android:id="@+id/episode_progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/character_recyclerview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line" />
         
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -26,6 +27,7 @@ class LocationDetailsFragment : Fragment() {
     private lateinit var type: TextView
     private lateinit var dimension: TextView
     private lateinit var created: TextView
+    private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
 
     private var isOnline = true
@@ -46,6 +48,7 @@ class LocationDetailsFragment : Fragment() {
         bindViews()
         setViews()
         initRecyclerView()
+        showProgressBar()
 
         return binding.root
     }
@@ -57,6 +60,7 @@ class LocationDetailsFragment : Fragment() {
             type = locationType
             dimension = locationDimension
             created = locationCreated
+            progressBar = residentsProgressBar
             recyclerView = locationResidentsRecyclerview
         }
     }
@@ -75,6 +79,7 @@ class LocationDetailsFragment : Fragment() {
                         visibility = View.VISIBLE
                         text = resources.getString(R.string.no_locations)
                     }
+                    viewModel.setProgressBarVisibility(false)
                 }
             }
         }
@@ -93,18 +98,30 @@ class LocationDetailsFragment : Fragment() {
                                 if (characterList.isNotEmpty()) {
                                     recyclerViewAdapter.residentsList = characterList
                                     recyclerView.adapter = recyclerViewAdapter
+                                    viewModel.setProgressBarVisibility(false)
                                 } else {
                                     binding.emptyLocation.apply {
                                         visibility = View.VISIBLE
                                         text = resources.getString(R.string.no_residents)
                                     }
+                                    viewModel.setProgressBarVisibility(false)
                                 }
                             }
                         }
                     } else {
                         binding.emptyLocation.visibility = View.VISIBLE
+                        viewModel.setProgressBarVisibility(false)
                     }
                 }
+            }
+        }
+    }
+
+    private fun showProgressBar() {
+        viewModel.isProgressBarVisible.observe(viewLifecycleOwner) { isVisible ->
+            when(isVisible) {
+                true -> progressBar.visibility = View.VISIBLE
+                false -> progressBar.visibility = View.GONE
             }
         }
     }
