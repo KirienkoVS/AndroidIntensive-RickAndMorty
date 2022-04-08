@@ -17,6 +17,7 @@ import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.LocationsFragmentBinding
 import com.example.rickandmorty.initLoadStateAdapter
 import com.example.rickandmorty.isOnline
+import com.example.rickandmorty.restoreEditTextText
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -102,20 +103,8 @@ class LocationsFragment : Fragment()  {
         val dimensionEditText = filterLayout.findViewById<EditText>(R.id.location_dimension_edit_text)
         val dialog = MaterialAlertDialogBuilder(requireContext())
 
-        val filterList = mutableListOf<EditText>(
-            nameEditText,
-            typeEditText,
-            dimensionEditText
-        )
-
-        // restores editTexts text
-        filterList.forEach { editText ->
-            locationFilterMap.entries.forEach { filter ->
-                if (editText.transitionName == filter.key) {
-                    editText.setText(filter.value)
-                }
-            }
-        }
+        val editTextList = mutableListOf<EditText>(nameEditText, typeEditText, dimensionEditText)
+        restoreEditTextText(editTextList, locationFilterMap)
 
         // dialog builder
         with(dialog) {
@@ -140,21 +129,6 @@ class LocationsFragment : Fragment()  {
                 }
             }
         }.show()
-    }
-
-    private fun changeFilterIcon(filterItem: MenuItem) {
-        viewModel.queries.observe(viewLifecycleOwner) { filterMap ->
-            var isFilterEmpty = true
-            filterMap.values.forEach {
-                if (it.isNotBlank()) {
-                    isFilterEmpty = false
-                }
-            }
-            when(isFilterEmpty) {
-                false -> filterItem.setIcon(R.drawable.ic_filter_list_off)
-                true -> filterItem.setIcon(R.drawable.ic_filter)
-            }
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -202,6 +176,21 @@ class LocationsFragment : Fragment()  {
                 return false
             }
         })
+    }
+
+    private fun changeFilterIcon(filterItem: MenuItem) {
+        viewModel.queries.observe(viewLifecycleOwner) { filterMap ->
+            var isFilterEmpty = true
+            filterMap.values.forEach {
+                if (it.isNotBlank()) {
+                    isFilterEmpty = false
+                }
+            }
+            when(isFilterEmpty) {
+                false -> filterItem.setIcon(R.drawable.ic_filter_list_off)
+                true -> filterItem.setIcon(R.drawable.ic_filter)
+            }
+        }
     }
 
     override fun onDestroy() {

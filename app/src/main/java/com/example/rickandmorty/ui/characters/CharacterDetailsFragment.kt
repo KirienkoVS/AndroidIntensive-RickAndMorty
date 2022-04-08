@@ -53,9 +53,6 @@ class CharacterDetailsFragment : Fragment() {
         initRecyclerView()
         showProgressBar()
 
-        originName.setOnClickListener { navigateToLocation(originName.text.toString()) }
-        locationName.setOnClickListener { navigateToLocation(locationName.text.toString()) }
-
         return binding.root
     }
 
@@ -92,6 +89,8 @@ class CharacterDetailsFragment : Fragment() {
                 requestCharacterLocation(character.locationName, character.originName, isOnline) // location empty string check?
             }
         }
+        originName.setOnClickListener { navigateToLocation(originName.text.toString()) }
+        locationName.setOnClickListener { navigateToLocation(locationName.text.toString()) }
     }
 
     private fun initRecyclerView() {

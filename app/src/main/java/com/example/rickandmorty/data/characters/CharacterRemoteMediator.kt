@@ -27,16 +27,10 @@ class CharacterRemoteMediator(
             }
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
-                // If remoteKeys is null, that means the refresh result is not in the database yet.
                 remoteKeys?.prevKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
             }
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
-                /*// If remoteKeys is null, that means the refresh result is not in the database yet.
-                // We can return Success with endOfPaginationReached = false because Paging
-                // will call this method again if RemoteKeys becomes non-null.
-                // If remoteKeys is NOT NULL but its nextKey is null, that means we've reached
-                // the end of pagination for append.*/
                 remoteKeys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
             }
         }
@@ -101,14 +95,12 @@ class CharacterRemoteMediator(
     private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, CharacterData>): CharacterRemoteKeys? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { character ->
-                // Get the remote keys of the first items retrieved
                 database.characterRemoteKeysDao().characterIdRemoteKeys(character.id)
             }
     }
 
     // LoadType.APPEND
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, CharacterData>): CharacterRemoteKeys? {
-        // Get the last page that was retrieved, that contained items. From that last page, get the last item.
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { character ->
                 database.characterRemoteKeysDao().characterIdRemoteKeys(character.id)

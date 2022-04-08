@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -26,6 +27,16 @@ internal fun isOnline(context: Context): Boolean {
         activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
         activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
         else -> false
+    }
+}
+
+internal fun restoreEditTextText(editTextList: List<EditText>, filterMap: Map<String, String>) {
+    editTextList.forEach { editText ->
+        filterMap.entries.forEach { filter ->
+            if (editText.transitionName == filter.key) {
+                editText.setText(filter.value)
+            }
+        }
     }
 }
 
