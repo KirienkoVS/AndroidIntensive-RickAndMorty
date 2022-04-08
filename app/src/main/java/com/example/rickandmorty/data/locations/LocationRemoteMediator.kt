@@ -1,6 +1,5 @@
 package com.example.rickandmorty.data.locations
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -46,7 +45,6 @@ class LocationRemoteMediator(
             )
 
             val locationsData = response.results
-            Log.d("api", "locationData - ${locationsData.size}")
             val endOfPaginationReached = response.info.next == null
 
             database.withTransaction {

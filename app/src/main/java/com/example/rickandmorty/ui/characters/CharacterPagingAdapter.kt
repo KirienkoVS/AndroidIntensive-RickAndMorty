@@ -22,7 +22,6 @@ class CharacterPagingAdapter: PagingDataAdapter<CharacterData, RecyclerView.View
         private val species: TextView = view.findViewById(R.id.character_species)
         private val status: TextView = view.findViewById(R.id.character_status)
         private val gender: TextView = view.findViewById(R.id.character_gender)
-        private val type: TextView = view.findViewById(R.id.character_type)
         private val image: ImageView = view.findViewById(R.id.character_imageview)
 
         fun bind(character: CharacterData) {
@@ -30,7 +29,6 @@ class CharacterPagingAdapter: PagingDataAdapter<CharacterData, RecyclerView.View
             species.text = character.species
             status.text = character.status
             gender.text = character.gender
-            type.text = character.type.ifBlank { "unknown" }
             Glide.with(image).load(character.image).into(image)
         }
     }

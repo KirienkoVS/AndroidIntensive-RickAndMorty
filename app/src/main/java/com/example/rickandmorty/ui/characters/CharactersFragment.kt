@@ -202,6 +202,21 @@ class CharactersFragment : Fragment() {
         }
     }
 
+    private fun changeFilterIcon(filterItem: MenuItem) {
+        viewModel.queries.observe(viewLifecycleOwner) { filterMap ->
+            var isFilterEmpty = true
+            filterMap.values.forEach {
+                if (it.isNotBlank()) {
+                    isFilterEmpty = false
+                }
+            }
+            when(isFilterEmpty) {
+                false -> filterItem.setIcon(R.drawable.ic_filter_list_off)
+                true -> filterItem.setIcon(R.drawable.ic_filter)
+            }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.filter -> {
@@ -220,9 +235,12 @@ class CharactersFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
 
+        val filterItem = menu.findItem(R.id.filter)
         val searchItem = menu.findItem(R.id.search_action)
         val searchView = searchItem.actionView as SearchView
         val searchViewCloseButton = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+
+        changeFilterIcon(filterItem)
 
         searchViewCloseButton.setOnClickListener {
             searchView.apply {

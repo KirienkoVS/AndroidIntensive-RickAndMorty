@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/character_imageview"
-        android:layout_width="98dp"
-        android:layout_height="98dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_background"
@@ -57,16 +57,6 @@
         app:layout_constraintTop_toBottomOf="@id/character_status_textview" />
 
     <TextView
-        android:id="@+id/character_type_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/type"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@+id/character_imageview"
-        app:layout_constraintTop_toBottomOf="@id/character_gender_textview" />
-
-    <TextView
         android:id="@+id/character_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -100,15 +90,6 @@
         android:layout_marginStart="8dp"
         tools:text="Male"
         app:layout_constraintTop_toBottomOf="@id/character_status"
-        app:layout_constraintStart_toEndOf="@id/character_species_textview"/>
-
-    <TextView
-        android:id="@+id/character_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        tools:text="@string/unknown"
-        app:layout_constraintTop_toBottomOf="@id/character_gender"
         app:layout_constraintStart_toEndOf="@id/character_species_textview"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
