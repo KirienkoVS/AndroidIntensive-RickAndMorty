@@ -7,7 +7,7 @@
 
 # App architecture
 ### Application is designed following [recommended app architecture](https://developer.android.com/jetpack/guide#recommended-app-arch) by Google
-![Screenshot_4](https://user-images.githubusercontent.com/80069416/161754934-a00961d6-da76-400c-9add-2dd8731c0485.jpg)
+![mvvm](https://user-images.githubusercontent.com/80069416/162500352-f84208f4-d291-4cd1-90d1-829e731d4eef.png)
 
 # Libraries Used
 - Architecture components
