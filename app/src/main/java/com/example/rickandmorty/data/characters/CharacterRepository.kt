@@ -84,19 +84,24 @@ class CharacterRepository @Inject constructor(
         }
     }
 
-    suspend fun getCharacterLocation(location: String, origin: String, isOnline: Boolean) {
+    suspend fun saveCharacterLocations(locations: List<String>, isOnline: Boolean) {
         if (isOnline) {
-            val locationResponse = api.requestLocations(location, type = "", dimension = "", page = 0).results.map {
-                LocationData(id = it.id, name = it.name, type = it.type, dimension = it.dimension,
-                residents = it.residents, url = it.url, created = it.created)
+            locations.forEach { location ->
+                if (location != "unknown") {
+                    try {
+                        val locationResponse = api.requestLocations(location, type = "", dimension = "", page = 0).results
+                            .map {
+                                LocationData(id = it.id, name = it.name, type = it.type, dimension = it.dimension,
+                                residents = it.residents, url = it.url, created = it.created)
+                        }
+                        database.locationDao().insertLocations(locationResponse)
+                    } catch (exception: IOException) {
+                        error (exception)
+                    } catch (exception: HttpException) {
+                        error (exception)
+                    }
+                }
             }
-            database.locationDao().insertLocations(locationResponse)
-
-            val originResponse = api.requestLocations(origin, type = "", dimension = "", page = 0).results.map {
-                LocationData(id = it.id, name = it.name, type = it.type, dimension = it.dimension,
-                    residents = it.residents, url = it.url, created = it.created)
-            }
-            database.locationDao().insertLocations(originResponse)
         }
     }
 

@@ -82,15 +82,20 @@ class CharacterDetailsFragment : Fragment() {
                 gender.text = character.gender
                 type.text = character.type.ifBlank { "unknown" }
                 created.text = character.created.subSequence(0, 10)
-                originName.text = character.originName.ifBlank { "unknown" }
-                locationName.text = character.locationName.ifBlank { "unknown" }
+                originName.apply {
+                    text = character.originName.ifBlank { "unknown" }
+                    setOnClickListener { navigateToLocation(originName.text.toString()) }
+                }
+                locationName.apply {
+                    text = character.locationName.ifBlank { "unknown" }
+                    setOnClickListener { navigateToLocation(locationName.text.toString()) }
+                }
                 Glide.with(requireContext()).load(character.image).into(imageView)
-
-                requestCharacterLocation(character.locationName, character.originName, isOnline) // location empty string check?
+                preSaveCharacterLocations(listOf(
+                    character.originName.ifBlank { "unknown" }, character.locationName.ifBlank { "unknown" }
+                ), isOnline)
             }
         }
-        originName.setOnClickListener { navigateToLocation(originName.text.toString()) }
-        locationName.setOnClickListener { navigateToLocation(locationName.text.toString()) }
     }
 
     private fun initRecyclerView() {
@@ -133,8 +138,8 @@ class CharacterDetailsFragment : Fragment() {
         }
     }
 
-    private fun requestCharacterLocation(location: String, origin: String, isOnline: Boolean) {
-        viewModel.requestCharacterLocation(location, origin, isOnline)
+    private fun preSaveCharacterLocations(locations: List<String>, isOnline: Boolean) {
+        viewModel.preSaveCharacterLocations(locations, isOnline)
     }
 
     override fun onDestroy() {

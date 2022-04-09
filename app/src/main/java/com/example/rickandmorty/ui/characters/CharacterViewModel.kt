@@ -23,18 +23,8 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
         _isProgressBarVisible.value = isVisible
     }
 
-    private val _queries = MutableLiveData<MutableMap<String, String>>()
+    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
     val queries: LiveData<MutableMap<String, String>> = _queries
-
-    init {
-        _queries.value = mutableMapOf(
-            "name" to "",
-            "species" to "",
-            "status" to "",
-            "gender" to "",
-            "type" to ""
-        )
-    }
 
     fun setFilter(queries: MutableMap<String, String>) {
         _queries.value = queries
@@ -64,9 +54,9 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
         return characterEpisodes
     }
 
-    fun requestCharacterLocation(location: String, origin: String, isOnline: Boolean) {
+    fun preSaveCharacterLocations(locations: List<String>, isOnline: Boolean) {
         viewModelScope.launch {
-            repository.getCharacterLocation(location, origin, isOnline)
+            repository.saveCharacterLocations(locations, isOnline)
         }
     }
 

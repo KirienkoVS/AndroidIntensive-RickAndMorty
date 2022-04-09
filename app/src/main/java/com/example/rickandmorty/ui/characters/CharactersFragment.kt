@@ -119,14 +119,10 @@ class CharactersFragment : Fragment() {
             setCustomTitle(customTitle)
             setCancelable(false)
             setPositiveButton("Apply") { _, _ ->
-                checkBoxList.forEach {
-                    if (it.isChecked) {
-                        characterFilterMap.put(it.transitionName, it.text.toString())
-                    } else if (characterFilterMap[it.transitionName].isNullOrBlank()){
-                        characterFilterMap.put(it.transitionName, "")
-                    }
+                checkBoxList.filter { it.isChecked }.forEach {
+                    characterFilterMap.put(it.transitionName, it.text.toString())
                 }
-                editTextList.forEach {
+                editTextList.filter { it.text.isNotBlank() }.forEach {
                     characterFilterMap.put(it.transitionName, it.text.toString())
                 }
                 viewModel.setFilter(characterFilterMap)

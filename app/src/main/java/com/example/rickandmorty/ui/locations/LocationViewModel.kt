@@ -23,16 +23,8 @@ class LocationViewModel @Inject constructor(private val repository: LocationRepo
         _isProgressBarVisible.value = isVisible
     }
 
-    private val _queries = MutableLiveData<MutableMap<String, String>>()
+    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
     val queries: LiveData<MutableMap<String, String>> = _queries
-
-    init {
-        _queries.value = mutableMapOf(
-            "name" to "",
-            "type" to "",
-            "dimension" to ""
-        )
-    }
 
     fun setFilter(queries: MutableMap<String, String>) {
         _queries.value = queries

@@ -23,15 +23,8 @@ class EpisodeViewModel @Inject constructor(private val repository: EpisodeReposi
         _isProgressBarVisible.value = isVisible
     }
 
-    private val _queries = MutableLiveData<MutableMap<String, String>>()
+    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
     val queries: LiveData<MutableMap<String, String>> = _queries
-
-    init {
-        _queries.value = mutableMapOf(
-            "name" to "",
-            "episode" to ""
-        )
-    }
 
     fun setFilter(queries: MutableMap<String, String>) {
         _queries.value = queries
