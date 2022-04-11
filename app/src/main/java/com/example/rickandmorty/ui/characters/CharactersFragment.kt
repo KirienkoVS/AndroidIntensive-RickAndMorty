@@ -13,7 +13,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.rickandmorty.R
@@ -80,9 +82,11 @@ class CharactersFragment : Fragment() {
 
     private fun displayCharacters() {
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
-            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                viewModel.requestCharacters(queries).collectLatest {
-                    pagingAdapter.submitData(it)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                    viewModel.requestCharacters(queries).collectLatest {
+                        pagingAdapter.submitData(it)
+                    }
                 }
             }
         }
@@ -90,8 +94,10 @@ class CharactersFragment : Fragment() {
 
     private fun displayFoundCharacters(search: String) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.searchCharacters(search).collectLatest {
-                pagingAdapter.submitData(it)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.searchCharacters(search).collectLatest {
+                    pagingAdapter.submitData(it)
+                }
             }
         }
     }
@@ -125,6 +131,9 @@ class CharactersFragment : Fragment() {
                 editTextList.filter { it.text.isNotBlank() }.forEach {
                     characterFilterMap.put(it.transitionName, it.text.toString())
                 }
+                if (characterFilterMap.isEmpty()) {
+                    characterFilterMap.put("isRefresh", "false")
+                } else characterFilterMap.put("isRefresh", "true")
                 viewModel.setFilter(characterFilterMap)
             }
             setNegativeButton("Cancel") { _, _ -> }
@@ -133,8 +142,7 @@ class CharactersFragment : Fragment() {
                 setOnShowListener {
                     getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
                         characterFilterMap.clear()
-                        nameEditText.text.clear()
-                        typeEditText.text.clear()
+                        editTextList.forEach { it.text.clear() }
                         checkBoxList.forEach { it.isChecked = false }
                     }
                 }
@@ -189,6 +197,7 @@ class CharactersFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.filter -> {
@@ -203,6 +212,7 @@ class CharactersFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
@@ -240,7 +250,7 @@ class CharactersFragment : Fragment() {
         viewModel.queries.observe(viewLifecycleOwner) { filterMap ->
             var isFilterEmpty = true
             filterMap.values.forEach {
-                if (it.isNotBlank()) {
+                if (it.isNotBlank() && it != "true" && it != "false") {
                     isFilterEmpty = false
                 }
             }

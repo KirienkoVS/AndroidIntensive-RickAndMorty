@@ -22,7 +22,6 @@ import javax.inject.Named
 @OptIn(ExperimentalCoroutinesApi::class)
 class CharacterDaoTest {
 
-
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 

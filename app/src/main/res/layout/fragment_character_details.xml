@@ -86,7 +86,7 @@
         <!--//////-->
 
         <TextView
-            android:id="@+id/character_name"
+            android:id="@+id/character_details_name"
             style="@style/text_vew_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -95,30 +95,30 @@
             tools:text="Morty Smith" />
 
         <TextView
-            android:id="@+id/character_species"
+            android:id="@+id/character_details_species"
             style="@style/text_vew_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/character_species_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_name"
+            app:layout_constraintTop_toBottomOf="@id/character_details_name"
             tools:text="Human" />
 
         <TextView
-            android:id="@+id/character_status"
+            android:id="@+id/character_details_status"
             style="@style/text_vew_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/character_species_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_species"
+            app:layout_constraintTop_toBottomOf="@id/character_details_species"
             tools:text="Alive" />
 
         <TextView
-            android:id="@+id/character_gender"
+            android:id="@+id/character_details_gender"
             style="@style/text_vew_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/character_species_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_status"
+            app:layout_constraintTop_toBottomOf="@id/character_details_status"
             tools:text="Male" />
 
         <TextView
@@ -127,7 +127,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/character_species_textview"
-            app:layout_constraintTop_toBottomOf="@id/character_gender"
+            app:layout_constraintTop_toBottomOf="@id/character_details_gender"
             tools:text="unknown" />
 
         <TextView

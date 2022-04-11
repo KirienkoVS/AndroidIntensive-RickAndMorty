@@ -59,10 +59,10 @@ class CharacterDetailsFragment : Fragment() {
     private fun bindViews() {
         with(binding) {
             imageView = characterImageView
-            name = characterName
-            species = characterSpecies
-            status = characterStatus
-            gender = characterGender
+            name = characterDetailsName
+            species = characterDetailsSpecies
+            status = characterDetailsStatus
+            gender = characterDetailsGender
             type = characterDetailsType
             created = characterCreated
             originName = characterOriginName
@@ -76,24 +76,26 @@ class CharacterDetailsFragment : Fragment() {
     private fun setViews() {
         viewModel.requestCharacterDetails(characterID)?.let {
             it.observe(viewLifecycleOwner) { character->
-                name.text = character.name
-                species.text = character.species
-                status.text = character.status
-                gender.text = character.gender
-                type.text = character.type.ifBlank { "unknown" }
-                created.text = character.created.subSequence(0, 10)
-                originName.apply {
-                    text = character.originName.ifBlank { "unknown" }
-                    setOnClickListener { navigateToLocation(originName.text.toString()) }
+                if (character != null) {
+                    name.text = character.name
+                    species.text = character.species
+                    status.text = character.status
+                    gender.text = character.gender
+                    type.text = character.type.ifBlank { "unknown" }
+                    created.text = character.created.subSequence(0, 10)
+                    originName.apply {
+                        text = character.originName.ifBlank { "unknown" }
+                        setOnClickListener { navigateToLocation(originName.text.toString()) }
+                    }
+                    locationName.apply {
+                        text = character.locationName.ifBlank { "unknown" }
+                        setOnClickListener { navigateToLocation(locationName.text.toString()) }
+                    }
+                    Glide.with(requireContext()).load(character.image).into(imageView)
+                    preSaveCharacterLocations(listOf(
+                        character.originName.ifBlank { "unknown" }, character.locationName.ifBlank { "unknown" }
+                    ), isOnline)
                 }
-                locationName.apply {
-                    text = character.locationName.ifBlank { "unknown" }
-                    setOnClickListener { navigateToLocation(locationName.text.toString()) }
-                }
-                Glide.with(requireContext()).load(character.image).into(imageView)
-                preSaveCharacterLocations(listOf(
-                    character.originName.ifBlank { "unknown" }, character.locationName.ifBlank { "unknown" }
-                ), isOnline)
             }
         }
     }
@@ -101,7 +103,10 @@ class CharacterDetailsFragment : Fragment() {
     private fun initRecyclerView() {
         viewModel.requestCharacterDetails(characterID)?.let { characterLiveData ->
             characterLiveData.observe(viewLifecycleOwner) { characterData ->
-                val episodeUrlList = characterData.episode
+                var episodeUrlList = emptyList<String>()
+                if (characterData != null) {
+                    episodeUrlList = characterData.episode
+                }
 
                 viewModel.requestCharacterEpisodes(episodeUrlList, isOnline)?.let { episodeLiveData ->
                     episodeLiveData.observe(viewLifecycleOwner) { episodeList ->

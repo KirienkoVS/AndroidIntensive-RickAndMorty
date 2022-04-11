@@ -10,7 +10,9 @@ import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.rickandmorty.R
@@ -77,9 +79,11 @@ class LocationsFragment : Fragment()  {
 
     private fun displayLocations() {
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
-            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                viewModel.requestLocations(queries).collectLatest {
-                    pagingAdapter.submitData(it)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                    viewModel.requestLocations(queries).collectLatest {
+                        pagingAdapter.submitData(it)
+                    }
                 }
             }
         }
@@ -87,8 +91,10 @@ class LocationsFragment : Fragment()  {
 
     private fun displayFoundLocations(search: String) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.searchLocations(search).collectLatest {
-                pagingAdapter.submitData(it)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.searchLocations(search).collectLatest {
+                    pagingAdapter.submitData(it)
+                }
             }
         }
     }
@@ -111,9 +117,10 @@ class LocationsFragment : Fragment()  {
             setView(filterLayout)
             setCustomTitle(customTitle)
             setPositiveButton("Apply") { _, _ ->
-                locationFilterMap.put("name", nameEditText.text.toString())
-                locationFilterMap.put("type", typeEditText.text.toString())
-                locationFilterMap.put("dimension", dimensionEditText.text.toString())
+                editTextList.filter { it.text.isNotBlank() }.forEach {
+                    locationFilterMap.put(it.transitionName, it.text.toString())
+                }
+                locationFilterMap.put("isRefresh", "true")
                 viewModel.setFilter(locationFilterMap)
             }
             setNegativeButton("Cancel") { _, _ -> }
@@ -122,15 +129,14 @@ class LocationsFragment : Fragment()  {
                 setOnShowListener {
                     getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
                         locationFilterMap.clear()
-                        nameEditText.text.clear()
-                        typeEditText.text.clear()
-                        dimensionEditText.text.clear()
+                        editTextList.forEach { it.text.clear() }
                     }
                 }
             }
         }.show()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.filter -> {
@@ -145,6 +151,7 @@ class LocationsFragment : Fragment()  {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
@@ -182,7 +189,7 @@ class LocationsFragment : Fragment()  {
         viewModel.queries.observe(viewLifecycleOwner) { filterMap ->
             var isFilterEmpty = true
             filterMap.values.forEach {
-                if (it.isNotBlank()) {
+                if (it.isNotBlank() && it != "true" && it != "false") {
                     isFilterEmpty = false
                 }
             }

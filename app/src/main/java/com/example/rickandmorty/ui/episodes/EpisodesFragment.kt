@@ -10,7 +10,9 @@ import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.rickandmorty.R
@@ -77,9 +79,11 @@ class EpisodesFragment : Fragment()  {
 
     private fun displayEpisodes() {
         viewModel.queries.observe(viewLifecycleOwner) { queries ->
-            viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-                viewModel.requestEpisodes(queries).collectLatest {
-                    pagingAdapter.submitData(it)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                    viewModel.requestEpisodes(queries).collectLatest {
+                        pagingAdapter.submitData(it)
+                    }
                 }
             }
         }
@@ -87,8 +91,10 @@ class EpisodesFragment : Fragment()  {
 
     private fun displayFoundEpisodes(search: String) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.searchEpisodes(search).collectLatest {
-                pagingAdapter.submitData(it)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.searchEpisodes(search).collectLatest {
+                    pagingAdapter.submitData(it)
+                }
             }
         }
     }
@@ -110,8 +116,10 @@ class EpisodesFragment : Fragment()  {
             setView(filterLayout)
             setCustomTitle(customTitle)
             setPositiveButton("Apply") { _, _ ->
-                episodeFilterMap.put("name", nameEditText.text.toString())
-                episodeFilterMap.put("episode", numberEditText.text.toString())
+                editTextList.filter { it.text.isNotBlank() }.forEach {
+                    episodeFilterMap.put(it.transitionName, it.text.toString())
+                }
+                episodeFilterMap.put("isRefresh", "true")
                 viewModel.setFilter(episodeFilterMap)
             }
             setNegativeButton("Cancel") { _, _ -> }
@@ -120,14 +128,14 @@ class EpisodesFragment : Fragment()  {
                 setOnShowListener {
                     getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
                         episodeFilterMap.clear()
-                        nameEditText.text.clear()
-                        numberEditText.text.clear()
+                        editTextList.forEach { it.text.clear() }
                     }
                 }
             }
         }.show()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.filter -> {
@@ -142,6 +150,7 @@ class EpisodesFragment : Fragment()  {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.filter_menu, menu)
@@ -179,7 +188,7 @@ class EpisodesFragment : Fragment()  {
         viewModel.queries.observe(viewLifecycleOwner) { filterMap ->
             var isFilterEmpty = true
             filterMap.values.forEach {
-                if (it.isNotBlank()) {
+                if (it.isNotBlank() && it != "true" && it != "false") {
                     isFilterEmpty = false
                 }
             }
