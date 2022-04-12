@@ -62,6 +62,12 @@ class EpisodesFragment : Fragment()  {
         return binding.root
     }
 
+    override fun onPause() {
+        super.onPause()
+        episodeFilterMap.put("isRefresh", "false")
+        viewModel.setFilter(episodeFilterMap)
+    }
+
     private fun bindViews() {
         recyclerView = binding.episodeRecyclerview
         emptyTextView = binding.emptyTextView

@@ -80,6 +80,8 @@ internal fun <T : Any> initLoadStateAdapter(
             ?: loadState.source.prepend as? LoadState.Error
             ?: loadState.append as? LoadState.Error
             ?: loadState.prepend as? LoadState.Error
-        errorState?.let { Toast.makeText(activity, "${it.error}", Toast.LENGTH_LONG).show() }
+        errorState?.let {
+            Toast.makeText(activity, activity?.resources?.getString(R.string.data_not_avaliable), Toast.LENGTH_LONG).show()
+        }
     }
 }

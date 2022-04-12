@@ -17,6 +17,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/episode_name_edit_text"
             android:transitionName="name"
+            android:maxLines="1"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"/>
@@ -35,6 +37,8 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/episode_number_edit_text"
             android:transitionName="episode"
+            android:maxLines="1"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"/>

@@ -9,8 +9,6 @@ import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.db.locations.LocationRemoteKeys
 import com.example.rickandmorty.model.LocationData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -22,14 +20,9 @@ class LocationRemoteMediator(
 ) : RemoteMediator<Int, LocationData>() {
 
     override suspend fun initialize(): InitializeAction {
-        val databaseIsEmpty = withContext(Dispatchers.IO) {
-            database.locationRemoteKeysDao().locationIdIdRemoteKeys(1) == null
-        }
-        return when(true) {
-            databaseIsEmpty -> InitializeAction.LAUNCH_INITIAL_REFRESH
-            (queries.get("isRefresh") == "true") -> InitializeAction.LAUNCH_INITIAL_REFRESH
-            else -> InitializeAction.SKIP_INITIAL_REFRESH
-        }
+        return if (queries.get("isRefresh") == "true") {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else InitializeAction.SKIP_INITIAL_REFRESH
     }
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, LocationData>): MediatorResult {

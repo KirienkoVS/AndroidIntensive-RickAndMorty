@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rickandmorty.R
 import com.example.rickandmorty.databinding.EpisodeDetailsFragmentBinding
 import com.example.rickandmorty.isOnline
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,7 +65,7 @@ class EpisodeDetailsFragment: Fragment() {
         viewModel.requestEpisodeDetails(episodeID)?.let { episodeLiveData ->
             episodeLiveData.observe(viewLifecycleOwner) { episode ->
                 if (episode == null) {
-                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, getString(R.string.data_not_avaliable), Toast.LENGTH_LONG).show()
                 } else {
                     id.text = episode.id.toString()
                     name.text = episode.name
@@ -80,7 +81,7 @@ class EpisodeDetailsFragment: Fragment() {
         viewModel.requestEpisodeDetails(episodeID)?.let { episodeLiveData ->
             episodeLiveData.observe(viewLifecycleOwner) { episode ->
                 if (episode == null) {
-                    Toast.makeText(activity, "Data not available!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, getString(R.string.data_not_avaliable), Toast.LENGTH_LONG).show()
                     viewModel.setProgressBarVisibility(false)
                 } else {
                     val characterUrlList = episode.characters

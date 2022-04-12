@@ -65,6 +65,12 @@ class CharactersFragment : Fragment() {
         return binding.root
     }
 
+    override fun onPause() {
+        super.onPause()
+        characterFilterMap.put("isRefresh", "false")
+        viewModel.setFilter(characterFilterMap)
+    }
+
     private fun bindViews() {
         recyclerView = binding.characterRecyclerview
         emptyTextView = binding.emptyTextView
@@ -131,9 +137,7 @@ class CharactersFragment : Fragment() {
                 editTextList.filter { it.text.isNotBlank() }.forEach {
                     characterFilterMap.put(it.transitionName, it.text.toString())
                 }
-                if (characterFilterMap.isEmpty()) {
-                    characterFilterMap.put("isRefresh", "false")
-                } else characterFilterMap.put("isRefresh", "true")
+                characterFilterMap.put("isRefresh", "true")
                 viewModel.setFilter(characterFilterMap)
             }
             setNegativeButton("Cancel") { _, _ -> }

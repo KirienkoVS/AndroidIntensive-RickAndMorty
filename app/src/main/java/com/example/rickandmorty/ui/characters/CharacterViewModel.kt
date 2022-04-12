@@ -23,7 +23,7 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
         _isProgressBarVisible.value = isVisible
     }
 
-    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf())
+    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf("isRefresh" to "true"))
     val queries: LiveData<MutableMap<String, String>> = _queries
 
     fun setFilter(queries: MutableMap<String, String>) {

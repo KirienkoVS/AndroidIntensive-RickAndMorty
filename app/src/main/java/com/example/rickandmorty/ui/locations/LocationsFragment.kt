@@ -62,6 +62,12 @@ class LocationsFragment : Fragment()  {
         return binding.root
     }
 
+    override fun onPause() {
+        super.onPause()
+        locationFilterMap.put("isRefresh", "false")
+        viewModel.setFilter(locationFilterMap)
+    }
+
     private fun bindViews() {
         recyclerView = binding.locationRecyclerview
         emptyTextView = binding.emptyTextView

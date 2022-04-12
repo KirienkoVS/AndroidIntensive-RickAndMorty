@@ -32,15 +32,12 @@
     <string name="created">Created:</string>
     <string name="character_imageview">character_imageview</string>
     <string name="episode">Episode:</string>
-    <string name="url">URL:</string>
-    <string name="image">Image:</string>
     <string name="air_date">Air date:</string>
     <string name="episode_name">episode name…</string>
     <string name="episode_number">episode number…</string>
     <string name="id">ID:</string>
     <string name="episode_characters">Characters:</string>
     <string name="dimension">Dimension:</string>
-    <string name="location_name">location name…</string>
     <string name="filter_by_location_name">location name…</string>
     <string name="filter_by_location_type">location type…</string>
     <string name="filter_by_location_dimension">location dimension…</string>
@@ -54,4 +51,5 @@
     <string name="no_episodes">Episodes are not available.\n Check internet connection.</string>
     <string name="refresh">Refresh</string>
     <string name="character_type">character type…</string>
+    <string name="data_not_avaliable">Data not available! Check internet connection.</string>
 </resources>
