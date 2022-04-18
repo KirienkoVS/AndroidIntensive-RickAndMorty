@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8dp"
-    android:padding="8dp"
+    android:paddingTop="8dp"
     android:background="@drawable/border">
 
     <TextView
@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/id"
         android:textStyle="bold"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,7 +23,7 @@
         android:id="@+id/location_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         android:textIsSelectable="true"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,6 +35,7 @@
         android:layout_height="wrap_content"
         android:text="@string/name"
         android:textStyle="bold"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_id_textview" />
 
@@ -41,7 +43,7 @@
         android:id="@+id/location_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         android:textIsSelectable="true"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"
         app:layout_constraintTop_toBottomOf="@id/location_id"
@@ -53,6 +55,7 @@
         android:layout_height="wrap_content"
         android:text="@string/type"
         android:textStyle="bold"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_name_textview" />
 
@@ -60,7 +63,7 @@
         android:id="@+id/location_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         android:textIsSelectable="true"
         tools:text="Space station"
         app:layout_constraintTop_toBottomOf="@id/location_name"
@@ -72,6 +75,7 @@
         android:layout_height="wrap_content"
         android:text="@string/dimension"
         android:textStyle="bold"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_type_textview" />
 
@@ -79,7 +83,7 @@
         android:id="@+id/location_dimension"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="unknown"
         app:layout_constraintTop_toBottomOf="@id/location_type"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
@@ -90,6 +94,7 @@
         android:layout_height="wrap_content"
         android:text="@string/created"
         android:textStyle="bold"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_dimension_textview" />
 
@@ -97,7 +102,7 @@
         android:id="@+id/location_created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="2017-11-10"
         app:layout_constraintTop_toBottomOf="@id/location_dimension"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
@@ -108,6 +113,7 @@
         android:layout_height="wrap_content"
         android:text="@string/residents"
         android:textStyle="bold"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_created_textview" />
 

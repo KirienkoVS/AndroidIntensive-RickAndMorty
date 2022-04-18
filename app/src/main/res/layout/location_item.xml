@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/name"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,7 +21,7 @@
         android:id="@+id/location_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Earth" />
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:text="@string/type"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_name_textview" />
 
@@ -40,7 +40,7 @@
         android:id="@+id/location_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="Planet"
         app:layout_constraintTop_toBottomOf="@id/location_name"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:text="@string/dimension"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_type_textview" />
 
@@ -59,7 +59,7 @@
         android:id="@+id/location_dimension"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="Dimension C-137"
         app:layout_constraintTop_toBottomOf="@id/location_type"
         app:layout_constraintStart_toEndOf="@id/location_dimension_textview"/>

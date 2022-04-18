@@ -10,6 +10,7 @@
     <style name="text_vew_style">
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#5E5D5D</item>
     </style>
     <style name="item_style">
         <item name="android:layout_marginTop">8dp</item>

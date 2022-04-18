@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/name"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,7 +21,7 @@
         android:id="@+id/episode_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toEndOf="@id/episode_episode_textview"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Pilot" />
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:text="@string/episode"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/episode_name_textview" />
 
@@ -40,7 +40,7 @@
         android:id="@+id/episode_episode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="S01E01"
         app:layout_constraintTop_toBottomOf="@id/episode_name"
         app:layout_constraintStart_toEndOf="@id/episode_episode_textview"/>
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:text="@string/air_date"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/episode_episode_textview" />
 
@@ -59,7 +59,7 @@
         android:id="@+id/episode_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="December 2, 2013"
         app:layout_constraintTop_toBottomOf="@id/episode_episode"
         app:layout_constraintStart_toEndOf="@id/episode_episode_textview"/>

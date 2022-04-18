@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:text="@string/name"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toEndOf="@+id/character_imageview"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:text="@string/species"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toEndOf="@+id/character_imageview"
         app:layout_constraintTop_toBottomOf="@id/character_name_textview" />
 
@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:text="@string/status"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toEndOf="@+id/character_imageview"
         app:layout_constraintTop_toBottomOf="@id/character_species_textview" />
 
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:text="@string/gender"
         android:textStyle="bold"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toEndOf="@+id/character_imageview"
         app:layout_constraintTop_toBottomOf="@id/character_status_textview" />
 
@@ -60,7 +60,7 @@
         android:id="@+id/character_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         app:layout_constraintStart_toEndOf="@id/character_species_textview"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Rick Sanchez" />
@@ -69,7 +69,7 @@
         android:id="@+id/character_species"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="Human"
         app:layout_constraintTop_toBottomOf="@id/character_name"
         app:layout_constraintStart_toEndOf="@id/character_species_textview"/>
@@ -78,7 +78,7 @@
         android:id="@+id/character_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="Alive"
         app:layout_constraintTop_toBottomOf="@id/character_species"
         app:layout_constraintStart_toEndOf="@id/character_species_textview"/>
@@ -87,7 +87,7 @@
         android:id="@+id/character_gender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        style="@style/text_vew_style"
         tools:text="Male"
         app:layout_constraintTop_toBottomOf="@id/character_status"
         app:layout_constraintStart_toEndOf="@id/character_species_textview"/>
