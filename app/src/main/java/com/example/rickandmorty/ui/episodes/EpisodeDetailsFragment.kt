@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,14 +22,9 @@ class EpisodeDetailsFragment: Fragment() {
 
     private val viewModel: EpisodeViewModel by viewModels()
 
-    private lateinit var id: TextView
-    private lateinit var name: TextView
-    private lateinit var episodeNumber: TextView
-    private lateinit var airDate: TextView
-    private lateinit var created: TextView
-
     private var episodeID = 0
     private var isOnline = true
+
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
 
@@ -50,15 +44,8 @@ class EpisodeDetailsFragment: Fragment() {
     }
 
     private fun bindViews() {
-        with(binding) {
-            id = episodeId
-            name = episodeName
-            episodeNumber = episode
-            airDate = episodeDate
-            created = episodeCreated
-            progressBar = charactersProgressBar
-            recyclerView = episodeCharactersRecyclerview
-        }
+        progressBar = binding.charactersProgressBar
+        recyclerView = binding.episodeCharactersRecyclerview
     }
 
     private fun setViews() {
@@ -67,11 +54,11 @@ class EpisodeDetailsFragment: Fragment() {
                 if (episode == null) {
                     Toast.makeText(activity, getString(R.string.data_not_avaliable), Toast.LENGTH_LONG).show()
                 } else {
-                    id.text = episode.id.toString()
-                    name.text = episode.name
-                    episodeNumber.text = episode.episodeNumber
-                    airDate.text = episode.airDate
-                    created.text = episode.created.subSequence(0, 10)
+                    binding.episodeId.text = episode.id.toString()
+                    binding.episodeName.text = episode.name
+                    binding.episode.text = episode.episodeNumber
+                    binding.episodeDate.text = episode.airDate
+                    binding.episodeCreated.text = episode.created.subSequence(0, 10)
                 }
             }
         }

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -22,17 +21,12 @@ class LocationDetailsFragment : Fragment() {
 
     private val viewModel: LocationViewModel by viewModels()
 
-    private lateinit var id: TextView
-    private lateinit var name: TextView
-    private lateinit var type: TextView
-    private lateinit var dimension: TextView
-    private lateinit var created: TextView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var recyclerView: RecyclerView
-
     private var isOnline = true
     private var locationID = 0
     private var locationName = ""
+
+    private lateinit var progressBar: ProgressBar
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
@@ -54,26 +48,19 @@ class LocationDetailsFragment : Fragment() {
     }
 
     private fun bindViews() {
-        with(binding) {
-            id = locationId
-            name = locationName
-            type = locationType
-            dimension = locationDimension
-            created = locationCreated
-            progressBar = residentsProgressBar
-            recyclerView = locationResidentsRecyclerview
-        }
+        progressBar = binding.residentsProgressBar
+        recyclerView = binding.locationResidentsRecyclerview
     }
 
     private fun setViews() {
         viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
             locationLiveData.observe(viewLifecycleOwner) { location->
                 if (location != null) {
-                    id.text = location.id.toString()
-                    name.text = location.name
-                    type.text = location.type.ifBlank { "unknown" }
-                    dimension.text = location.dimension.ifBlank { "unknown" }
-                    created.text = location.created.subSequence(0, 10)
+                    binding.locationId.text = location.id.toString()
+                    binding.locationName.text = location.name
+                    binding.locationType.text = location.type.ifBlank { "unknown" }
+                    binding.locationDimension.text = location.dimension.ifBlank { "unknown" }
+                    binding.locationCreated.text = location.created.subSequence(0, 10)
                 } else {
                     binding.emptyLocation.apply {
                         visibility = View.VISIBLE

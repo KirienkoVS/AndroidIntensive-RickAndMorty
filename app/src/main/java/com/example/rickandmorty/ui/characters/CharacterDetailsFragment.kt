@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,18 +24,10 @@ class CharacterDetailsFragment : Fragment() {
 
     private val viewModel: CharacterViewModel by viewModels()
 
-    private lateinit var imageView: ImageView
-    private lateinit var name: TextView
-    private lateinit var species: TextView
-    private lateinit var status: TextView
-    private lateinit var gender: TextView
-    private lateinit var type: TextView
-    private lateinit var created: TextView
-    private lateinit var originName: TextView
-    private lateinit var locationName: TextView
-
     private var isOnline = true
     private var characterID = 0
+
+    private lateinit var imageView: ImageView
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewAdapter: CharacterDetailsAdapter
@@ -59,14 +50,6 @@ class CharacterDetailsFragment : Fragment() {
     private fun bindViews() {
         with(binding) {
             imageView = characterImageView
-            name = characterDetailsName
-            species = characterDetailsSpecies
-            status = characterDetailsStatus
-            gender = characterDetailsGender
-            type = characterDetailsType
-            created = characterCreated
-            originName = characterOriginName
-            locationName = characterLocationName
             progressBar = episodeProgressBar
             recyclerView = characterRecyclerview
             recyclerViewAdapter = CharacterDetailsAdapter()
@@ -77,19 +60,19 @@ class CharacterDetailsFragment : Fragment() {
         viewModel.requestCharacterDetails(characterID)?.let {
             it.observe(viewLifecycleOwner) { character->
                 if (character != null) {
-                    name.text = character.name
-                    species.text = character.species
-                    status.text = character.status
-                    gender.text = character.gender
-                    type.text = character.type.ifBlank { "unknown" }
-                    created.text = character.created.subSequence(0, 10)
-                    originName.apply {
+                    binding.characterDetailsName.text = character.name
+                    binding.characterDetailsSpecies.text = character.species
+                    binding.characterDetailsStatus.text = character.status
+                    binding.characterDetailsGender.text = character.gender
+                    binding.characterDetailsType.text = character.type.ifBlank { "unknown" }
+                    binding.characterCreated.text = character.created.subSequence(0, 10)
+                    binding.characterOriginName.apply {
                         text = character.originName.ifBlank { "unknown" }
-                        setOnClickListener { navigateToLocation(originName.text.toString()) }
+                        setOnClickListener { navigateToLocation(this.text.toString()) }
                     }
-                    locationName.apply {
+                    binding.characterLocationName.apply {
                         text = character.locationName.ifBlank { "unknown" }
-                        setOnClickListener { navigateToLocation(locationName.text.toString()) }
+                        setOnClickListener { navigateToLocation(this.text.toString()) }
                     }
                     Glide.with(requireContext()).load(character.image).into(imageView)
                     preSaveCharacterLocations(listOf(
