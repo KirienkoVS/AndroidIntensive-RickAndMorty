@@ -36,6 +36,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigationAndActionBar() {
         val navigationView: BottomNavigationView = binding.bottomNavigationView
+        navigationView.setOnItemReselectedListener {
+            when(it.itemId) {
+                R.id.characters_page -> navController.popBackStack(R.id.characters_page, false)
+                R.id.locations_page -> navController.popBackStack(R.id.locations_page, false)
+                R.id.episodes_page -> navController.popBackStack(R.id.episodes_page, false)
+            }
+        }
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.characters_page,
