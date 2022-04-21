@@ -1,22 +1,22 @@
 package com.example.rickandmorty.data.locations
 
-import android.database.sqlite.SQLiteException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.paging.*
 import com.example.rickandmorty.api.RickAndMortyApi
+import com.example.rickandmorty.data.ResponseResult
 import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.LocationData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import retrofit2.HttpException
-import java.io.IOException
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
 class LocationRepository @Inject constructor(
     private val api: RickAndMortyApi,
-    private val database: AppDatabase
+    private val database: AppDatabase,
 ) {
 
     fun getLocations(queries: Map<String, String>): Flow<PagingData<LocationData>> {
@@ -26,10 +26,12 @@ class LocationRepository @Inject constructor(
         val dimension = if (queries.get("dimension").isNullOrBlank()) "empty" else "%${queries.get("dimension")}%"
 
         fun pagingSourceFactory(): () -> PagingSource<Int, LocationData> {
-            return { database.locationDao().locationsByFilter(
-                name = if (name == "empty") null else name,
-                type = if (type == "empty") null else type,
-                dimension = if (dimension == "empty") null else dimension)
+            return {
+                database.locationDao().locationsByFilter(
+                    name = if (name == "empty") null else name,
+                    type = if (type == "empty") null else type,
+                    dimension = if (dimension == "empty") null else dimension
+                )
             }
         }
 
@@ -41,8 +43,25 @@ class LocationRepository @Inject constructor(
 
     }
 
-    fun getLocationDetails(id: Int, name: String): LiveData<LocationData> {
-        return database.locationDao().getLocationDetails(id, name)
+    suspend fun getLocationDetails(id: Int, name: String): ResponseResult<LocationData> {
+        return try {
+            val dbResponse = withContext(Dispatchers.IO) {
+                database.locationDao().getLocationDetails(id, name)
+            }
+            if (dbResponse == null) {
+                val apiResponse = api.requestLocations(name = name, type = "", dimension = "", page = 0)
+                if (apiResponse.isSuccessful) {
+                    apiResponse.body()?.let {
+                        database.locationDao().insertLocations(it.results)
+                        ResponseResult.success(response = it.results.first())
+                    } ?: ResponseResult.error("Unknown error", null)
+                } else ResponseResult.error("Unknown error", null)
+            } else {
+                ResponseResult.success(dbResponse)
+            }
+        } catch (exception: Exception) {
+            ResponseResult.error(exception.message, null)
+        }
     }
 
     suspend fun getLocationResidents(residentUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
@@ -68,15 +87,13 @@ class LocationRepository @Inject constructor(
                     database.characterDao().insertCharacters(apiResponse)
                     emit(apiResponse)
                 }
-            } catch (exception: IOException) {
-                error(exception)
-            } catch (exception: HttpException) {
+            } catch (exception: Exception) {
                 error(exception)
             }
         } else {
             try {
                 database.characterDao().getLocationOrEpisodeCharacters(dbQuery)
-            } catch (exception: SQLiteException) {
+            } catch (exception: Exception) {
                 error(exception)
             }
         }
@@ -84,17 +101,15 @@ class LocationRepository @Inject constructor(
 
     fun searchLocations(query: String): Flow<PagingData<LocationData>> {
         val dbQuery = if (query.isBlank()) "empty" else "%${query}%"
-
         fun pagingSourceFactory(): () -> PagingSource<Int, LocationData> {
-            return { database.locationDao().locationsBySearch(query = if (dbQuery == "empty") null else dbQuery)
+            return {
+                database.locationDao().locationsBySearch(query = if (dbQuery == "empty") null else dbQuery)
             }
         }
-
         return Pager(
             config = PagingConfig(pageSize = PAGE_SIZE),
             pagingSourceFactory = pagingSourceFactory(),
         ).flow
-
     }
 
     companion object {

@@ -1,6 +1,5 @@
 package com.example.rickandmorty.data.characters
 
-import android.database.sqlite.SQLiteException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.paging.*
@@ -8,10 +7,9 @@ import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
-import com.example.rickandmorty.model.LocationData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import retrofit2.HttpException
-import java.io.IOException
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
@@ -46,8 +44,10 @@ class CharacterRepository @Inject constructor(
 
     }
 
-    fun getCharacterDetails(id: Int): LiveData<CharacterData> {
-        return database.characterDao().getCharacterDetails(id)
+    suspend fun getCharacterDetails(id: Int): CharacterData {
+        return withContext(Dispatchers.IO) {
+            database.characterDao().getCharacterDetails(id)
+        }
     }
 
     fun getCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>> {
@@ -70,37 +70,14 @@ class CharacterRepository @Inject constructor(
                     database.episodeDao().insertEpisodes(apiResponse)
                     emit(apiResponse)
                 }
-            } catch (exception: IOException) {
-                error (exception)
-            } catch (exception: HttpException) {
+            } catch (exception: Exception) {
                 error (exception)
             }
         } else {
             try {
                 database.episodeDao().getCharacterEpisodes(dbQuery)
-            } catch (exception: SQLiteException) {
+            } catch (exception: Exception) {
                 error (exception)
-            }
-        }
-    }
-
-    suspend fun saveCharacterLocations(locations: List<String>, isOnline: Boolean) {
-        if (isOnline) {
-            locations.forEach { location ->
-                if (location != "unknown") {
-                    try {
-                        val locationResponse = api.requestLocations(location, type = "", dimension = "", page = 0).results
-                            .map {
-                                LocationData(id = it.id, name = it.name, type = it.type, dimension = it.dimension,
-                                residents = it.residents, url = it.url, created = it.created)
-                        }
-                        database.locationDao().insertLocations(locationResponse)
-                    } catch (exception: IOException) {
-                        error (exception)
-                    } catch (exception: HttpException) {
-                        error (exception)
-                    }
-                }
             }
         }
     }

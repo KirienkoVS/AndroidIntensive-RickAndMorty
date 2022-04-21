@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.example.rickandmorty.data.ResponseResult
 import com.example.rickandmorty.data.locations.LocationRepository
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.LocationData
@@ -22,8 +23,8 @@ class LocationViewModel @Inject constructor(private val repository: LocationRepo
     fun setProgressBarVisibility(isVisible: Boolean) {
         _isProgressBarVisible.value = isVisible
     }
-
-    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf("isRefresh" to "true"))
+    /*--------------------------------------------------------------------------------------------------------------*/
+    private val _queries = MutableLiveData(mutableMapOf("isRefresh" to "true"))
     val queries: LiveData<MutableMap<String, String>> = _queries
 
     fun setFilter(queries: MutableMap<String, String>) {
@@ -33,18 +34,16 @@ class LocationViewModel @Inject constructor(private val repository: LocationRepo
     fun requestLocations(queries: Map<String, String>): Flow<PagingData<LocationData>> {
         return repository.getLocations(queries)
     }
+    /*--------------------------------------------------------------------------------------------------------------*/
+    private val _locationDetails = MutableLiveData<ResponseResult<LocationData>>()
+    val locationDetails: LiveData<ResponseResult<LocationData>> = _locationDetails
 
-
-    private var locationDetails: LiveData<LocationData>? = null
-
-    fun requestLocationDetails(id: Int, name: String): LiveData<LocationData>? {
+    fun requestLocationDetails(id: Int, name: String) {
         viewModelScope.launch {
-            locationDetails = repository.getLocationDetails(id, name)
+            _locationDetails.value = repository.getLocationDetails(id, name)
         }
-        return locationDetails
     }
-
-
+    /*--------------------------------------------------------------------------------------------------------------*/
     private var locationCharacters: LiveData<List<CharacterData>>? = null
 
     fun requestLocationCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>>? {
@@ -53,9 +52,8 @@ class LocationViewModel @Inject constructor(private val repository: LocationRepo
         }
         return locationCharacters
     }
-
+    /*--------------------------------------------------------------------------------------------------------------*/
     fun searchLocations(query: String): Flow<PagingData<LocationData>> {
         return repository.searchLocations(query)
     }
-
 }

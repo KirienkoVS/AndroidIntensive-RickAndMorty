@@ -1,6 +1,5 @@
 package com.example.rickandmorty.data.episodes
 
-import android.database.sqlite.SQLiteException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.paging.*
@@ -8,9 +7,9 @@ import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import retrofit2.HttpException
-import java.io.IOException
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
@@ -39,8 +38,10 @@ class EpisodeRepository @Inject constructor(
 
     }
 
-    fun getEpisodeDetails(id: Int): LiveData<EpisodeData> {
-        return database.episodeDao().getEpisodeDetails(id)
+    suspend fun getEpisodeDetails(id: Int): EpisodeData {
+        return withContext(Dispatchers.IO) {
+            database.episodeDao().getEpisodeDetails(id)
+        }
     }
 
     fun getEpisodeCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
@@ -65,15 +66,13 @@ class EpisodeRepository @Inject constructor(
                     database.characterDao().insertCharacters(apiResponse)
                     emit(apiResponse)
                 }
-            } catch (exception: IOException) {
-                error(exception)
-            } catch (exception: HttpException) {
+            } catch (exception: Exception) {
                 error(exception)
             }
         } else {
             try {
                 database.characterDao().getLocationOrEpisodeCharacters(dbQuery)
-            } catch (exception: SQLiteException) {
+            } catch (exception: Exception) {
                 error(exception)
             }
         }

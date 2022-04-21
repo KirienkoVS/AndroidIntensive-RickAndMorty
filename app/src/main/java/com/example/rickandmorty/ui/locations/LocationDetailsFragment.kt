@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmorty.R
+import com.example.rickandmorty.data.Status
 import com.example.rickandmorty.databinding.LocationDetailsFragmentBinding
 import com.example.rickandmorty.isOnline
+import com.example.rickandmorty.model.LocationData
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,92 +25,87 @@ class LocationDetailsFragment : Fragment() {
     private var locationID = 0
     private var locationName = ""
 
-    private lateinit var progressBar: ProgressBar
-    private lateinit var recyclerView: RecyclerView
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = LocationDetailsFragmentBinding.inflate(inflater, container, false)
-
-        isOnline = isOnline(requireContext())
 
         arguments?.apply {
             locationID = this.getInt(LOCATION_ID)
             locationName = this.getString(LOCATION_NAME) ?: error("Should provide location name")
         }
 
-        bindViews()
-        setViews()
-        initRecyclerView()
+        isOnline = isOnline(requireContext())
+        viewModel.requestLocationDetails(locationID, locationName)
+
         showProgressBar()
+        displayLocationDetails()
 
         return binding.root
     }
 
-    private fun bindViews() {
-        progressBar = binding.residentsProgressBar
-        recyclerView = binding.locationResidentsRecyclerview
-    }
-
-    private fun setViews() {
-        viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
-            locationLiveData.observe(viewLifecycleOwner) { location->
-                if (location != null) {
-                    binding.locationId.text = location.id.toString()
-                    binding.locationName.text = location.name
-                    binding.locationType.text = location.type.ifBlank { "unknown" }
-                    binding.locationDimension.text = location.dimension.ifBlank { "unknown" }
-                    binding.locationCreated.text = location.created.subSequence(0, 10)
-                } else {
-                    binding.emptyLocation.apply {
-                        visibility = View.VISIBLE
-                        text = resources.getString(R.string.no_locations)
+    private fun displayLocationDetails() {
+        viewModel.locationDetails.observe(viewLifecycleOwner) { response ->
+            when (response.status) {
+                Status.SUCCESS -> {
+                    response.response?.let { location ->
+                        setUpViews(location)
+                        setUpRecyclerView(location)
                     }
-                    viewModel.setProgressBarVisibility(false)
                 }
+                Status.ERROR -> showInternetConnectionError()
             }
         }
     }
 
-    private fun initRecyclerView() {
-        val recyclerViewAdapter = LocationDetailsAdapter()
+    private fun setUpViews(location: LocationData) {
+        with(binding) {
+            locationId.text = location.id.toString()
+            locationName.text = location.name
+            locationType.text = location.type.ifBlank { "unknown" }
+            locationDimension.text = location.dimension.ifBlank { "unknown" }
+            locationCreated.text = location.created.subSequence(0, 10)
+        }
+    }
 
-        viewModel.requestLocationDetails(locationID, locationName)?.let { locationLiveData ->
-            locationLiveData.observe(viewLifecycleOwner) { location ->
-                if (location != null) {
-                    val residentsUrlList = location.residents
-                    if (residentsUrlList.isNotEmpty()) {
-                        viewModel.requestLocationCharacters(residentsUrlList, isOnline)?.let { characterLiveData ->
-                            characterLiveData.observe(viewLifecycleOwner) { characterList ->
-                                if (characterList.isNotEmpty()) {
-                                    recyclerViewAdapter.residentsList = characterList
-                                    recyclerView.adapter = recyclerViewAdapter
-                                    viewModel.setProgressBarVisibility(false)
-                                } else {
-                                    binding.emptyLocation.apply {
-                                        visibility = View.VISIBLE
-                                        text = resources.getString(R.string.no_residents)
-                                    }
-                                    viewModel.setProgressBarVisibility(false)
-                                }
-                            }
-                        }
-                    } else {
-                        binding.emptyLocation.visibility = View.VISIBLE
+    private fun setUpRecyclerView(location: LocationData) {
+        val residentsUrlList = location.residents
+        if (residentsUrlList.isNotEmpty()) {
+            viewModel.requestLocationCharacters(residentsUrlList, isOnline)
+                ?.observe(viewLifecycleOwner) { characterList ->
+                    if (characterList.isNotEmpty()) {
+                        val adapter = LocationDetailsAdapter()
+                        adapter.residentsList = characterList
+                        binding.recyclerView.adapter = adapter
                         viewModel.setProgressBarVisibility(false)
-                    }
+                    } else showInternetConnectionError()
                 }
-            }
-        }
+        } else showEmptyLocationError()
     }
 
     private fun showProgressBar() {
         viewModel.isProgressBarVisible.observe(viewLifecycleOwner) { isVisible ->
-            when(isVisible) {
-                true -> progressBar.visibility = View.VISIBLE
-                false -> progressBar.visibility = View.GONE
+            when (isVisible) {
+                true -> binding.progressBar.visibility = View.VISIBLE
+                false -> binding.progressBar.visibility = View.GONE
             }
         }
+    }
+
+    private fun showInternetConnectionError() {
+        binding.emptyLocation.apply {
+            visibility = View.VISIBLE
+            text = resources.getString(R.string.no_results)
+        }
+        viewModel.setProgressBarVisibility(false)
+    }
+
+    private fun showEmptyLocationError() {
+        binding.emptyLocation.apply {
+            visibility = View.VISIBLE
+            text = resources.getString(R.string.empty_location)
+        }
+        viewModel.setProgressBarVisibility(false)
     }
 
     override fun onDestroy() {

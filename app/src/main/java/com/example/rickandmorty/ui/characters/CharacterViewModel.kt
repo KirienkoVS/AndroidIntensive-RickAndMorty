@@ -22,8 +22,8 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
     fun setProgressBarVisibility(isVisible: Boolean) {
         _isProgressBarVisible.value = isVisible
     }
-
-    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf("isRefresh" to "true"))
+    /*--------------------------------------------------------------------------------------------------------------*/
+    private val _queries = MutableLiveData(mutableMapOf("isRefresh" to "true"))
     val queries: LiveData<MutableMap<String, String>> = _queries
 
     fun setFilter(queries: MutableMap<String, String>) {
@@ -33,18 +33,16 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
     fun requestCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
         return repository.getCharacters(queries)
     }
+    /*--------------------------------------------------------------------------------------------------------------*/
+    private val _characterDetails = MutableLiveData<CharacterData>()
+    val characterDetails: LiveData<CharacterData> = _characterDetails
 
-
-    private var characterDetails: LiveData<CharacterData>? = null
-
-    fun requestCharacterDetails(id: Int): LiveData<CharacterData>? {
+    fun requestCharacterDetails(id: Int) {
         viewModelScope.launch {
-            characterDetails = repository.getCharacterDetails(id)
+            _characterDetails.value = repository.getCharacterDetails(id)
         }
-        return characterDetails
     }
-
-
+    /*--------------------------------------------------------------------------------------------------------------*/
     private var characterEpisodes: LiveData<List<EpisodeData>>? = null
 
     fun requestCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>>? {
@@ -53,15 +51,8 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
         }
         return characterEpisodes
     }
-
-    fun preSaveCharacterLocations(locations: List<String>, isOnline: Boolean) {
-        viewModelScope.launch {
-            repository.saveCharacterLocations(locations, isOnline)
-        }
-    }
-
+    /*--------------------------------------------------------------------------------------------------------------*/
     fun searchCharacters(query: String): Flow<PagingData<CharacterData>> {
         return repository.searchCharacters(query)
     }
-
 }

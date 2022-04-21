@@ -47,7 +47,7 @@ internal fun <T : Any> initLoadStateAdapter(
     recyclerView: RecyclerView,
     activity: FragmentActivity?,
     swipeRefresh: SwipeRefreshLayout,
-    pagingAdapter: PagingDataAdapter<T, RecyclerView.ViewHolder>
+    pagingAdapter: PagingDataAdapter<T, RecyclerView.ViewHolder>,
 ) {
     val header = LoadStateAdapter { pagingAdapter.retry() }
     recyclerView.adapter = pagingAdapter.withLoadStateHeaderAndFooter(
@@ -68,7 +68,7 @@ internal fun <T : Any> initLoadStateAdapter(
                 text = resources.getString(R.string.no_match)
             }
         } else if (isListEmpty) {
-            textView.isVisible = isListEmpty
+            textView.isVisible = true
         } else textView.visibility = View.GONE
 
         header.loadState = loadState.mediator

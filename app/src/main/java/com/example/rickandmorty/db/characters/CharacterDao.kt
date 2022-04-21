@@ -29,7 +29,7 @@ interface CharacterDao {
     ): PagingSource<Int, CharacterData>
 
     @Query("SELECT * FROM characters WHERE id = :id")
-    fun getCharacterDetails(id: Int): LiveData<CharacterData>
+    fun getCharacterDetails(id: Int): CharacterData
 
     @Query("SELECT * FROM characters WHERE id IN (:id)")
     fun getLocationOrEpisodeCharacters(id: List<Int>): LiveData<List<CharacterData>>

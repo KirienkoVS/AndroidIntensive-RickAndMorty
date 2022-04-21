@@ -48,6 +48,8 @@ class CharactersFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         characterFilterMap = mutableMapOf()
+        characterFilterMap.put("isRefresh", "true")
+        viewModel.setFilter(characterFilterMap)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

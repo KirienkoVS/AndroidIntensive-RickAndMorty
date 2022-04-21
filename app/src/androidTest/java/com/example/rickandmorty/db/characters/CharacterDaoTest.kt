@@ -3,7 +3,6 @@ package com.example.rickandmorty.db.characters
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.filters.SmallTest
 import com.example.rickandmorty.db.AppDatabase
-import com.example.rickandmorty.getOrAwaitValue
 import com.example.rickandmorty.model.CharacterData
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -52,7 +51,7 @@ class CharacterDaoTest {
     @Test
     fun insertCharacters() = runTest {
         characterDao.insertCharacters(listOf(characterData))
-        val character = characterDao.getCharacterDetails(1).getOrAwaitValue()
+        val character = characterDao.getCharacterDetails(1)
 
         assertThat(character).isEqualTo(characterData)
     }
@@ -61,7 +60,7 @@ class CharacterDaoTest {
     fun clearCharacters() = runTest {
         characterDao.insertCharacters(listOf(characterData))
         characterDao.clearCharacters()
-        val character = characterDao.getCharacterDetails(1).getOrAwaitValue()
+        val character = characterDao.getCharacterDetails(1)
 
         assertThat(character).isNull()
     }

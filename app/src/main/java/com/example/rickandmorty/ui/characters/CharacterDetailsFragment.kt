@@ -4,16 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rickandmorty.databinding.FragmentCharacterDetailsBinding
 import com.example.rickandmorty.isOnline
+import com.example.rickandmorty.model.CharacterData
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,81 +25,62 @@ class CharacterDetailsFragment : Fragment() {
     private var isOnline = true
     private var characterID = 0
 
-    private lateinit var imageView: ImageView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var recyclerViewAdapter: CharacterDetailsAdapter
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
 
         isOnline = isOnline(requireContext())
         characterID = arguments?.getInt(CHARACTER_ID) ?: error("Should provide character ID")
+        viewModel.requestCharacterDetails(characterID)
 
-        bindViews()
-        setViews()
-        initRecyclerView()
         showProgressBar()
+        displayCharacterDetails()
 
         return binding.root
     }
 
-    private fun bindViews() {
-        with(binding) {
-            imageView = characterImageView
-            progressBar = episodeProgressBar
-            recyclerView = characterRecyclerview
-            recyclerViewAdapter = CharacterDetailsAdapter()
-        }
-    }
-
-    private fun setViews() {
-        viewModel.requestCharacterDetails(characterID)?.let {
-            it.observe(viewLifecycleOwner) { character->
-                if (character != null) {
-                    binding.characterDetailsName.text = character.name
-                    binding.characterDetailsSpecies.text = character.species
-                    binding.characterDetailsStatus.text = character.status
-                    binding.characterDetailsGender.text = character.gender
-                    binding.characterDetailsType.text = character.type.ifBlank { "unknown" }
-                    binding.characterCreated.text = character.created.subSequence(0, 10)
-                    binding.characterOriginName.apply {
-                        text = character.originName.ifBlank { "unknown" }
-                        setOnClickListener { navigateToLocation(this.text.toString()) }
-                    }
-                    binding.characterLocationName.apply {
-                        text = character.locationName.ifBlank { "unknown" }
-                        setOnClickListener { navigateToLocation(this.text.toString()) }
-                    }
-                    Glide.with(requireContext()).load(character.image).into(imageView)
-                    preSaveCharacterLocations(listOf(
-                        character.originName.ifBlank { "unknown" }, character.locationName.ifBlank { "unknown" }
-                    ), isOnline)
-                }
+    private fun displayCharacterDetails() {
+        viewModel.characterDetails.observe(viewLifecycleOwner) { character ->
+            if (character != null) {
+                setUpViews(character)
+                setUpRecyclerView(character)
             }
         }
     }
 
-    private fun initRecyclerView() {
-        viewModel.requestCharacterDetails(characterID)?.let { characterLiveData ->
-            characterLiveData.observe(viewLifecycleOwner) { characterData ->
-                var episodeUrlList = emptyList<String>()
-                if (characterData != null) {
-                    episodeUrlList = characterData.episode
-                }
+    private fun setUpViews(character: CharacterData) {
+        with(binding) {
+            characterDetailsName.text = character.name
+            characterDetailsSpecies.text = character.species
+            characterDetailsStatus.text = character.status
+            characterDetailsGender.text = character.gender
+            characterDetailsType.text = character.type.ifBlank { "unknown" }
+            characterCreated.text = character.created.subSequence(0, 10)
+            characterOriginName.apply {
+                text = character.originName.ifBlank { "unknown" }
+                setOnClickListener { navigateToLocation(this.text.toString()) }
+            }
+            characterLocationName.apply {
+                text = character.locationName.ifBlank { "unknown" }
+                setOnClickListener { navigateToLocation(this.text.toString()) }
+            }
+            Glide.with(requireContext()).load(character.image).into(imageView)
+        }
+    }
 
-                viewModel.requestCharacterEpisodes(episodeUrlList, isOnline)?.let { episodeLiveData ->
-                    episodeLiveData.observe(viewLifecycleOwner) { episodeList ->
-                        if (episodeList.isNotEmpty()) {
-                            recyclerViewAdapter.episodeList = episodeList
-                            recyclerView.adapter = recyclerViewAdapter
-                            viewModel.setProgressBarVisibility(false)
-                        } else {
-                            binding.emptyEpisodes.visibility = View.VISIBLE
-                            viewModel.setProgressBarVisibility(false)
-                        }
-                    }
+    private fun setUpRecyclerView(character: CharacterData) {
+        val episodeUrlList = character.episode
+        viewModel.requestCharacterEpisodes(episodeUrlList, isOnline)?.let { episodeLiveData ->
+            episodeLiveData.observe(viewLifecycleOwner) { episodeList ->
+                if (episodeList.isNotEmpty()) {
+                    val recyclerViewAdapter = CharacterDetailsAdapter()
+                    recyclerViewAdapter.episodeList = episodeList
+                    binding.recyclerView.adapter = recyclerViewAdapter
+                    viewModel.setProgressBarVisibility(false)
+                } else {
+                    binding.emptyEpisodes.visibility = View.VISIBLE
+                    viewModel.setProgressBarVisibility(false)
                 }
             }
         }
@@ -109,9 +88,9 @@ class CharacterDetailsFragment : Fragment() {
 
     private fun showProgressBar() {
         viewModel.isProgressBarVisible.observe(viewLifecycleOwner) { isVisible ->
-            when(isVisible) {
-                true -> progressBar.visibility = View.VISIBLE
-                false -> progressBar.visibility = View.GONE
+            when (isVisible) {
+                true -> binding.progressBar.visibility = View.VISIBLE
+                false -> binding.progressBar.visibility = View.GONE
             }
         }
     }
@@ -124,10 +103,6 @@ class CharacterDetailsFragment : Fragment() {
                 CharacterDetailsFragmentDirections.actionCharacterDetailsFragmentToLocationDetailsFragment(locationName = destination)
             findNavController().navigate(action)
         }
-    }
-
-    private fun preSaveCharacterLocations(locations: List<String>, isOnline: Boolean) {
-        viewModel.preSaveCharacterLocations(locations, isOnline)
     }
 
     override fun onDestroy() {

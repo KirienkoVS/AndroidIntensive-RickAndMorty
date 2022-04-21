@@ -22,8 +22,8 @@ class EpisodeViewModel @Inject constructor(private val repository: EpisodeReposi
     fun setProgressBarVisibility(isVisible: Boolean) {
         _isProgressBarVisible.value = isVisible
     }
-
-    private val _queries = MutableLiveData<MutableMap<String, String>>(mutableMapOf("isRefresh" to "true"))
+    /*--------------------------------------------------------------------------------------------------------------*/
+    private val _queries = MutableLiveData(mutableMapOf("isRefresh" to "true"))
     val queries: LiveData<MutableMap<String, String>> = _queries
 
     fun setFilter(queries: MutableMap<String, String>) {
@@ -33,18 +33,16 @@ class EpisodeViewModel @Inject constructor(private val repository: EpisodeReposi
     fun requestEpisodes(queries: Map<String, String>): Flow<PagingData<EpisodeData>> {
         return repository.getEpisodes(queries)
     }
+    /*--------------------------------------------------------------------------------------------------------------*/
+    private val _episodeDetails = MutableLiveData<EpisodeData>()
+    val episodeDetails: LiveData<EpisodeData> = _episodeDetails
 
-
-    private var episodeDetails: LiveData<EpisodeData>? = null
-
-    fun requestEpisodeDetails(id: Int): LiveData<EpisodeData>? {
+    fun requestEpisodeDetails(id: Int) {
         viewModelScope.launch {
-            episodeDetails = repository.getEpisodeDetails(id)
+            _episodeDetails.value = repository.getEpisodeDetails(id)
         }
-        return episodeDetails
     }
-
-
+    /*--------------------------------------------------------------------------------------------------------------*/
     private var episodeCharacters: LiveData<List<CharacterData>>? = null
 
     fun requestEpisodeCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>>? {
@@ -53,9 +51,8 @@ class EpisodeViewModel @Inject constructor(private val repository: EpisodeReposi
         }
         return episodeCharacters
     }
-
+    /*--------------------------------------------------------------------------------------------------------------*/
     fun searchEpisodes(query: String): Flow<PagingData<EpisodeData>> {
         return repository.searchEpisodes(query)
     }
-
 }

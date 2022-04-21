@@ -20,7 +20,7 @@ interface EpisodeDao {
     fun episodesByFilter(name: String?, episode: String?): PagingSource<Int, EpisodeData>
 
     @Query("SELECT * FROM episodes WHERE id = :id")
-    fun getEpisodeDetails(id: Int): LiveData<EpisodeData>
+    fun getEpisodeDetails(id: Int): EpisodeData
 
     @Query("SELECT * FROM episodes WHERE id IN (:id)")
     fun getCharacterEpisodes(id: List<Int>): LiveData<List<EpisodeData>>

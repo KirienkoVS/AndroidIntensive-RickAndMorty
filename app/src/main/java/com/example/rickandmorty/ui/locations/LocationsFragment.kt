@@ -3,6 +3,7 @@ package com.example.rickandmorty.ui.locations
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
@@ -42,12 +43,16 @@ class LocationsFragment : Fragment()  {
     private var isOnline = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("LocationsFragment", "onCreate")
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         locationFilterMap = mutableMapOf()
+        locationFilterMap.put("isRefresh", "true")
+        viewModel.setFilter(locationFilterMap)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        Log.d("LocationsFragment", "onCreateView")
         _binding = LocationsFragmentBinding.inflate(inflater, container, false)
 
         isOnline = isOnline(requireContext())
@@ -200,8 +205,8 @@ class LocationsFragment : Fragment()  {
                 }
             }
             when(isFilterEmpty) {
-                false -> filterItem.setIcon(R.drawable.ic_filter_list_off)
                 true -> filterItem.setIcon(R.drawable.ic_filter)
+                false -> filterItem.setIcon(R.drawable.ic_filter_list_off)
             }
         }
     }

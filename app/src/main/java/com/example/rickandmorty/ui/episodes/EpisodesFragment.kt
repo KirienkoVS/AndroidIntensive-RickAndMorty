@@ -45,6 +45,8 @@ class EpisodesFragment : Fragment()  {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         episodeFilterMap = mutableMapOf()
+        episodeFilterMap.put("isRefresh", "true")
+        viewModel.setFilter(episodeFilterMap)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

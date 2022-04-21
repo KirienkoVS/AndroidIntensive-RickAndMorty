@@ -15,7 +15,7 @@
     tools:context=".ui.characters.CharacterDetailsFragment">     
 
         <ImageView
-            android:id="@+id/character_imageView"
+            android:id="@+id/imageView"
             android:layout_width="115dp"
             android:layout_height="115dp"
             android:contentDescription="@string/character_imageview"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:text="@string/name"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintStart_toEndOf="@id/imageView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:text="@string/species"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintStart_toEndOf="@id/imageView"
             app:layout_constraintTop_toBottomOf="@id/character_name_textview" />
 
         <TextView
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:text="@string/status"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintStart_toEndOf="@id/imageView"
             app:layout_constraintTop_toBottomOf="@id/character_species_textview" />
 
         <TextView
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:text="@string/gender"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintStart_toEndOf="@id/imageView"
             app:layout_constraintTop_toBottomOf="@id/character_status_textview" />
 
         <TextView
@@ -70,17 +70,16 @@
             android:layout_height="wrap_content"
             android:text="@string/type"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintStart_toEndOf="@id/imageView"
             app:layout_constraintTop_toBottomOf="@id/character_gender_textview" />
 
         <TextView
-            android:id="@+id/character_created_textview"
             style="@style/text_vew_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/created"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/character_imageView"
+            app:layout_constraintStart_toEndOf="@id/imageView"
             app:layout_constraintTop_toBottomOf="@id/character_type_textview" />
 
         <!--//////-->
@@ -149,7 +148,6 @@
             app:layout_constraintTop_toBottomOf="@id/character_created" />
 
         <TextView
-            android:id="@+id/character_origin_textview"
             style="@style/text_vew_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -204,7 +202,7 @@
             app:layout_constraintTop_toBottomOf="@id/character_location_name" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/character_recyclerview"
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -227,11 +225,11 @@
             app:layout_constraintTop_toBottomOf="@id/character_episode_textview" />
 
         <ProgressBar
-            android:id="@+id/episode_progressBar"
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/character_recyclerview"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/line" />

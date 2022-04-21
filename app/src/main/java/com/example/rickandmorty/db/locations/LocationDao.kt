@@ -1,6 +1,5 @@
 package com.example.rickandmorty.db.locations
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
@@ -21,7 +20,7 @@ interface LocationDao {
     fun locationsByFilter(name: String?, type: String?, dimension: String?): PagingSource<Int, LocationData>
 
     @Query("SELECT * FROM locations WHERE id = :id OR name = :name")
-    fun getLocationDetails(id: Int, name: String): LiveData<LocationData>
+    fun getLocationDetails(id: Int, name: String): LocationData?
 
     @Query("DELETE FROM locations")
     suspend fun clearLocations()

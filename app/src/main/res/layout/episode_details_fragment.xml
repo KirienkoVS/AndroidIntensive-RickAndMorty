@@ -60,7 +60,7 @@
         app:layout_constraintTop_toBottomOf="@id/episode_name_textview" />
 
     <TextView
-        android:id="@+id/episode"
+        android:id="@+id/episodeNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/text_vew_style"
@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         style="@style/text_vew_style"
         tools:text="September 10, 2017"
-        app:layout_constraintTop_toBottomOf="@id/episode"
+        app:layout_constraintTop_toBottomOf="@id/episodeNumber"
         app:layout_constraintStart_toEndOf="@id/episode_characters_textview"/>
 
     <TextView
@@ -118,7 +118,7 @@
         app:layout_constraintTop_toBottomOf="@id/episode_created_textview" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/episode_characters_recyclerview"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -128,11 +128,11 @@
         app:layout_constraintTop_toBottomOf="@id/episode_characters_textview" />
 
     <ProgressBar
-        android:id="@+id/characters_progressBar"
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/episode_characters_recyclerview"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/episode_episode_textview" />

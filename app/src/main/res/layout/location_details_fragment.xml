@@ -118,7 +118,7 @@
         app:layout_constraintTop_toBottomOf="@id/location_created_textview" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/location_residents_recyclerview"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -131,7 +131,6 @@
         android:id="@+id/empty_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/empty_location"
         android:textAlignment="center"
         android:textSize="16sp"
         android:visibility="gone"
@@ -141,11 +140,11 @@
         app:layout_constraintTop_toBottomOf="@+id/location_residents_textview" />
 
     <ProgressBar
-        android:id="@+id/residents_progressBar"
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/location_residents_recyclerview"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_type" />

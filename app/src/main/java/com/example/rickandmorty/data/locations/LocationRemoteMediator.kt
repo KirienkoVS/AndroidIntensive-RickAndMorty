@@ -42,6 +42,8 @@ class LocationRemoteMediator(
         }
 
         try {
+            var locationsData: List<LocationData> = emptyList()
+            var endOfPaginationReached = false
 
             val response = api.requestLocations(
                 name = queries.get("name"),
@@ -50,8 +52,12 @@ class LocationRemoteMediator(
                 page
             )
 
-            val locationsData = response.results
-            val endOfPaginationReached = response.info.next == null
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    locationsData = it.results
+                    endOfPaginationReached = it.info.next == null
+                }
+            }
 
             database.withTransaction {
 
