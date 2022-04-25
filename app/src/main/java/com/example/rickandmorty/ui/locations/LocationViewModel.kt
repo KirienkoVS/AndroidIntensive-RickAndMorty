@@ -44,13 +44,13 @@ class LocationViewModel @Inject constructor(private val repository: LocationRepo
         }
     }
     /*--------------------------------------------------------------------------------------------------------------*/
-    private var locationCharacters: LiveData<List<CharacterData>>? = null
+    private val _locationResidents = MutableLiveData<ResponseResult<List<CharacterData>>>()
+    val locationResidents: LiveData<ResponseResult<List<CharacterData>>> = _locationResidents
 
-    fun requestLocationCharacters(characterUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>>? {
+    fun requestLocationResidents(characterUrlList: List<String>) {
         viewModelScope.launch {
-            locationCharacters = repository.getLocationResidents(characterUrlList, isOnline)
+            _locationResidents.value = repository.getLocationResidents(characterUrlList)
         }
-        return locationCharacters
     }
     /*--------------------------------------------------------------------------------------------------------------*/
     fun searchLocations(query: String): Flow<PagingData<LocationData>> {

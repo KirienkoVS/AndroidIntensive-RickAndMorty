@@ -1,9 +1,8 @@
 package com.example.rickandmorty.data.characters
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import androidx.paging.*
 import com.example.rickandmorty.api.RickAndMortyApi
+import com.example.rickandmorty.data.ResponseResult
 import com.example.rickandmorty.db.AppDatabase
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
@@ -15,7 +14,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalPagingApi::class)
 class CharacterRepository @Inject constructor(
     private val api: RickAndMortyApi,
-    private val database: AppDatabase
+    private val database: AppDatabase,
 ) {
 
     fun getCharacters(queries: Map<String, String>): Flow<PagingData<CharacterData>> {
@@ -27,12 +26,13 @@ class CharacterRepository @Inject constructor(
         val gender = if (queries.get("gender").isNullOrBlank()) "empty" else queries.get("gender")
 
         fun pagingSourceFactory(): () -> PagingSource<Int, CharacterData> {
-            return { database.characterDao().charactersByFilter(
-                name = if (name == "empty") null else name,
-                species = if (species == "empty") null else species,
-                status = if (status == "empty") null else status,
-                gender = if (gender == "empty") null else gender,
-                type = if (type == "empty") null else type)
+            return {
+                database.characterDao().charactersByFilter(
+                    name = if (name == "empty") null else name,
+                    species = if (species == "empty") null else species,
+                    status = if (status == "empty") null else status,
+                    gender = if (gender == "empty") null else gender,
+                    type = if (type == "empty") null else type)
             }
         }
 
@@ -50,7 +50,7 @@ class CharacterRepository @Inject constructor(
         }
     }
 
-    fun getCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>> {
+    suspend fun getCharacterEpisodes(episodeUrlList: List<String>): ResponseResult<List<EpisodeData>> {
         var apiQuery = ""
         val dbQuery = mutableListOf<Int>()
 
@@ -60,41 +60,37 @@ class CharacterRepository @Inject constructor(
             dbQuery.add(episodeID)
         }
 
-        return if (isOnline) {
-            try {
-                liveData {
-                    val apiResponse = api.requestSingleEpisode(apiQuery).map {
-                        EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
-                            characters = it.characters, url = it.url, created = it.created)
-                    }
-                    database.episodeDao().insertEpisodes(apiResponse)
-                    emit(apiResponse)
-                }
-            } catch (exception: Exception) {
-                error (exception)
-            }
-        } else {
-            try {
-                database.episodeDao().getCharacterEpisodes(dbQuery)
-            } catch (exception: Exception) {
-                error (exception)
-            }
+        return try {
+            val dbResponse = withContext(Dispatchers.IO) { database.episodeDao().getCharacterEpisodes(dbQuery) }
+            if (dbResponse.isEmpty()) {
+                val apiResponse = api.requestSingleEpisode(apiQuery)
+                if (apiResponse.isSuccessful) {
+                    apiResponse.body()?.let { response ->
+                        val episodeData = response.map {
+                            EpisodeData(id = it.id, name = it.name, airDate = it.air_date, episodeNumber = it.episode,
+                                characters = it.characters, url = it.url, created = it.created)
+                        }
+                        database.episodeDao().insertEpisodes(episodeData)
+                        ResponseResult.Success(episodeData)
+                    } ?: ResponseResult.Error(apiResponse.message())
+                } else ResponseResult.Error(apiResponse.message())
+            } else ResponseResult.Success(dbResponse)
+        } catch (exception: Exception) {
+            ResponseResult.Error(exception.message)
         }
     }
 
     fun searchCharacters(query: String): Flow<PagingData<CharacterData>> {
         val dbQuery = if (query.isBlank()) "empty" else "%${query}%"
-
         fun pagingSourceFactory(): () -> PagingSource<Int, CharacterData> {
-            return { database.characterDao().charactersBySearch(query = if (dbQuery == "empty") null else dbQuery)
+            return {
+                database.characterDao().charactersBySearch(query = if (dbQuery == "empty") null else dbQuery)
             }
         }
-
         return Pager(
             config = PagingConfig(pageSize = PAGE_SIZE),
             pagingSourceFactory = pagingSourceFactory(),
         ).flow
-
     }
 
     companion object {

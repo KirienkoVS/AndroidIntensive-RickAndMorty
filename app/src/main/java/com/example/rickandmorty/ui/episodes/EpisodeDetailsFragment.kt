@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.rickandmorty.data.ResponseResult
 import com.example.rickandmorty.databinding.EpisodeDetailsFragmentBinding
-import com.example.rickandmorty.isOnline
 import com.example.rickandmorty.model.EpisodeData
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,14 +21,12 @@ class EpisodeDetailsFragment : Fragment() {
     private val viewModel: EpisodeViewModel by viewModels()
 
     private var episodeID = 0
-    private var isOnline = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = EpisodeDetailsFragmentBinding.inflate(inflater, container, false)
 
-        isOnline = isOnline(requireContext())
         episodeID = arguments?.getInt(EPISODE_ID) ?: error("Should provide episode ID")
         viewModel.requestEpisodeDetails(episodeID)
 
@@ -57,13 +56,18 @@ class EpisodeDetailsFragment : Fragment() {
     }
 
     private fun setUpRecyclerView(episode: EpisodeData) {
-        val characterUrlList = episode.characters
-        viewModel.requestEpisodeCharacters(characterUrlList, isOnline)?.let { characterLiveData ->
-            characterLiveData.observe(viewLifecycleOwner) { characterList ->
-                val recyclerViewAdapter = EpisodeDetailsAdapter()
-                recyclerViewAdapter.characterList = characterList
-                binding.recyclerView.adapter = recyclerViewAdapter
-                viewModel.setProgressBarVisibility(false)
+        viewModel.requestEpisodeCharacters(episode.characters)
+        viewModel.episodeCharacters.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is ResponseResult.Success -> {
+                    response.data?.let { characterList ->
+                        val recyclerViewAdapter = EpisodeDetailsAdapter()
+                        recyclerViewAdapter.characterList = characterList
+                        binding.recyclerView.adapter = recyclerViewAdapter
+                        viewModel.setProgressBarVisibility(false)
+                    } ?: Toast.makeText(activity, "${response.message}", Toast.LENGTH_SHORT).show()
+                }
+                is ResponseResult.Error -> Toast.makeText(activity, "${response.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

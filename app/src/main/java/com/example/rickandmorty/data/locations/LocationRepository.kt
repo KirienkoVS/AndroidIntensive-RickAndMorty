@@ -1,7 +1,6 @@
 package com.example.rickandmorty.data.locations
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
+import android.util.Log
 import androidx.paging.*
 import com.example.rickandmorty.api.RickAndMortyApi
 import com.example.rickandmorty.data.ResponseResult
@@ -53,18 +52,19 @@ class LocationRepository @Inject constructor(
                 if (apiResponse.isSuccessful) {
                     apiResponse.body()?.let {
                         database.locationDao().insertLocations(it.results)
-                        ResponseResult.success(response = it.results.first())
-                    } ?: ResponseResult.error("Unknown error", null)
-                } else ResponseResult.error("Unknown error", null)
+                        ResponseResult.Success(data = it.results.first())
+                    } ?: ResponseResult.Error(apiResponse.message())
+                } else ResponseResult.Error(apiResponse.message())
             } else {
-                ResponseResult.success(dbResponse)
+                ResponseResult.Success(dbResponse)
             }
         } catch (exception: Exception) {
-            ResponseResult.error(exception.message, null)
+            ResponseResult.Error(exception.message)
         }
     }
 
-    suspend fun getLocationResidents(residentUrlList: List<String>, isOnline: Boolean): LiveData<List<CharacterData>> {
+    suspend fun getLocationResidents(residentUrlList: List<String>): ResponseResult<List<CharacterData>> {
+        Log.d("LocationRepository", "residentUrlList: $residentUrlList")
         var apiQuery = ""
         val dbQuery = mutableListOf<Int>()
 
@@ -74,28 +74,32 @@ class LocationRepository @Inject constructor(
             dbQuery.add(residentID)
         }
 
-        return if (isOnline) {
-            try {
-                liveData {
-                    val apiResponse = api.requestSingleCharacter(apiQuery).map {
-                        CharacterData(
-                            id = it.id, name = it.name, species = it.species, status = it.status, gender = it.gender,
-                            image = it.image, type = it.type, created = it.created, originName = it.origin.name,
-                            locationName = it.location.name, episode = it.episode
-                        )
-                    }
-                    database.characterDao().insertCharacters(apiResponse)
-                    emit(apiResponse)
-                }
-            } catch (exception: Exception) {
-                error(exception)
-            }
-        } else {
-            try {
+        return try {
+            val dbResponse = withContext(Dispatchers.IO) {
                 database.characterDao().getLocationOrEpisodeCharacters(dbQuery)
-            } catch (exception: Exception) {
-                error(exception)
             }
+            Log.d("LocationRepository", "dbResponse: $dbResponse")
+            if (dbResponse.isEmpty()) {
+                val apiResponse = api.requestSingleCharacter(apiQuery)
+                if (apiResponse.isSuccessful) {
+                    apiResponse.body()?.let { response ->
+                        val characterData = response.map {
+                            CharacterData(
+                                id = it.id, name = it.name, species = it.species, status = it.status,
+                                gender = it.gender, image = it.image, type = it.type, created = it.created,
+                                originName = it.origin.name, locationName = it.location.name, episode = it.episode
+                            )
+                        }
+                        database.characterDao().insertCharacters(characterData)
+                        Log.d("LocationRepository", "apiResponse: $apiResponse")
+                        ResponseResult.Success(characterData)
+                    } ?: ResponseResult.Error(apiResponse.message())
+                } else ResponseResult.Error(apiResponse.message())
+            } else {
+                ResponseResult.Success(dbResponse)
+            }
+        } catch (exception: Exception) {
+            ResponseResult.Error(exception.message)
         }
     }
 

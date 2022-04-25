@@ -1,18 +1,9 @@
 package com.example.rickandmorty.data
 
-data class ResponseResult<out T>(val status: Status, val response: T?, val message: String?) {
-    companion object {
-        fun <T> success(response: T?): ResponseResult<T> {
-            return ResponseResult(Status.SUCCESS, response, null)
-        }
-
-        fun <T> error(message: String?, response: T?): ResponseResult<T> {
-            return ResponseResult(Status.ERROR, response, message)
-        }
-    }
-}
-
-enum class Status {
-    SUCCESS,
-    ERROR
+sealed class ResponseResult<T> (
+    val data: T? = null,
+    val message: String? = null
+) {
+    class Success<T>(data: T?): ResponseResult<T>(data = data)
+    class Error<T>(message: String?): ResponseResult<T>(message = message)
 }

@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.rickandmorty.data.ResponseResult
 import com.example.rickandmorty.databinding.FragmentCharacterDetailsBinding
-import com.example.rickandmorty.isOnline
 import com.example.rickandmorty.model.CharacterData
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +22,6 @@ class CharacterDetailsFragment : Fragment() {
 
     private val viewModel: CharacterViewModel by viewModels()
 
-    private var isOnline = true
     private var characterID = 0
 
     override fun onCreateView(
@@ -30,7 +29,6 @@ class CharacterDetailsFragment : Fragment() {
     ): View {
         _binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
 
-        isOnline = isOnline(requireContext())
         characterID = arguments?.getInt(CHARACTER_ID) ?: error("Should provide character ID")
         viewModel.requestCharacterDetails(characterID)
 
@@ -70,19 +68,43 @@ class CharacterDetailsFragment : Fragment() {
     }
 
     private fun setUpRecyclerView(character: CharacterData) {
-        val episodeUrlList = character.episode
-        viewModel.requestCharacterEpisodes(episodeUrlList, isOnline)?.let { episodeLiveData ->
-            episodeLiveData.observe(viewLifecycleOwner) { episodeList ->
-                if (episodeList.isNotEmpty()) {
-                    val recyclerViewAdapter = CharacterDetailsAdapter()
-                    recyclerViewAdapter.episodeList = episodeList
-                    binding.recyclerView.adapter = recyclerViewAdapter
-                    viewModel.setProgressBarVisibility(false)
-                } else {
-                    binding.emptyEpisodes.visibility = View.VISIBLE
+        viewModel.requestCharacterEpisodes(character.episode)
+        viewModel.characterEpisodes.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is ResponseResult.Success -> {
+                    response.data?.let { episodeList ->
+                        hideErrorMessage()
+                        val recyclerViewAdapter = CharacterDetailsAdapter()
+                        recyclerViewAdapter.episodeList = episodeList
+                        binding.recyclerView.adapter = recyclerViewAdapter
+                        viewModel.setProgressBarVisibility(false)
+                    } ?: Toast.makeText(activity, "${response.message}", Toast.LENGTH_SHORT).show()
+                }
+                is ResponseResult.Error -> {
+                    showErrorMessage()
+                    retryGetCharacterEpisodes(character)
                     viewModel.setProgressBarVisibility(false)
                 }
             }
+        }
+    }
+
+    private fun showErrorMessage() {
+        binding.emptyEpisodes.visibility = View.VISIBLE
+        binding.retryButton.visibility = View.VISIBLE
+    }
+
+    private fun hideErrorMessage() {
+        binding.emptyEpisodes.visibility = View.GONE
+        binding.retryButton.visibility = View.GONE
+    }
+
+    private fun retryGetCharacterEpisodes(character: CharacterData) {
+        binding.retryButton.setOnClickListener {
+            it.visibility = View.GONE
+            binding.emptyEpisodes.visibility = View.GONE
+            viewModel.setProgressBarVisibility(true)
+            viewModel.requestCharacterEpisodes(character.episode)
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.example.rickandmorty.data.ResponseResult
 import com.example.rickandmorty.data.characters.CharacterRepository
 import com.example.rickandmorty.model.CharacterData
 import com.example.rickandmorty.model.EpisodeData
@@ -43,13 +44,13 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
         }
     }
     /*--------------------------------------------------------------------------------------------------------------*/
-    private var characterEpisodes: LiveData<List<EpisodeData>>? = null
+    private val _characterEpisodes = MutableLiveData<ResponseResult<List<EpisodeData>>>()
+    val characterEpisodes: LiveData<ResponseResult<List<EpisodeData>>> = _characterEpisodes
 
-    fun requestCharacterEpisodes(episodeUrlList: List<String>, isOnline: Boolean): LiveData<List<EpisodeData>>? {
+    fun requestCharacterEpisodes(episodeUrlList: List<String>) {
         viewModelScope.launch {
-            characterEpisodes = repository.getCharacterEpisodes(episodeUrlList, isOnline)
+            _characterEpisodes.value = repository.getCharacterEpisodes(episodeUrlList)
         }
-        return characterEpisodes
     }
     /*--------------------------------------------------------------------------------------------------------------*/
     fun searchCharacters(query: String): Flow<PagingData<CharacterData>> {

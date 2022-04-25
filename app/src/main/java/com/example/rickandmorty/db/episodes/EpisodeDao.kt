@@ -1,6 +1,5 @@
 package com.example.rickandmorty.db.episodes
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
@@ -23,7 +22,7 @@ interface EpisodeDao {
     fun getEpisodeDetails(id: Int): EpisodeData
 
     @Query("SELECT * FROM episodes WHERE id IN (:id)")
-    fun getCharacterEpisodes(id: List<Int>): LiveData<List<EpisodeData>>
+    fun getCharacterEpisodes(id: List<Int>): List<EpisodeData>
 
     @Query("DELETE FROM episodes")
     suspend fun clearEpisodes()

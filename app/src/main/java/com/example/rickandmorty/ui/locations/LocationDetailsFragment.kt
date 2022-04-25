@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.rickandmorty.R
-import com.example.rickandmorty.data.Status
+import com.example.rickandmorty.data.ResponseResult
 import com.example.rickandmorty.databinding.LocationDetailsFragmentBinding
-import com.example.rickandmorty.isOnline
 import com.example.rickandmorty.model.LocationData
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +21,6 @@ class LocationDetailsFragment : Fragment() {
 
     private val viewModel: LocationViewModel by viewModels()
 
-    private var isOnline = true
     private var locationID = 0
     private var locationName = ""
 
@@ -35,7 +34,6 @@ class LocationDetailsFragment : Fragment() {
             locationName = this.getString(LOCATION_NAME) ?: error("Should provide location name")
         }
 
-        isOnline = isOnline(requireContext())
         viewModel.requestLocationDetails(locationID, locationName)
 
         showProgressBar()
@@ -46,14 +44,17 @@ class LocationDetailsFragment : Fragment() {
 
     private fun displayLocationDetails() {
         viewModel.locationDetails.observe(viewLifecycleOwner) { response ->
-            when (response.status) {
-                Status.SUCCESS -> {
-                    response.response?.let { location ->
+            when (response) {
+                is ResponseResult.Success -> {
+                    response.data?.let { location ->
                         setUpViews(location)
                         setUpRecyclerView(location)
-                    }
+                    } ?: Toast.makeText(activity, "${response.message}", Toast.LENGTH_SHORT).show()
                 }
-                Status.ERROR -> showInternetConnectionError()
+                is ResponseResult.Error -> {
+                    showInternetConnectionError()
+                    retryGetLocationDetails()
+                }
             }
         }
     }
@@ -69,18 +70,25 @@ class LocationDetailsFragment : Fragment() {
     }
 
     private fun setUpRecyclerView(location: LocationData) {
-        val residentsUrlList = location.residents
-        if (residentsUrlList.isNotEmpty()) {
-            viewModel.requestLocationCharacters(residentsUrlList, isOnline)
-                ?.observe(viewLifecycleOwner) { characterList ->
-                    if (characterList.isNotEmpty()) {
-                        val adapter = LocationDetailsAdapter()
-                        adapter.residentsList = characterList
-                        binding.recyclerView.adapter = adapter
-                        viewModel.setProgressBarVisibility(false)
-                    } else showInternetConnectionError()
+        viewModel.requestLocationResidents(location.residents)
+        viewModel.locationResidents.observe(viewLifecycleOwner) { response ->
+            when (response) {
+                is ResponseResult.Success -> {
+                    response.data?.let { characterList ->
+                        if (characterList.isNotEmpty()) {
+                            val adapter = LocationDetailsAdapter()
+                            adapter.residentsList = characterList
+                            binding.recyclerView.adapter = adapter
+                            viewModel.setProgressBarVisibility(false)
+                        } else showEmptyLocationError()
+                    } ?: Toast.makeText(activity, "${response.message}", Toast.LENGTH_SHORT).show()
                 }
-        } else showEmptyLocationError()
+                is ResponseResult.Error -> {
+                    showInternetConnectionError()
+                    retryGetLocationResidents(location)
+                }
+            }
+        }
     }
 
     private fun showProgressBar() {
@@ -97,6 +105,7 @@ class LocationDetailsFragment : Fragment() {
             visibility = View.VISIBLE
             text = resources.getString(R.string.no_results)
         }
+        binding.retryButton.visibility = View.VISIBLE
         viewModel.setProgressBarVisibility(false)
     }
 
@@ -106,6 +115,26 @@ class LocationDetailsFragment : Fragment() {
             text = resources.getString(R.string.empty_location)
         }
         viewModel.setProgressBarVisibility(false)
+    }
+
+    private fun retryGetLocationDetails() {
+        binding.retryButton.setOnClickListener {
+            it.visibility = View.GONE
+            binding.emptyLocation.visibility = View.GONE
+            viewModel.setProgressBarVisibility(true)
+            viewModel.requestLocationDetails(locationID, locationName)
+        }
+    }
+
+    private fun retryGetLocationResidents(location: LocationData) {
+        binding.retryButton.setOnClickListener {
+            it.visibility = View.GONE
+            binding.emptyLocation.visibility = View.GONE
+            viewModel.setProgressBarVisibility(true)
+            if (location.residents.isEmpty()) {
+                showEmptyLocationError()
+            } else viewModel.requestLocationResidents(location.residents)
+        }
     }
 
     override fun onDestroy() {
